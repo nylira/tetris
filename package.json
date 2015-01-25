@@ -1,0 +1,32 @@
+{
+  "name": "js-game-boilerplate",
+  "version": "0.0.1",
+  "description": "A description of a game.",
+  "main": "server.js",
+  "dependencies": {
+    "browserify": "^8.1.1",
+    "combokeys": "^2.3.0",
+    "fastclick": "^1.0.3",
+    "howler": "^1.1.25",
+    "koa": "^0.15.0",
+    "koa-router": "^3.8.0",
+    "koa-static": "^1.4.8",
+    "lodash": "^2.4.1",
+    "nib": "^1.1.0",
+    "pixi.js": "^2.2.3",
+    "stylus": "^0.49.0",
+    "uglify-js": "^2.4.16",
+    "watchify": "^2.2.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@91.121.116.55:js-game-boilerplate"
+  },
+  "author": "Peng Zhong",
+  "license": "Proprietary"
+}
