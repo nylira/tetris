@@ -1,6 +1,9 @@
 'use strict'
 
-// libraries
+/*----------------------------------------------------------------------------*/
+//  Modules
+/*----------------------------------------------------------------------------*/
+
 var P = require('pixi.js')
 var _ = require('lodash')
 //var Combokeys = require('combokeys')
@@ -9,11 +12,15 @@ var _ = require('lodash')
 //var attachFastClick = require('fastclick')
 //attachFastClick(document.body)
 
+/*----------------------------------------------------------------------------*/
+//  Variables
+/*----------------------------------------------------------------------------*/
+
 // constants
 var R = window.devicePixelRatio
-var CANVAS_X = 400
-var CANVAS_Y = 400
-var GRID_UNIT = 16
+var CANVAS_X = 320*R
+var CANVAS_Y = 568*R
+var GRID_UNIT = 16*R
 
 // stage variables
 var stage, renderer
@@ -23,21 +30,43 @@ var sceneMenu
 var sceneGame
 var sceneSummary
 
-// setup stage
+// textures
+var TDemo
+
+// sprites
+var SDemo
+
+/*----------------------------------------------------------------------------*/
+//  Stage
+/*----------------------------------------------------------------------------*/
+
 stage = new P.Stage(0xFFFFFF)
 renderer = P.autoDetectRenderer(CANVAS_X, CANVAS_Y)
 document.getElementById('container').appendChild(renderer.view)
 
-// it works!
-var demoTexture = new P.Texture.fromImage('../img/block16x16red.png')
-var demoSprite = new P.Sprite(demoTexture)
-demoSprite.position.x = 100
-demoSprite.position.y = 100
+/*----------------------------------------------------------------------------*/
+//  Textures
+/*----------------------------------------------------------------------------*/
 
-stage.addChild(demoSprite)
-console.log("WTF")
+if(R === 2){
+  TDemo = new P.Texture.fromImage('../img/block16x16red@x2.png')
+} else {
+  TDemo = new P.Texture.fromImage('../img/block16x16red.png')
+}
 
-// the rendering loop
+/*----------------------------------------------------------------------------*/
+//  Sprites
+/*----------------------------------------------------------------------------*/
+
+SDemo = new P.Sprite(TDemo)
+SDemo.position.x = 100*R
+SDemo.position.y = 100*R
+stage.addChild(SDemo)
+
+/*----------------------------------------------------------------------------*/
+//  Update
+/*----------------------------------------------------------------------------*/
+
 requestAnimationFrame(update)
 function update() {
   requestAnimationFrame(update)
