@@ -89,7 +89,6 @@ stage.addChild(fieldOfPlay)
 
 createNewPiece()
   
-console.log(_.find([[1,3],[1,2],[3,4]], [1,2]))
 /*----------------------------------------------------------------------------*/
 //  Update
 /*----------------------------------------------------------------------------*/
@@ -101,26 +100,19 @@ function update() {
   if(timer < new Date().getTime()) {
 
     // if the moving piece hits another piece, keep it there
-    if( occupied.length > 0 && _.find(occupied, [ SActivePiece.position.x
-    , SActivePiece.position.y + GRID_UNIT]) !== undefined) {
+    if(collidesWithOccupied(SActivePiece, occupied)) {
 
-      occupied.push([SActivePiece.position.x, SActivePiece.position.y])
-      console.log("this should rest on top of the other")
-
+      occupied.push(SActivePiece)
       createNewPiece()
 
     // if the moving piece hits the floor, keep it there
     } else if(SActivePiece.position.y === gridHeight * GRID_UNIT - GRID_UNIT) {
 
-      // add old moving piece to occupied list
-      occupied.push([SActivePiece.position.x, SActivePiece.position.y])
-      //console.log(occupied)
-
+      occupied.push(SActivePiece)
       createNewPiece()
 
     // otherwise keep it moving
     } else {
-
       SActivePiece.position.y = SActivePiece.position.y + GRID_UNIT
       timer = new Date().getTime() + REFRESH_RATE
 
@@ -134,6 +126,23 @@ function update() {
 /*----------------------------------------------------------------------------*/
 // Helpers
 /*----------------------------------------------------------------------------*/
+
+function collidesWithOccupied(activePiece, occupied) {
+  var answer
+  var occupiedSlots = []
+  if(occupied.length > 0) {
+
+    for(var i=0; i < occupied.length; i++) {
+      occupiedSlots.push([occupied[i].position.x, occupied[i].position.y])
+    }
+
+    answer = _.find(occupiedSlots, [activePiece.position.x
+      , activePiece.position.y + GRID_UNIT])
+  } else {
+    answer = false
+  }
+  return answer
+}
 
 function createNewPiece() {
   SActivePiece = new P.Sprite(TBlockRed)
