@@ -101,16 +101,20 @@ combokeys.bind(['s', 'down'], function(){moveActivePiece(SActivePiece, 's')})
 function moveActivePiece(piece, direction) {
   switch(direction) {
     case 'w':
-      if(piece.position.x !== 0) {
+      if(piece.position.x !== 0 && collidesWithLeft(SActivePiece, occupied) === false) {
+
         piece.position.x = piece.position.x - GRID_UNIT
       }
       break
     case 'e':
-      if(piece.position.x !== gridWidth * GRID_UNIT - GRID_UNIT) {
+      if(piece.position.x !== gridWidth * GRID_UNIT - GRID_UNIT  && collidesWithRight(SActivePiece, occupied) === false) {
         piece.position.x = piece.position.x + GRID_UNIT
       }
       break
     case 's':
+      if(piece.position.y !== gridHeight * GRID_UNIT - GRID_UNIT) {
+        piece.position.y = piece.position.y + GRID_UNIT
+      }
       break
     default:
       console.error('must specify a piece and a direction')
@@ -125,26 +129,24 @@ requestAnimationFrame(update)
 function update() {
   requestAnimationFrame(update)
 
+  // if the moving piece hits another piece, keep it there
+  if(collidesWithBelow(SActivePiece, occupied) === true) {
+    occupied.push(SActivePiece)
+    createNewPiece()
+  }
+
+
+  // if the moving piece hits the floor, keep it there
+  if(SActivePiece.position.y === gridHeight * GRID_UNIT - GRID_UNIT) {
+    occupied.push(SActivePiece)
+    createNewPiece()
+  }
+
   if(timer < new Date().getTime()) {
 
-    // if the moving piece hits another piece, keep it there
-    if(collidesWithOccupied(SActivePiece, occupied) === true) {
+    SActivePiece.position.y = SActivePiece.position.y + GRID_UNIT
+    timer = new Date().getTime() + REFRESH_RATE
 
-      occupied.push(SActivePiece)
-      createNewPiece()
-
-    // if the moving piece hits the floor, keep it there
-    } else if(SActivePiece.position.y === gridHeight * GRID_UNIT - GRID_UNIT) {
-
-      occupied.push(SActivePiece)
-      createNewPiece()
-
-    // otherwise keep it moving
-    } else {
-      SActivePiece.position.y = SActivePiece.position.y + GRID_UNIT
-      timer = new Date().getTime() + REFRESH_RATE
-
-    }
 
     // destroy a row if it's full
     /*
@@ -207,7 +209,48 @@ function destroyRow(occupiedPieces, occupied) {
 
 }
 
-function collidesWithOccupied(activePiece, occupied) {
+function collidesWithLeft(activePiece, occupied) {
+  var answer
+  var occupiedSlots = []
+  if(occupied.length > 0) {
+
+    for(var i=0; i < occupied.length; i++) {
+      occupiedSlots.push([occupied[i].position.x, occupied[i].position.y])
+    }
+
+    if(_.find(occupiedSlots, [activePiece.position.x - GRID_UNIT
+      , activePiece.position.y]) !== undefined) {
+      answer = true
+    } else {
+      answer = false
+    }
+  } else {
+    answer = false
+  }
+  return answer
+}
+function collidesWithRight(activePiece, occupied) {
+  var answer
+  var occupiedSlots = []
+  if(occupied.length > 0) {
+
+    for(var i=0; i < occupied.length; i++) {
+      occupiedSlots.push([occupied[i].position.x, occupied[i].position.y])
+    }
+
+    if(_.find(occupiedSlots, [activePiece.position.x + GRID_UNIT
+      , activePiece.position.y]) !== undefined) {
+      answer = true
+    } else {
+      answer = false
+    }
+  } else {
+    answer = false
+  }
+  return answer
+}
+
+function collidesWithBelow(activePiece, occupied) {
   var answer
   var occupiedSlots = []
   if(occupied.length > 0) {
