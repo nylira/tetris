@@ -6,8 +6,8 @@
 
 var P = require('pixi.js')
 var _ = require('lodash')
-//var Combokeys = require('combokeys')
-//var combokeys = new Combokeys(document)
+var Combokeys = require('combokeys')
+var combokeys = new Combokeys(document)
 //var Howl = require('howler').Howl
 //var attachFastClick = require('fastclick')
 //attachFastClick(document.body)
@@ -44,6 +44,7 @@ var TBackground
 var SActivePiece
 var SBackground
 
+
 /*============================================================================*/
 // Stage
 /*============================================================================*/
@@ -71,8 +72,8 @@ if(R === 2){
 var fieldOfPlay = new P.DisplayObjectContainer()
 var occupied = []
 
-var gridHeight = 24
-var gridWidth = 12
+var gridHeight = 20
+var gridWidth = 4
 function makeMap(width, height) {
   for(var i=0; i < height; i++) {
     for(var j=0; j < width; j++) {
@@ -89,6 +90,30 @@ stage.addChild(fieldOfPlay)
 
 createNewPiece()
   
+/*============================================================================*/
+// Bindings
+/*============================================================================*/
+
+combokeys.bind(['a', 'left'], function(){moveActivePiece(SActivePiece, 'w')})
+combokeys.bind(['d', 'right'], function(){moveActivePiece(SActivePiece, 'e')})
+combokeys.bind(['s', 'down'], function(){moveActivePiece(SActivePiece, 's')})
+
+function moveActivePiece(piece, direction) {
+  switch(direction) {
+    case 'w':
+      piece.position.x = piece.position.x - GRID_UNIT
+      break
+    case 'e':
+      piece.position.x = piece.position.x + GRID_UNIT
+      break
+    case 's':
+      piece.position.y = piece.position.y + GRID_UNIT
+      break
+    default:
+      console.error('must specify a piece and a direction')
+  }
+}
+
 /*----------------------------------------------------------------------------*/
 //  Update
 /*----------------------------------------------------------------------------*/
@@ -117,6 +142,12 @@ function update() {
       timer = new Date().getTime() + REFRESH_RATE
 
     }
+
+    // destroy a row if it's full
+    for(var row=0; row < gridHeight; row++) {
+      destroyRowIfFull(occupied, row)
+    }
+        
   }
 
   renderer.render(stage)
@@ -126,6 +157,29 @@ function update() {
 /*----------------------------------------------------------------------------*/
 // Helpers
 /*----------------------------------------------------------------------------*/
+
+function destroyRowIfFull(occupied, row) {
+  var piecesInARow = []
+  _.map(occupied, function(piece) {
+    if(piece.position.y === row * GRID_UNIT) {
+      piecesInARow.push(piece)
+      console.log(piecesInARow.length)
+    }
+  })
+  if(piecesInARow.length === gridWidth) {
+    destroyRow(piecesInARow, occupied)
+  }
+}
+
+function destroyRow(occupiedPieces, occupied) {
+  console.log("A row is complete! Removing occupiedPieces.")
+
+  // destroy the full row's pieces 
+  for(var k=0; k < occupiedPieces.length; k++) {
+    fieldOfPlay.removeChild(occupiedPieces[k])
+  }
+
+}
 
 function collidesWithOccupied(activePiece, occupied) {
   var answer
