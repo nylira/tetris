@@ -21,7 +21,9 @@ var R = window.devicePixelRatio
 var CANVAS_X = 320*R
 var CANVAS_Y = 568*R
 var GRID_UNIT = 16*R
-var REFRESH_RATE = 50
+var REFRESH_RATE = 100
+var gridHeight = 15
+var gridWidth = 5
 
 /*============================================================================*/
 // Variables
@@ -72,8 +74,6 @@ if(R === 2){
 var fieldOfPlay = new P.DisplayObjectContainer()
 var occupied = []
 
-var gridHeight = 20
-var gridWidth = 4
 function makeMap(width, height) {
   for(var i=0; i < height; i++) {
     for(var j=0; j < width; j++) {
@@ -101,13 +101,16 @@ combokeys.bind(['s', 'down'], function(){moveActivePiece(SActivePiece, 's')})
 function moveActivePiece(piece, direction) {
   switch(direction) {
     case 'w':
-      piece.position.x = piece.position.x - GRID_UNIT
+      if(piece.position.x !== 0) {
+        piece.position.x = piece.position.x - GRID_UNIT
+      }
       break
     case 'e':
-      piece.position.x = piece.position.x + GRID_UNIT
+      if(piece.position.x !== gridWidth * GRID_UNIT - GRID_UNIT) {
+        piece.position.x = piece.position.x + GRID_UNIT
+      }
       break
     case 's':
-      piece.position.y = piece.position.y + GRID_UNIT
       break
     default:
       console.error('must specify a piece and a direction')
@@ -125,7 +128,7 @@ function update() {
   if(timer < new Date().getTime()) {
 
     // if the moving piece hits another piece, keep it there
-    if(collidesWithOccupied(SActivePiece, occupied)) {
+    if(collidesWithOccupied(SActivePiece, occupied) === true) {
 
       occupied.push(SActivePiece)
       createNewPiece()
@@ -144,9 +147,11 @@ function update() {
     }
 
     // destroy a row if it's full
+    /*
     for(var row=0; row < gridHeight; row++) {
       destroyRowIfFull(occupied, row)
     }
+    */
         
   }
 
@@ -163,7 +168,7 @@ function destroyRowIfFull(occupied, row) {
   _.map(occupied, function(piece) {
     if(piece.position.y === row * GRID_UNIT) {
       piecesInARow.push(piece)
-      console.log(piecesInARow.length)
+      //console.log(piecesInARow.length)
     }
   })
   if(piecesInARow.length === gridWidth) {
@@ -172,7 +177,28 @@ function destroyRowIfFull(occupied, row) {
 }
 
 function destroyRow(occupiedPieces, occupied) {
-  console.log("A row is complete! Removing occupiedPieces.")
+  console.log("A row is complete. Removing occupiedPieces from occupied.")
+
+  console.log('predestruct: ', occupied.length)
+
+  // for each piece in the full row
+  for(var j=0; j < occupiedPieces.length; j++) {
+    var occupiedPiecePosition = [occupiedPieces[j].position.x, occupiedPieces[j].position.y]
+    //console.log('occupiedPiecePosition =', [occupiedPieces[j].position.x, occupiedPieces[j].position.y])
+
+    // for each occupied piece in the occupied array
+    for(var i=0; i < occupied.length; i++) {
+      var occupiedPosition = [occupied[i].position.x, occupied[i].position.y]
+      //console.log('occupiedPosition =', [occupied[i].position.x, occupied[i].position.y])
+      // if the piece in the full row is still in the occupied array
+      if(_.isEqual(occupiedPosition, occupiedPiecePosition)) {
+        //console.log('splicing something out')
+        // delete it from the occupied array
+        occupied.splice(occupied[i], 1)
+      }
+    }
+  }
+  console.log('postdestruct: ', occupied.length)
 
   // destroy the full row's pieces 
   for(var k=0; k < occupiedPieces.length; k++) {
@@ -190,8 +216,12 @@ function collidesWithOccupied(activePiece, occupied) {
       occupiedSlots.push([occupied[i].position.x, occupied[i].position.y])
     }
 
-    answer = _.find(occupiedSlots, [activePiece.position.x
-      , activePiece.position.y + GRID_UNIT])
+    if(_.find(occupiedSlots, [activePiece.position.x
+      , activePiece.position.y + GRID_UNIT]) !== undefined) {
+      answer = true
+    } else {
+      answer = false
+    }
   } else {
     answer = false
   }
