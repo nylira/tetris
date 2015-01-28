@@ -90,7 +90,6 @@ stage.addChild(fieldOfPlay)
 
 createNewPiece()
 
-createDebugPieces(gridWidth)
   
 /*============================================================================*/
 // Bindings
@@ -127,20 +126,27 @@ function moveActivePiece(piece, direction) {
 //  Update
 /*----------------------------------------------------------------------------*/
 
+console.log('occupied slots: ', slots(occupied))
+
 requestAnimationFrame(update)
 function update() {
   requestAnimationFrame(update)
-  var inThisRow = []
 
   if(collidesWithBelow(SActivePiece, occupied) === true) {
     occupied.push(SActivePiece)
     console.log('occupied slots: ', slots(occupied))
+
+    checkIfRowIsFull()
+
     createNewPiece()
   }
 
   if(SActivePiece.position.y === gridHeight * GRID_UNIT - GRID_UNIT) {
     occupied.push(SActivePiece)
     console.log('occupied slots: ', slots(occupied))
+
+    checkIfRowIsFull()
+
     createNewPiece()
   }
 
@@ -155,6 +161,26 @@ function update() {
 /*----------------------------------------------------------------------------*/
 // Helpers
 /*----------------------------------------------------------------------------*/
+
+function checkIfRowIsFull() {
+  var inThisRow = []
+  for(var i=0; i < occupied.length; i++) {
+    if(occupied[i].position.y === SActivePiece.position.y) {
+      inThisRow.push(occupied[i])
+    }
+  }
+  if(inThisRow.length === gridWidth) {
+    console.log('This row is full!')
+    //console.log(slots(inThisRow))
+    for(var j=0; j < inThisRow.length; j++) {
+      occupied.splice(inThisRow[j], 1)
+      fieldOfPlay.removeChild(inThisRow[j])
+    }
+    console.log('occupied slots after cleanup: ', slots(occupied))
+  } else {
+    console.log('this row isn\'t full yet')
+  }
+}
 
 
 function slots(occupied) {
@@ -207,34 +233,25 @@ function collidesWithRight(activePiece, occupied) {
 }
 
 function collidesWithBelow(activePiece, occupied) {
-  var answer
-  var occupiedSlots = []
-  if(occupied.length > 0) {
-
-    for(var i=0; i < occupied.length; i++) {
-      occupiedSlots.push([occupied[i].position.x, occupied[i].position.y])
+  var collision = false
+  for(var i=0; i < occupied.length; i++) {
+    //console.log(occupied[i].position.x, occupied[i].position.y)
+    if(occupied[i].position.x === activePiece.position.x && 
+       occupied[i].position.y === activePiece.position.y + GRID_UNIT) {
+      collision = true
     }
-
-    if(_.find(occupiedSlots, [activePiece.position.x
-      , activePiece.position.y + GRID_UNIT]) !== undefined) {
-      answer = true
-    } else {
-      answer = false
-    }
-  } else {
-    answer = false
   }
-  return answer
+  return collision
 }
 
 function createDebugPieces(num) {
-  console.log('creating!!')
   for(var i=0; i < num; i++) {
     var SDebugPiece = new P.Sprite(TBlockRed)
     SDebugPiece.position.x = GRID_UNIT * i
-    SDebugPiece.position.y = 416
-    console.log(SDebugPiece)
+    SDebugPiece.position.y = gridHeight*GRID_UNIT - GRID_UNIT*3
+    //console.log(SDebugPiece)
     fieldOfPlay.addChild(SDebugPiece)
+    occupied.push(SDebugPiece)
   }
 }
 
