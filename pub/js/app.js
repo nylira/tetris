@@ -291,7 +291,6 @@ function slideDownIfPossible() {
       canFall.splice(o,1)
     }
   }
-
   //console.log('canFall:', slots(canFall))
 }
 
@@ -302,49 +301,6 @@ function slots(occupied) {
   }
   return JSON.stringify(occupiedSlots)
 }
-
-/*
-function collidesWithLeft(activePiece, occupied) {
-  var answer
-  var occupiedSlots = []
-  if(occupied.length > 0) {
-
-    for(var i=0; i < occupied.length; i++) {
-      occupiedSlots.push([occupied[i].position.x, occupied[i].position.y])
-    }
-
-    if(_.find(occupiedSlots, [activePiece.position.x - GU
-      , activePiece.position.y]) !== undefined) {
-      answer = true
-    } else {
-      answer = false
-    }
-  } else {
-    answer = false
-  }
-  return answer
-}
-function collidesWithRight(activePiece, occupied) {
-  var answer
-  var occupiedSlots = []
-  if(occupied.length > 0) {
-
-    for(var i=0; i < occupied.length; i++) {
-      occupiedSlots.push([occupied[i].position.x, occupied[i].position.y])
-    }
-
-    if(_.find(occupiedSlots, [activePiece.position.x + GU
-      , activePiece.position.y]) !== undefined) {
-      answer = true
-    } else {
-      answer = false
-    }
-  } else {
-    answer = false
-  }
-  return answer
-}
-*/
 
 function collisionSouth(piece, occupied) {
   var collision = false
@@ -378,7 +334,6 @@ function collisionWest(piece, occupied) {
   }
   return collision
 }
-
 
 function createDebugPieces(num) {
   for(var i=0; i < num; i++) {
