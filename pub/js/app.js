@@ -288,46 +288,6 @@ function collisionWest(piece, occupied) {
 }
 
 
-function createDebugPieces(num) {
-  for(var i=0; i < num; i++) {
-    var SDebugPiece = new P.Sprite(TBlockRed)
-    SDebugPiece.position.x = GU * i
-    SDebugPiece.position.y = GRID_Y - GU*3
-    //console.log(SDebugPiece)
-    fieldOfPlay.addChild(SDebugPiece)
-    occupied.push(SDebugPiece)
-  }
-}
-
-function createNewPiece() {
-  SActivePiece = new P.Sprite(TBlockRed)
-  SActivePiece.position.x = _.random(0, GRID_WIDTH - 1) * GU
-  SActivePiece.position.y = 0
-  fieldOfPlay.addChild(SActivePiece)
-}
-
-function createNewFP() {
-  SActiveFP = new P.DisplayObjectContainer()
-
-  var piece1 = new P.Sprite(TBlockRed)
-  var piece2 = new P.Sprite(TBlockRed)
-  var piece3 = new P.Sprite(TBlockRed)
-  var piece4 = new P.Sprite(TBlockRed)
-  piece1.position.x = GRID_X/2  - GU
-  piece1.position.y = 0
-  piece2.position.x = GRID_X/2
-  piece2.position.y = 0
-  piece3.position.x = GRID_X/2  - GU
-  piece3.position.y = GU
-  piece4.position.x = GRID_X/2
-  piece4.position.y = GU
-  SActiveFP.addChild(piece1)
-  SActiveFP.addChild(piece2)
-  SActiveFP.addChild(piece3)
-  SActiveFP.addChild(piece4)
-  fieldOfPlay.addChild(SActiveFP)
-}
-
 function moveWest(fp) {
   var doable = 0
   for(var i=0; i < fp.children.length; i++) {
@@ -372,3 +332,81 @@ function moveSouth(fp) {
     }
   }
 }
+
+function createDebugPieces(num) {
+  for(var i=0; i < num; i++) {
+    var SDebugPiece = new P.Sprite(TBlockRed)
+    SDebugPiece.position.x = GU * i
+    SDebugPiece.position.y = GRID_Y - GU*3
+    //console.log(SDebugPiece)
+    fieldOfPlay.addChild(SDebugPiece)
+    occupied.push(SDebugPiece)
+  }
+}
+
+function createNewPiece() {
+  SActivePiece = new P.Sprite(TBlockRed)
+  SActivePiece.position.x = _.random(0, GRID_WIDTH - 1) * GU
+  SActivePiece.position.y = 0
+  fieldOfPlay.addChild(SActivePiece)
+}
+
+function createNewFP() {
+  SActiveFP = new P.DisplayObjectContainer()
+  //var types = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
+  var types = ['I', 'O']
+  var randType = _.head(_.shuffle(types))
+  
+  switch(randType) {
+    case 'I':
+      SActiveFP = createNewI()
+      break
+    case 'O':
+      SActiveFP = createNewO()
+      break
+  }
+  fieldOfPlay.addChild(SActiveFP)
+}
+
+function createNewI() {
+  var fourPiece = new P.DisplayObjectContainer()
+  var piece1 = new P.Sprite(TBlockRed)
+  var piece2 = new P.Sprite(TBlockRed)
+  var piece3 = new P.Sprite(TBlockRed)
+  var piece4 = new P.Sprite(TBlockRed)
+  piece1.position.x = GRID_X/2 - GU*2
+  piece1.position.y = 0
+  piece2.position.x = GRID_X/2 - GU*1
+  piece2.position.y = 0
+  piece3.position.x = GRID_X/2
+  piece3.position.y = 0
+  piece4.position.x = GRID_X/2 + GU
+  piece4.position.y = 0
+  fourPiece.addChild(piece1)
+  fourPiece.addChild(piece2)
+  fourPiece.addChild(piece3)
+  fourPiece.addChild(piece4)
+  return fourPiece
+}
+
+function createNewO() {
+  var fourPiece = new P.DisplayObjectContainer()
+  var piece1 = new P.Sprite(TBlockRed)
+  var piece2 = new P.Sprite(TBlockRed)
+  var piece3 = new P.Sprite(TBlockRed)
+  var piece4 = new P.Sprite(TBlockRed)
+  piece1.position.x = GRID_X/2  - GU
+  piece1.position.y = 0
+  piece2.position.x = GRID_X/2
+  piece2.position.y = 0
+  piece3.position.x = GRID_X/2  - GU
+  piece3.position.y = GU
+  piece4.position.x = GRID_X/2
+  piece4.position.y = GU
+  fourPiece.addChild(piece1)
+  fourPiece.addChild(piece2)
+  fourPiece.addChild(piece3)
+  fourPiece.addChild(piece4)
+  return fourPiece
+}
+
