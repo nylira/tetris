@@ -101,12 +101,12 @@ console.log(SActiveFP.children.length)
 // Bindings
 /*============================================================================*/
 
-combokeys.bind(['a', 'left'], function(){moveActivePiece(SActiveFP, 'w')})
-combokeys.bind(['d', 'right'], function(){moveActivePiece(SActiveFP, 'e')})
-combokeys.bind(['s', 'down'], function(){moveActivePiece(SActiveFP, 's')})
+combokeys.bind(['a', 'left'], function(){moveActiveFP(SActiveFP, 'w')})
+combokeys.bind(['d', 'right'], function(){moveActiveFP(SActiveFP, 'e')})
+combokeys.bind(['s', 'down'], function(){moveActiveFP(SActiveFP, 's')})
 combokeys.bind(['x', 'space'], function(){GAME_RUNNING = !GAME_RUNNING})
 
-function moveActivePiece(fp, direction) {
+function moveActiveFP(fp, direction) {
   var doable = 0
   switch(direction) {
     case 'w':
@@ -149,33 +149,6 @@ function moveActivePiece(fp, direction) {
       console.error('must specify a piece and a direction')
   }
 }
-
-/*
-function moveActivePiece(fp, direction) {
-  for(var i=0; i < fp.children.length; i++) {
-    switch(direction) {
-      case 'w':
-        if(fp.children[i].position.x !== 0) {
-          fp.children[i].position.x = fp.children[i].position.x - GU
-        }
-        break
-      case 'e':
-        if(fp.children[i].position.x !== GRID_X - GU) {
-          fp.children[i].position.x = fp.children[i].position.x + GU
-        }
-        break
-      case 's':
-        if(fp.children[i].position.y !== GRID_Y - GU) {
-          fp.children[i].position.y = fp.children[i].position.y + GU
-        }
-        break
-      default:
-        console.error('must specify a piece and a direction')
-    }
-  }
-}
-
-*/
 
 /*----------------------------------------------------------------------------*/
 //  Update
