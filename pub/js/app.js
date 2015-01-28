@@ -21,9 +21,9 @@ var R = window.devicePixelRatio
 var CANVAS_X = 320*R
 var CANVAS_Y = 568*R
 var GU = 16*R
-var REFRESH_RATE = 150
+var REFRESH_RATE = 300
 var GRID_WIDTH = 10
-var GRID_HEIGHT = 20
+var GRID_HEIGHT = 32
 var GRID_X = GRID_WIDTH * GU
 var GRID_Y = GRID_HEIGHT * GU
 var GAME_RUNNING = true
@@ -49,6 +49,8 @@ var TBackground
 // sprites
 var SActivePiece
 var SActiveFP
+var SActiveFPType
+var SActiveFPTypeState
 var SBackground
 
 
@@ -103,6 +105,7 @@ createNewFP()
 combokeys.bind(['a', 'left'], function(){moveActiveFP(SActiveFP, 'w')})
 combokeys.bind(['d', 'right'], function(){moveActiveFP(SActiveFP, 'e')})
 combokeys.bind(['s', 'down'], function(){moveActiveFP(SActiveFP, 's')})
+combokeys.bind(['w', 'up'], function(){rotate(SActiveFP, SActiveFPType)})
 combokeys.bind(['x', 'space'], function(){GAME_RUNNING = !GAME_RUNNING})
 
 function moveActiveFP(fp, direction) {
@@ -351,20 +354,89 @@ function createNewPiece() {
   fieldOfPlay.addChild(SActivePiece)
 }
 
+function rotate(fp, type) {
+  switch(type) {
+    case 'I': rotateI(fp); break;
+    //case 'J': rotateJ(fp, state); break;
+    //case 'O': break;
+  }
+}
+
+function rotateI(fp) {
+  switch(SActiveFPTypeState) {
+    case 1:
+      fp.children[0].position.x = fp.children[0].position.x + GU*2
+      fp.children[0].position.y = fp.children[0].position.y - GU
+      fp.children[1].position.x = fp.children[1].position.x + GU
+      fp.children[1].position.y = fp.children[1].position.y
+      fp.children[2].position.x = fp.children[2].position.x
+      fp.children[2].position.y = fp.children[2].position.y + GU
+      fp.children[3].position.x = fp.children[3].position.x - GU
+      fp.children[3].position.y = fp.children[3].position.y + GU*2
+      SActiveFPTypeState = 2
+      break
+    case 2:
+      fp.children[0].position.x = fp.children[0].position.x + GU
+      fp.children[0].position.y = fp.children[0].position.y + GU*2
+      fp.children[1].position.x = fp.children[1].position.x
+      fp.children[1].position.y = fp.children[1].position.y + GU
+      fp.children[2].position.x = fp.children[2].position.x - GU
+      fp.children[2].position.y = fp.children[2].position.y
+      fp.children[3].position.x = fp.children[3].position.x - GU*2
+      fp.children[3].position.y = fp.children[3].position.y - GU
+      SActiveFPTypeState = 3
+      break
+    case 3:
+      fp.children[0].position.x = fp.children[0].position.x - GU*2
+      fp.children[0].position.y = fp.children[0].position.y + GU
+      fp.children[1].position.x = fp.children[1].position.x - GU
+      fp.children[1].position.y = fp.children[1].position.y
+      fp.children[2].position.x = fp.children[2].position.x
+      fp.children[2].position.y = fp.children[2].position.y - GU
+      fp.children[3].position.x = fp.children[3].position.x + GU
+      fp.children[3].position.y = fp.children[3].position.y - GU*2
+      SActiveFPTypeState = 4
+      break
+    case 4:
+      fp.children[0].position.x = fp.children[0].position.x - GU
+      fp.children[0].position.y = fp.children[0].position.y - GU*2
+      fp.children[1].position.x = fp.children[1].position.x
+      fp.children[1].position.y = fp.children[1].position.y - GU
+      fp.children[2].position.x = fp.children[2].position.x + GU
+      fp.children[2].position.y = fp.children[2].position.y
+      fp.children[3].position.x = fp.children[3].position.x + GU*2
+      fp.children[3].position.y = fp.children[3].position.y + GU
+      SActiveFPTypeState = 1
+      break
+  }
+}
+  
 function createNewFP() {
   SActiveFP = new P.DisplayObjectContainer()
   //var types = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
-  var types = ['I', 'O']
+  var types = ['I']
   var randType = _.head(_.shuffle(types))
   
   switch(randType) {
     case 'I':
       SActiveFP = createNewI()
+      SActiveFPType = 'I'
+      break
+    case 'J':
+      SActiveFP = createNewJ()
+      SActiveFPType = 'J'
       break
     case 'O':
       SActiveFP = createNewO()
+      SActiveFPType = 'O'
       break
   }
+
+  SActiveFP.children[0].alpha = 1.0
+  SActiveFP.children[1].alpha = 0.8
+  SActiveFP.children[2].alpha = 0.6
+  SActiveFP.children[3].alpha = 0.4
+  SActiveFPTypeState = 1
   fieldOfPlay.addChild(SActiveFP)
 }
 
@@ -382,6 +454,27 @@ function createNewI() {
   piece3.position.y = 0
   piece4.position.x = GRID_X/2 + GU
   piece4.position.y = 0
+  fourPiece.addChild(piece1)
+  fourPiece.addChild(piece2)
+  fourPiece.addChild(piece3)
+  fourPiece.addChild(piece4)
+  return fourPiece
+}
+
+function createNewJ() {
+  var fourPiece = new P.DisplayObjectContainer()
+  var piece1 = new P.Sprite(TBlockRed)
+  var piece2 = new P.Sprite(TBlockRed)
+  var piece3 = new P.Sprite(TBlockRed)
+  var piece4 = new P.Sprite(TBlockRed)
+  piece1.position.x = GRID_X/2 - GU
+  piece1.position.y = 0
+  piece2.position.x = GRID_X/2
+  piece2.position.y = 0
+  piece3.position.x = GRID_X/2 + GU
+  piece3.position.y = 0
+  piece4.position.x = GRID_X/2 + GU
+  piece4.position.y = GU
   fourPiece.addChild(piece1)
   fourPiece.addChild(piece2)
   fourPiece.addChild(piece3)
