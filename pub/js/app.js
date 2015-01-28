@@ -21,9 +21,9 @@ var R = window.devicePixelRatio
 var CANVAS_X = 320*R
 var CANVAS_Y = 568*R
 var GU = 16*R
-var REFRESH_RATE = 50
-var GRID_WIDTH = 3
-var GRID_HEIGHT = 12
+var REFRESH_RATE = 150
+var GRID_WIDTH = 10
+var GRID_HEIGHT = 20
 var GRID_X = GRID_WIDTH * GU
 var GRID_Y = GRID_HEIGHT * GU
 var GAME_RUNNING
@@ -47,6 +47,7 @@ var TBackground
 
 // sprites
 var SActivePiece
+var SActiveFP
 var SBackground
 
 
@@ -91,40 +92,90 @@ makeMap(GRID_WIDTH, GRID_HEIGHT)
 
 stage.addChild(fieldOfPlay)
 
-createNewPiece()
 
+//createNewPiece()
+createNewFP()
   
+console.log(SActiveFP.children.length)
 /*============================================================================*/
 // Bindings
 /*============================================================================*/
 
-combokeys.bind(['a', 'left'], function(){moveActivePiece(SActivePiece, 'w')})
-combokeys.bind(['d', 'right'], function(){moveActivePiece(SActivePiece, 'e')})
-combokeys.bind(['s', 'down'], function(){moveActivePiece(SActivePiece, 's')})
+combokeys.bind(['a', 'left'], function(){moveActivePiece(SActiveFP, 'w')})
+combokeys.bind(['d', 'right'], function(){moveActivePiece(SActiveFP, 'e')})
+combokeys.bind(['s', 'down'], function(){moveActivePiece(SActiveFP, 's')})
 combokeys.bind(['x', 'space'], function(){GAME_RUNNING = !GAME_RUNNING})
 
-function moveActivePiece(piece, direction) {
+function moveActivePiece(fp, direction) {
+  var doable = 0
   switch(direction) {
     case 'w':
-      if(piece.position.x !== 0 && collidesWithLeft(SActivePiece, occupied) === false) {
-
-        piece.position.x = piece.position.x - GU
+      for(var i=0; i < fp.children.length; i++) {
+        if(fp.children[i].position.x !== 0) {
+          doable++
+        }
+      }
+      if(doable === fp.children.length) {
+        for(var k=0; k < fp.children.length; k++) {
+          fp.children[k].position.x = fp.children[k].position.x - GU
+        }
       }
       break
     case 'e':
-      if(piece.position.x !== GRID_X - GU  && collidesWithRight(SActivePiece, occupied) === false) {
-        piece.position.x = piece.position.x + GU
+      for(var j=0; j < fp.children.length; j++) {
+        if(fp.children[j].position.x !== GRID_X - GU) {
+          doable++
+        }
+      }
+      if(doable === fp.children.length) {
+        for(var l=0; l < fp.children.length; l++) {
+          fp.children[l].position.x = fp.children[l].position.x + GU
+        }
       }
       break
     case 's':
-      if(piece.position.y !== GRID_Y - GU) {
-        piece.position.y = piece.position.y + GU
+      for(var m=0; m < fp.children.length; m++) {
+        if(fp.children[m].position.y !== GRID_Y - GU) {
+          doable++
+        }
+      }
+      if(doable === fp.children.length) {
+        for(var n=0; n < fp.children.length; n++) {
+          fp.children[n].position.y = fp.children[n].position.y + GU
+        }
       }
       break
     default:
       console.error('must specify a piece and a direction')
   }
 }
+
+/*
+function moveActivePiece(fp, direction) {
+  for(var i=0; i < fp.children.length; i++) {
+    switch(direction) {
+      case 'w':
+        if(fp.children[i].position.x !== 0) {
+          fp.children[i].position.x = fp.children[i].position.x - GU
+        }
+        break
+      case 'e':
+        if(fp.children[i].position.x !== GRID_X - GU) {
+          fp.children[i].position.x = fp.children[i].position.x + GU
+        }
+        break
+      case 's':
+        if(fp.children[i].position.y !== GRID_Y - GU) {
+          fp.children[i].position.y = fp.children[i].position.y + GU
+        }
+        break
+      default:
+        console.error('must specify a piece and a direction')
+    }
+  }
+}
+
+*/
 
 /*----------------------------------------------------------------------------*/
 //  Update
@@ -139,28 +190,35 @@ function update() {
 
   if(GAME_RUNNING === true) {
 
-    if(collidesWithBelow(SActivePiece, occupied) === true) {
-      occupied.push(SActivePiece)
-      console.log('occupied slots: ', slots(occupied))
+    for(var j=0; j < SActiveFP.children.length; j++) {
 
-      checkIfRowIsFull()
-      slideDownIfPossible()
+      if(collidesWithBelow(SActiveFP.children[j], occupied) === true) {
+        occupied.push(SActiveFP.children[j])
+        console.log('occupied slots: ', slots(occupied))
 
-      createNewPiece()
-    }
+        checkIfRowIsFull()
+        slideDownIfPossible()
 
-    if(SActivePiece.position.y === GRID_Y - GU) {
-      occupied.push(SActivePiece)
-      console.log('occupied slots: ', slots(occupied))
+        createNewFP()
+      }
 
-      checkIfRowIsFull()
-      slideDownIfPossible()
+      if(SActiveFP.children[j].position.y === GRID_Y - GU) {
+        occupied.push(SActiveFP.children[j])
+        console.log('occupied slots: ', slots(occupied))
 
-      createNewPiece()
+        checkIfRowIsFull()
+        slideDownIfPossible()
+
+        createNewFP()
+      }
+
     }
 
     if(timer < new Date().getTime()) {
-      SActivePiece.position.y = SActivePiece.position.y + GU
+      for(var i=0; i < SActiveFP.children.length; i++) {
+        SActiveFP.children[i].position.y = SActiveFP.children[i].position.y + GU
+      }
+    
       timer = new Date().getTime() + REFRESH_RATE
       checkIfRowIsFull()
       slideDownIfPossible()
@@ -327,4 +385,26 @@ function createNewPiece() {
   SActivePiece.position.x = _.random(0, GRID_WIDTH - 1) * GU
   SActivePiece.position.y = 0
   fieldOfPlay.addChild(SActivePiece)
+}
+
+function createNewFP() {
+  SActiveFP = new P.DisplayObjectContainer()
+
+  var piece1 = new P.Sprite(TBlockRed)
+  var piece2 = new P.Sprite(TBlockRed)
+  var piece3 = new P.Sprite(TBlockRed)
+  var piece4 = new P.Sprite(TBlockRed)
+  piece1.position.x = GRID_X/2  - GU
+  piece1.position.y = 0
+  piece2.position.x = GRID_X/2
+  piece2.position.y = 0
+  piece3.position.x = GRID_X/2  - GU
+  piece3.position.y = GU
+  piece4.position.x = GRID_X/2
+  piece4.position.y = GU
+  SActiveFP.addChild(piece1)
+  SActiveFP.addChild(piece2)
+  SActiveFP.addChild(piece3)
+  SActiveFP.addChild(piece4)
+  fieldOfPlay.addChild(SActiveFP)
 }
