@@ -186,12 +186,12 @@ function checkIfRowIsFull() {
     }
 
     // clear the row pieces from the occupied list
+    // if the occupied piece is not in the row, add it to newOccupied
     for(var j=0; j < occupied.length; j++) {
       for(var k=0; k < inThisRow.length; k++) {
         if(occupied[j].position.x !== inThisRow[k].position.x &&
            occupied[j].position.y !== inThisRow[k].position.y) {
           newOccupied.push(occupied[j])
-          //inThisRow.splice(k, 1)
         }
       }
     }
@@ -199,31 +199,6 @@ function checkIfRowIsFull() {
     console.log('occupied slots after cleanup: ', slots(occupied))
   }
 }
-
-    //console.log('This row is full!')
-    /*
-    for(var j=0; j < inThisRow.length; j++) {
-      for(var k=0; k < occupied.length; k++) {
-    
-        console.log(
-          'Does inThisRow'
-        , [inThisRow[j].position.x, inThisRow[j].position.y]
-        , ' equal occupied'
-        , [occupied[k].position.x, occupied[k].position.y]
-        , '?')
-
-        if(inThisRow[j].position.x === occupied[k].position.x &&
-           inThisRow[j].position.y === occupied[k].position.y) {
-          console.log('Yes, removing ', [occupied[k].position.x, occupied[k].position.y])
-          occupied.splice(occupied[k], 1)
-          console.log(slots(occupied))
-        } else {
-          console.log('No')
-        }
-      }
-    }
-    */
-
 
 function slots(occupied) {
   var occupiedSlots = []
