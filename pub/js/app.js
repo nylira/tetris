@@ -24,6 +24,7 @@ var GRID_UNIT = 16*R
 var REFRESH_RATE = 300
 var gridHeight = 15
 var gridWidth = 3
+var GAME_RUNNING
 
 /*============================================================================*/
 // Variables
@@ -98,6 +99,7 @@ createNewPiece()
 combokeys.bind(['a', 'left'], function(){moveActivePiece(SActivePiece, 'w')})
 combokeys.bind(['d', 'right'], function(){moveActivePiece(SActivePiece, 'e')})
 combokeys.bind(['s', 'down'], function(){moveActivePiece(SActivePiece, 's')})
+combokeys.bind(['x', 'space'], function(){GAME_RUNNING = !GAME_RUNNING})
 
 function moveActivePiece(piece, direction) {
   switch(direction) {
@@ -126,33 +128,38 @@ function moveActivePiece(piece, direction) {
 //  Update
 /*----------------------------------------------------------------------------*/
 
+GAME_RUNNING = true
 console.log('occupied slots: ', slots(occupied))
 
 requestAnimationFrame(update)
 function update() {
   requestAnimationFrame(update)
 
-  if(collidesWithBelow(SActivePiece, occupied) === true) {
-    occupied.push(SActivePiece)
-    console.log('occupied slots: ', slots(occupied))
+  if(GAME_RUNNING === true) {
 
-    checkIfRowIsFull()
+    if(collidesWithBelow(SActivePiece, occupied) === true) {
+      occupied.push(SActivePiece)
+      console.log('occupied slots: ', slots(occupied))
 
-    createNewPiece()
-  }
+      checkIfRowIsFull()
 
-  if(SActivePiece.position.y === gridHeight * GRID_UNIT - GRID_UNIT) {
-    occupied.push(SActivePiece)
-    console.log('occupied slots: ', slots(occupied))
+      createNewPiece()
+    }
 
-    checkIfRowIsFull()
+    if(SActivePiece.position.y === gridHeight * GRID_UNIT - GRID_UNIT) {
+      occupied.push(SActivePiece)
+      console.log('occupied slots: ', slots(occupied))
 
-    createNewPiece()
-  }
+      checkIfRowIsFull()
 
-  if(timer < new Date().getTime()) {
-    SActivePiece.position.y = SActivePiece.position.y + GRID_UNIT
-    timer = new Date().getTime() + REFRESH_RATE
+      createNewPiece()
+    }
+
+    if(timer < new Date().getTime()) {
+      SActivePiece.position.y = SActivePiece.position.y + GRID_UNIT
+      timer = new Date().getTime() + REFRESH_RATE
+    }
+
   }
 
   renderer.render(stage)
@@ -169,18 +176,53 @@ function checkIfRowIsFull() {
       inThisRow.push(occupied[i])
     }
   }
+  // if the row is full
   if(inThisRow.length === gridWidth) {
-    console.log('This row is full!')
-    //console.log(slots(inThisRow))
-    for(var j=0; j < inThisRow.length; j++) {
-      occupied.splice(inThisRow[j], 1)
-      fieldOfPlay.removeChild(inThisRow[j])
+    var newOccupied = []
+
+    // clear the row visually
+    for(var l=0; l < inThisRow.length; l++) {
+      fieldOfPlay.removeChild(inThisRow[l])
     }
+
+    // clear the row pieces from the occupied list
+    for(var j=0; j < occupied.length; j++) {
+      for(var k=0; k < inThisRow.length; k++) {
+        if(occupied[j].position.x !== inThisRow[k].position.x &&
+           occupied[j].position.y !== inThisRow[k].position.y) {
+          newOccupied.push(occupied[j])
+          //inThisRow.splice(k, 1)
+        }
+      }
+    }
+    occupied = _.uniq(newOccupied)
     console.log('occupied slots after cleanup: ', slots(occupied))
-  } else {
-    console.log('this row isn\'t full yet')
   }
 }
+
+    //console.log('This row is full!')
+    /*
+    for(var j=0; j < inThisRow.length; j++) {
+      for(var k=0; k < occupied.length; k++) {
+    
+        console.log(
+          'Does inThisRow'
+        , [inThisRow[j].position.x, inThisRow[j].position.y]
+        , ' equal occupied'
+        , [occupied[k].position.x, occupied[k].position.y]
+        , '?')
+
+        if(inThisRow[j].position.x === occupied[k].position.x &&
+           inThisRow[j].position.y === occupied[k].position.y) {
+          console.log('Yes, removing ', [occupied[k].position.x, occupied[k].position.y])
+          occupied.splice(occupied[k], 1)
+          console.log(slots(occupied))
+        } else {
+          console.log('No')
+        }
+      }
+    }
+    */
 
 
 function slots(occupied) {
