@@ -159,6 +159,7 @@ function moveActiveFP(fp, direction) {
 
 GAME_RUNNING = true
 console.log('occupied slots: ', slots(occupied))
+var LANDED = false
 
 requestAnimationFrame(update)
 function update() {
@@ -170,34 +171,53 @@ function update() {
 
       // stacking on others
       if(collisionSouth(SActiveFP.children[j], occupied) === true) {
-        addFPToOccupied(SActiveFP, occupied)
+        LANDED = true
         console.log('occupied slots: ', slots(occupied))
 
         //checkIfRowIsFull()
         //slideDownIfPossible()
 
-        createNewFP()
-
+        //addFPToOccupied(SActiveFP, occupied)
+        //createNewFP()
         break
       }
 
       // stacking on ground
       if(SActiveFP.children[j].position.y === GRID_Y - GU) {
-        addFPToOccupied(SActiveFP, occupied)
+        LANDED = true
         console.log('occupied slots: ', slots(occupied))
 
         //checkIfRowIsFull()
         //slideDownIfPossible()
 
-        createNewFP()
+        //addFPToOccupied(SActiveFP, occupied)
+        //createNewFP()
         break
       }
-
     }
 
     if(timer < new Date().getTime()) {
+      /*
       for(var i=0; i < SActiveFP.children.length; i++) {
         SActiveFP.children[i].position.y = SActiveFP.children[i].position.y + GU
+      }*/
+      if(LANDED === true) {
+        addFPToOccupied(SActiveFP, occupied)
+        createNewFP()
+        LANDED = false
+      }
+
+      var doable = 0
+      for(var m=0; m < SActiveFP.children.length; m++) {
+        if(SActiveFP.children[m].position.y !== GRID_Y - GU &&
+            collisionSouth(SActiveFP.children[m], occupied) === false) {
+          doable++
+        }
+      }
+      if(doable === SActiveFP.children.length) {
+        for(var n=0; n < SActiveFP.children.length; n++) {
+          SActiveFP.children[n].position.y = SActiveFP.children[n].position.y + GU
+        }
       }
     
       timer = new Date().getTime() + REFRESH_RATE
@@ -291,6 +311,7 @@ function slideDownIfPossible() {
       canFall.splice(o,1)
     }
   }
+
   //console.log('canFall:', slots(canFall))
 }
 
@@ -334,6 +355,7 @@ function collisionWest(piece, occupied) {
   }
   return collision
 }
+
 
 function createDebugPieces(num) {
   for(var i=0; i < num; i++) {
