@@ -111,7 +111,8 @@ function moveActiveFP(fp, direction) {
   switch(direction) {
     case 'w':
       for(var i=0; i < fp.children.length; i++) {
-        if(fp.children[i].position.x !== 0) {
+        if( fp.children[i].position.x !== 0 &&
+            collisionWest(fp.children[i], occupied) === false) {
           doable++
         }
       }
@@ -123,7 +124,8 @@ function moveActiveFP(fp, direction) {
       break
     case 'e':
       for(var j=0; j < fp.children.length; j++) {
-        if(fp.children[j].position.x !== GRID_X - GU) {
+        if(fp.children[j].position.x !== GRID_X - GU &&
+            collisionEast(fp.children[j], occupied) === false) {
           doable++
         }
       }
@@ -135,7 +137,8 @@ function moveActiveFP(fp, direction) {
       break
     case 's':
       for(var m=0; m < fp.children.length; m++) {
-        if(fp.children[m].position.y !== GRID_Y - GU) {
+        if(fp.children[m].position.y !== GRID_Y - GU &&
+            collisionSouth(fp.children[m], occupied) === false) {
           doable++
         }
       }
@@ -166,10 +169,8 @@ function update() {
     for(var j=0; j < SActiveFP.children.length; j++) {
 
       // stacking on others
-      if(collidesWithBelow(SActiveFP.children[j], occupied) === true) {
-        _.map(SActiveFP.children, function(piece) {
-          occupied.push(piece)
-        })
+      if(collisionSouth(SActiveFP.children[j], occupied) === true) {
+        addFPToOccupied(SActiveFP, occupied)
         console.log('occupied slots: ', slots(occupied))
 
         //checkIfRowIsFull()
@@ -182,11 +183,7 @@ function update() {
 
       // stacking on ground
       if(SActiveFP.children[j].position.y === GRID_Y - GU) {
-
-        _.map(SActiveFP.children, function(piece) {
-          occupied.push(piece)
-        })
-
+        addFPToOccupied(SActiveFP, occupied)
         console.log('occupied slots: ', slots(occupied))
 
         //checkIfRowIsFull()
@@ -216,6 +213,12 @@ function update() {
 /*----------------------------------------------------------------------------*/
 // Helpers
 /*----------------------------------------------------------------------------*/
+
+function addFPToOccupied(fp, occupied) {
+  _.map(fp.children, function(piece) {
+    occupied.push(piece)
+  })
+}
 
 function checkIfRowIsFull() {
   var inThisRow = []
@@ -300,6 +303,7 @@ function slots(occupied) {
   return JSON.stringify(occupiedSlots)
 }
 
+/*
 function collidesWithLeft(activePiece, occupied) {
   var answer
   var occupiedSlots = []
@@ -340,18 +344,41 @@ function collidesWithRight(activePiece, occupied) {
   }
   return answer
 }
+*/
 
-function collidesWithBelow(activePiece, occupied) {
+function collisionSouth(piece, occupied) {
   var collision = false
   for(var i=0; i < occupied.length; i++) {
-    //console.log(occupied[i].position.x, occupied[i].position.y)
-    if(occupied[i].position.x === activePiece.position.x && 
-       occupied[i].position.y === activePiece.position.y + GU) {
+    if(occupied[i].position.x === piece.position.x && 
+       occupied[i].position.y === piece.position.y + GU) {
       collision = true
     }
   }
   return collision
 }
+
+function collisionEast(piece, occupied) {
+  var collision = false
+  for(var i=0; i < occupied.length; i++) {
+    if(occupied[i].position.x === piece.position.x + GU && 
+       occupied[i].position.y === piece.position.y) {
+      collision= true
+    }
+  }
+  return collision
+}
+
+function collisionWest(piece, occupied) {
+  var collision = false
+  for(var i=0; i < occupied.length; i++) {
+    if(occupied[i].position.x === piece.position.x - GU && 
+       occupied[i].position.y === piece.position.y) {
+      collision= true
+    }
+  }
+  return collision
+}
+
 
 function createDebugPieces(num) {
   for(var i=0; i < num; i++) {
