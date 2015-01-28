@@ -26,7 +26,8 @@ var GRID_WIDTH = 10
 var GRID_HEIGHT = 20
 var GRID_X = GRID_WIDTH * GU
 var GRID_Y = GRID_HEIGHT * GU
-var GAME_RUNNING
+var GAME_RUNNING = true
+var LANDED = false
 
 /*============================================================================*/
 // Variables
@@ -92,16 +93,9 @@ makeMap(GRID_WIDTH, GRID_HEIGHT)
 
 stage.addChild(fieldOfPlay)
 
-
 //createNewPiece()
 createNewFP()
   
-console.log(SActiveFP.children.length)
-
-
-
-
-
 /*============================================================================*/
 // Bindings
 /*============================================================================*/
@@ -125,10 +119,6 @@ function moveActiveFP(fp, direction) {
 //  Update
 /*----------------------------------------------------------------------------*/
 
-GAME_RUNNING = true
-console.log('occupied slots: ', slots(occupied))
-var LANDED = false
-
 requestAnimationFrame(update)
 function update() {
   requestAnimationFrame(update)
@@ -140,26 +130,12 @@ function update() {
       // stacking on others
       if(collisionSouth(SActiveFP.children[j], occupied) === true) {
         LANDED = true
-        console.log('occupied slots: ', slots(occupied))
-
-        //checkIfRowIsFull()
-        //slideDownIfPossible()
-
-        //addFPToOccupied(SActiveFP, occupied)
-        //createNewFP()
         break
       }
 
       // stacking on ground
       if(SActiveFP.children[j].position.y === GRID_Y - GU) {
         LANDED = true
-        console.log('occupied slots: ', slots(occupied))
-
-        //checkIfRowIsFull()
-        //slideDownIfPossible()
-
-        //addFPToOccupied(SActiveFP, occupied)
-        //createNewFP()
         break
       }
     }
@@ -168,6 +144,11 @@ function update() {
 
       if(LANDED === true) {
         addFPToOccupied(SActiveFP, occupied)
+        console.log('occupied slots: ', slots(occupied))
+
+        //checkIfRowIsFull()
+        //slideDownIfPossible()
+
         createNewFP()
         LANDED = false
       }
@@ -175,12 +156,8 @@ function update() {
       moveSouth(SActiveFP)
     
       timer = new Date().getTime() + REFRESH_RATE
-      //checkIfRowIsFull()
-      //slideDownIfPossible()
     }
-
   }
-
   renderer.render(stage)
 }
 
