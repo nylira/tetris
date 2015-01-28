@@ -97,6 +97,11 @@ stage.addChild(fieldOfPlay)
 createNewFP()
   
 console.log(SActiveFP.children.length)
+
+
+
+
+
 /*============================================================================*/
 // Bindings
 /*============================================================================*/
@@ -107,47 +112,10 @@ combokeys.bind(['s', 'down'], function(){moveActiveFP(SActiveFP, 's')})
 combokeys.bind(['x', 'space'], function(){GAME_RUNNING = !GAME_RUNNING})
 
 function moveActiveFP(fp, direction) {
-  var doable = 0
   switch(direction) {
-    case 'w':
-      for(var i=0; i < fp.children.length; i++) {
-        if( fp.children[i].position.x !== 0 &&
-            collisionWest(fp.children[i], occupied) === false) {
-          doable++
-        }
-      }
-      if(doable === fp.children.length) {
-        for(var k=0; k < fp.children.length; k++) {
-          fp.children[k].position.x = fp.children[k].position.x - GU
-        }
-      }
-      break
-    case 'e':
-      for(var j=0; j < fp.children.length; j++) {
-        if(fp.children[j].position.x !== GRID_X - GU &&
-            collisionEast(fp.children[j], occupied) === false) {
-          doable++
-        }
-      }
-      if(doable === fp.children.length) {
-        for(var l=0; l < fp.children.length; l++) {
-          fp.children[l].position.x = fp.children[l].position.x + GU
-        }
-      }
-      break
-    case 's':
-      for(var m=0; m < fp.children.length; m++) {
-        if(fp.children[m].position.y !== GRID_Y - GU &&
-            collisionSouth(fp.children[m], occupied) === false) {
-          doable++
-        }
-      }
-      if(doable === fp.children.length) {
-        for(var n=0; n < fp.children.length; n++) {
-          fp.children[n].position.y = fp.children[n].position.y + GU
-        }
-      }
-      break
+    case 'w': moveWest(fp); break
+    case 'e': moveEast(fp); break
+    case 's': moveSouth(fp); break
     default:
       console.error('must specify a piece and a direction')
   }
@@ -197,28 +165,14 @@ function update() {
     }
 
     if(timer < new Date().getTime()) {
-      /*
-      for(var i=0; i < SActiveFP.children.length; i++) {
-        SActiveFP.children[i].position.y = SActiveFP.children[i].position.y + GU
-      }*/
+
       if(LANDED === true) {
         addFPToOccupied(SActiveFP, occupied)
         createNewFP()
         LANDED = false
       }
 
-      var doable = 0
-      for(var m=0; m < SActiveFP.children.length; m++) {
-        if(SActiveFP.children[m].position.y !== GRID_Y - GU &&
-            collisionSouth(SActiveFP.children[m], occupied) === false) {
-          doable++
-        }
-      }
-      if(doable === SActiveFP.children.length) {
-        for(var n=0; n < SActiveFP.children.length; n++) {
-          SActiveFP.children[n].position.y = SActiveFP.children[n].position.y + GU
-        }
-      }
+      moveSouth(SActiveFP)
     
       timer = new Date().getTime() + REFRESH_RATE
       //checkIfRowIsFull()
@@ -395,4 +349,49 @@ function createNewFP() {
   SActiveFP.addChild(piece3)
   SActiveFP.addChild(piece4)
   fieldOfPlay.addChild(SActiveFP)
+}
+
+function moveWest(fp) {
+  var doable = 0
+  for(var i=0; i < fp.children.length; i++) {
+    if( fp.children[i].position.x !== 0 &&
+        collisionWest(fp.children[i], occupied) === false) {
+      doable++
+    }
+  }
+  if(doable === fp.children.length) {
+    for(var k=0; k < fp.children.length; k++) {
+      fp.children[k].position.x = fp.children[k].position.x - GU
+    }
+  }
+}
+
+function moveEast(fp) {
+  var doable = 0
+  for(var j=0; j < fp.children.length; j++) {
+    if(fp.children[j].position.x !== GRID_X - GU &&
+        collisionEast(fp.children[j], occupied) === false) {
+      doable++
+    }
+  }
+  if(doable === fp.children.length) {
+    for(var l=0; l < fp.children.length; l++) {
+      fp.children[l].position.x = fp.children[l].position.x + GU
+    }
+  }
+}
+
+function moveSouth(fp) {
+  var doable = 0
+  for(var j=0; j < fp.children.length; j++) {
+    if(fp.children[j].position.y !== GRID_Y - GU &&
+        collisionSouth(fp.children[j], occupied) === false) {
+      doable++
+    }
+  }
+  if(doable === fp.children.length) {
+    for(var l=0; l < fp.children.length; l++) {
+      fp.children[l].position.y = fp.children[l].position.y + GU
+    }
+  }
 }
