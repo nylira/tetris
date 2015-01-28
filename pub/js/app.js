@@ -20,10 +20,12 @@ var combokeys = new Combokeys(document)
 var R = window.devicePixelRatio
 var CANVAS_X = 320*R
 var CANVAS_Y = 568*R
-var GRID_UNIT = 16*R
+var GU = 16*R
 var REFRESH_RATE = 50
-var gridHeight = 15
-var gridWidth = 10
+var GRID_WIDTH = 3
+var GRID_HEIGHT = 12
+var GRID_X = GRID_WIDTH * GU
+var GRID_Y = GRID_HEIGHT * GU
 var GAME_RUNNING
 
 /*============================================================================*/
@@ -79,13 +81,13 @@ function makeMap(width, height) {
   for(var i=0; i < height; i++) {
     for(var j=0; j < width; j++) {
       var sprite = new P.Sprite(TBackground)
-      sprite.position.x =  GRID_UNIT * j
-      sprite.position.y = GRID_UNIT * i
+      sprite.position.x =  GU * j
+      sprite.position.y = GU * i
       fieldOfPlay.addChild(sprite)
     }
   }     
 }
-makeMap(gridWidth, gridHeight)
+makeMap(GRID_WIDTH, GRID_HEIGHT)
 
 stage.addChild(fieldOfPlay)
 
@@ -106,17 +108,17 @@ function moveActivePiece(piece, direction) {
     case 'w':
       if(piece.position.x !== 0 && collidesWithLeft(SActivePiece, occupied) === false) {
 
-        piece.position.x = piece.position.x - GRID_UNIT
+        piece.position.x = piece.position.x - GU
       }
       break
     case 'e':
-      if(piece.position.x !== gridWidth * GRID_UNIT - GRID_UNIT  && collidesWithRight(SActivePiece, occupied) === false) {
-        piece.position.x = piece.position.x + GRID_UNIT
+      if(piece.position.x !== GRID_X - GU  && collidesWithRight(SActivePiece, occupied) === false) {
+        piece.position.x = piece.position.x + GU
       }
       break
     case 's':
-      if(piece.position.y !== gridHeight * GRID_UNIT - GRID_UNIT) {
-        piece.position.y = piece.position.y + GRID_UNIT
+      if(piece.position.y !== GRID_Y - GU) {
+        piece.position.y = piece.position.y + GU
       }
       break
     default:
@@ -147,7 +149,7 @@ function update() {
       createNewPiece()
     }
 
-    if(SActivePiece.position.y === gridHeight * GRID_UNIT - GRID_UNIT) {
+    if(SActivePiece.position.y === GRID_Y - GU) {
       occupied.push(SActivePiece)
       console.log('occupied slots: ', slots(occupied))
 
@@ -158,7 +160,7 @@ function update() {
     }
 
     if(timer < new Date().getTime()) {
-      SActivePiece.position.y = SActivePiece.position.y + GRID_UNIT
+      SActivePiece.position.y = SActivePiece.position.y + GU
       timer = new Date().getTime() + REFRESH_RATE
       checkIfRowIsFull()
       slideDownIfPossible()
@@ -182,7 +184,7 @@ function checkIfRowIsFull() {
   }
 
   // if the row is full
-  if(inThisRow.length === gridWidth) {
+  if(inThisRow.length === GRID_WIDTH) {
     var newOccupied = []
 
     // clear the row visually
@@ -217,7 +219,7 @@ function slideDownIfPossible() {
     for(var n=0; n < occupied.length; n++) {
       if( _.isEqual(occupied[n].position
         , new P.Point( occupied[m].position.x
-                     , occupied[m].position.y + GRID_UNIT)) === false) {
+                     , occupied[m].position.y + GU)) === false) {
         pointlessPieces.push(occupied[m])
         //console.log('pointlessPieces.length', pointlessPieces.length)
       }
@@ -229,7 +231,7 @@ function slideDownIfPossible() {
     }
 
     // add occupiedPiece to a list of pieces that can fall
-    if(canPieceFall === true && occupied[m].position.y < 448) {
+    if(canPieceFall === true && occupied[m].position.y < GRID_Y - GU) {
       canFall.push(occupied[m])
       canFall = _.uniq(canFall)
     }
@@ -237,10 +239,10 @@ function slideDownIfPossible() {
 
   // slide down every canFall piece
   for(var o=0; o < canFall.length; o++) {
-    canFall[o].position.y = canFall[o].position.y + GRID_UNIT
+    canFall[o].position.y = canFall[o].position.y + GU
 
     // remove pieces from canFall if they reach the bottom
-    if(canFall[o].position.y === 448) {
+    if(canFall[o].position.y === GRID_Y - GU) {
       canFall.splice(o,1)
     }
   }
@@ -265,7 +267,7 @@ function collidesWithLeft(activePiece, occupied) {
       occupiedSlots.push([occupied[i].position.x, occupied[i].position.y])
     }
 
-    if(_.find(occupiedSlots, [activePiece.position.x - GRID_UNIT
+    if(_.find(occupiedSlots, [activePiece.position.x - GU
       , activePiece.position.y]) !== undefined) {
       answer = true
     } else {
@@ -285,7 +287,7 @@ function collidesWithRight(activePiece, occupied) {
       occupiedSlots.push([occupied[i].position.x, occupied[i].position.y])
     }
 
-    if(_.find(occupiedSlots, [activePiece.position.x + GRID_UNIT
+    if(_.find(occupiedSlots, [activePiece.position.x + GU
       , activePiece.position.y]) !== undefined) {
       answer = true
     } else {
@@ -302,7 +304,7 @@ function collidesWithBelow(activePiece, occupied) {
   for(var i=0; i < occupied.length; i++) {
     //console.log(occupied[i].position.x, occupied[i].position.y)
     if(occupied[i].position.x === activePiece.position.x && 
-       occupied[i].position.y === activePiece.position.y + GRID_UNIT) {
+       occupied[i].position.y === activePiece.position.y + GU) {
       collision = true
     }
   }
@@ -312,8 +314,8 @@ function collidesWithBelow(activePiece, occupied) {
 function createDebugPieces(num) {
   for(var i=0; i < num; i++) {
     var SDebugPiece = new P.Sprite(TBlockRed)
-    SDebugPiece.position.x = GRID_UNIT * i
-    SDebugPiece.position.y = gridHeight*GRID_UNIT - GRID_UNIT*3
+    SDebugPiece.position.x = GU * i
+    SDebugPiece.position.y = GRID_Y - GU*3
     //console.log(SDebugPiece)
     fieldOfPlay.addChild(SDebugPiece)
     occupied.push(SDebugPiece)
@@ -322,7 +324,7 @@ function createDebugPieces(num) {
 
 function createNewPiece() {
   SActivePiece = new P.Sprite(TBlockRed)
-  SActivePiece.position.x = _.random(0, gridWidth - 1) * GRID_UNIT
+  SActivePiece.position.x = _.random(0, GRID_WIDTH - 1) * GU
   SActivePiece.position.y = 0
   fieldOfPlay.addChild(SActivePiece)
 }
