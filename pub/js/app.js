@@ -21,9 +21,9 @@ var R = window.devicePixelRatio
 var CANVAS_X = 320*R
 var CANVAS_Y = 568*R
 var GRID_UNIT = 16*R
-var REFRESH_RATE = 100
+var REFRESH_RATE = 300
 var gridHeight = 15
-var gridWidth = 5
+var gridWidth = 3
 
 /*============================================================================*/
 // Variables
@@ -89,6 +89,8 @@ makeMap(gridWidth, gridHeight)
 stage.addChild(fieldOfPlay)
 
 createNewPiece()
+
+createDebugPieces(gridWidth)
   
 /*============================================================================*/
 // Bindings
@@ -128,85 +130,39 @@ function moveActivePiece(piece, direction) {
 requestAnimationFrame(update)
 function update() {
   requestAnimationFrame(update)
+  var inThisRow = []
 
-  // if the moving piece hits another piece, keep it there
   if(collidesWithBelow(SActivePiece, occupied) === true) {
     occupied.push(SActivePiece)
+    console.log('occupied slots: ', slots(occupied))
     createNewPiece()
   }
 
-
-  // if the moving piece hits the floor, keep it there
   if(SActivePiece.position.y === gridHeight * GRID_UNIT - GRID_UNIT) {
     occupied.push(SActivePiece)
+    console.log('occupied slots: ', slots(occupied))
     createNewPiece()
   }
 
   if(timer < new Date().getTime()) {
-
     SActivePiece.position.y = SActivePiece.position.y + GRID_UNIT
     timer = new Date().getTime() + REFRESH_RATE
-
-
-    // destroy a row if it's full
-    /*
-    for(var row=0; row < gridHeight; row++) {
-      destroyRowIfFull(occupied, row)
-    }
-    */
-        
   }
 
   renderer.render(stage)
-
 }
 
 /*----------------------------------------------------------------------------*/
 // Helpers
 /*----------------------------------------------------------------------------*/
 
-function destroyRowIfFull(occupied, row) {
-  var piecesInARow = []
-  _.map(occupied, function(piece) {
-    if(piece.position.y === row * GRID_UNIT) {
-      piecesInARow.push(piece)
-      //console.log(piecesInARow.length)
-    }
-  })
-  if(piecesInARow.length === gridWidth) {
-    destroyRow(piecesInARow, occupied)
+
+function slots(occupied) {
+  var occupiedSlots = []
+  for(var i=0; i < occupied.length; i++) {
+    occupiedSlots.push([occupied[i].position.x, occupied[i].position.y])
   }
-}
-
-function destroyRow(occupiedPieces, occupied) {
-  console.log("A row is complete. Removing occupiedPieces from occupied.")
-
-  console.log('predestruct: ', occupied.length)
-
-  // for each piece in the full row
-  for(var j=0; j < occupiedPieces.length; j++) {
-    var occupiedPiecePosition = [occupiedPieces[j].position.x, occupiedPieces[j].position.y]
-    //console.log('occupiedPiecePosition =', [occupiedPieces[j].position.x, occupiedPieces[j].position.y])
-
-    // for each occupied piece in the occupied array
-    for(var i=0; i < occupied.length; i++) {
-      var occupiedPosition = [occupied[i].position.x, occupied[i].position.y]
-      //console.log('occupiedPosition =', [occupied[i].position.x, occupied[i].position.y])
-      // if the piece in the full row is still in the occupied array
-      if(_.isEqual(occupiedPosition, occupiedPiecePosition)) {
-        //console.log('splicing something out')
-        // delete it from the occupied array
-        occupied.splice(occupied[i], 1)
-      }
-    }
-  }
-  console.log('postdestruct: ', occupied.length)
-
-  // destroy the full row's pieces 
-  for(var k=0; k < occupiedPieces.length; k++) {
-    fieldOfPlay.removeChild(occupiedPieces[k])
-  }
-
+  return JSON.stringify(occupiedSlots)
 }
 
 function collidesWithLeft(activePiece, occupied) {
@@ -269,6 +225,17 @@ function collidesWithBelow(activePiece, occupied) {
     answer = false
   }
   return answer
+}
+
+function createDebugPieces(num) {
+  console.log('creating!!')
+  for(var i=0; i < num; i++) {
+    var SDebugPiece = new P.Sprite(TBlockRed)
+    SDebugPiece.position.x = GRID_UNIT * i
+    SDebugPiece.position.y = 416
+    console.log(SDebugPiece)
+    fieldOfPlay.addChild(SDebugPiece)
+  }
 }
 
 function createNewPiece() {
