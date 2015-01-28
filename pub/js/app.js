@@ -165,24 +165,35 @@ function update() {
 
     for(var j=0; j < SActiveFP.children.length; j++) {
 
+      // stacking on others
       if(collidesWithBelow(SActiveFP.children[j], occupied) === true) {
-        occupied.push(SActiveFP.children[j])
+        _.map(SActiveFP.children, function(piece) {
+          occupied.push(piece)
+        })
         console.log('occupied slots: ', slots(occupied))
 
-        checkIfRowIsFull()
-        slideDownIfPossible()
+        //checkIfRowIsFull()
+        //slideDownIfPossible()
 
         createNewFP()
+
+        break
       }
 
+      // stacking on ground
       if(SActiveFP.children[j].position.y === GRID_Y - GU) {
-        occupied.push(SActiveFP.children[j])
+
+        _.map(SActiveFP.children, function(piece) {
+          occupied.push(piece)
+        })
+
         console.log('occupied slots: ', slots(occupied))
 
-        checkIfRowIsFull()
-        slideDownIfPossible()
+        //checkIfRowIsFull()
+        //slideDownIfPossible()
 
         createNewFP()
+        break
       }
 
     }
@@ -193,8 +204,8 @@ function update() {
       }
     
       timer = new Date().getTime() + REFRESH_RATE
-      checkIfRowIsFull()
-      slideDownIfPossible()
+      //checkIfRowIsFull()
+      //slideDownIfPossible()
     }
 
   }
