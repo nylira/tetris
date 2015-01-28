@@ -21,9 +21,9 @@ var R = window.devicePixelRatio
 var CANVAS_X = 320*R
 var CANVAS_Y = 568*R
 var GRID_UNIT = 16*R
-var REFRESH_RATE = 300
+var REFRESH_RATE = 50
 var gridHeight = 15
-var gridWidth = 3
+var gridWidth = 10
 var GAME_RUNNING
 
 /*============================================================================*/
@@ -142,6 +142,7 @@ function update() {
       console.log('occupied slots: ', slots(occupied))
 
       checkIfRowIsFull()
+      slideDownIfPossible()
 
       createNewPiece()
     }
@@ -151,6 +152,7 @@ function update() {
       console.log('occupied slots: ', slots(occupied))
 
       checkIfRowIsFull()
+      slideDownIfPossible()
 
       createNewPiece()
     }
@@ -158,6 +160,8 @@ function update() {
     if(timer < new Date().getTime()) {
       SActivePiece.position.y = SActivePiece.position.y + GRID_UNIT
       timer = new Date().getTime() + REFRESH_RATE
+      checkIfRowIsFull()
+      slideDownIfPossible()
     }
 
   }
@@ -197,13 +201,10 @@ function checkIfRowIsFull() {
     }
     occupied = _.uniq(newOccupied)
     console.log('occupied slots after cleanup: ', slots(occupied))
-
-    slideDownIfPossible()
   }
 }
 
 function slideDownIfPossible() {
-
   // slide the pieces down if there's nothing below them
   var canFall = []
   
@@ -218,7 +219,7 @@ function slideDownIfPossible() {
         , new P.Point( occupied[m].position.x
                      , occupied[m].position.y + GRID_UNIT)) === false) {
         pointlessPieces.push(occupied[m])
-        console.log('pointlessPieces.length', pointlessPieces.length)
+        //console.log('pointlessPieces.length', pointlessPieces.length)
       }
     }
 
@@ -244,7 +245,7 @@ function slideDownIfPossible() {
     }
   }
 
-  console.log('canFall:', slots(canFall))
+  //console.log('canFall:', slots(canFall))
 }
 
 function slots(occupied) {
