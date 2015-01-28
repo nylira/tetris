@@ -198,53 +198,53 @@ function checkIfRowIsFull() {
     occupied = _.uniq(newOccupied)
     console.log('occupied slots after cleanup: ', slots(occupied))
 
-    // slide the pieces down if there's nothing below them
-    var canFall = []
-    
-    // if pieceCanFall
-    // if [piece.position.x , piece.position.y + grid_unit] not found in occupied
-    for(var m=0; m < occupied.length; m++) {
-      var canPieceFall = false
-      var pointlessPieces = []
-
-      // get a list of all invalid pieces from occupied
-      for(var n=0; n < occupied.length; n++) {
-        if( _.isEqual(occupied[n].position
-          , new P.Point( occupied[m].position.x
-                       , occupied[m].position.y + GRID_UNIT)) === false) {
-          pointlessPieces.push(occupied[m])
-          console.log('pointlessPieces.length', pointlessPieces.length)
-        }
-      }
-
-      // if there is a valid piece
-      if(pointlessPieces.length === occupied.length) {
-        canPieceFall = true
-      }
-
-      if(canPieceFall === true && occupied[m].position.y < 448) {
-        canFall.push(occupied[m])
-      }
-    }
-
-
-    /*
-    for(var m=0; m < occupied.length; m++) {
-      for(var n=0; n < occupied.length; n++) {
-        
-        if(occupied[m].position.x !== occupied[n].position.x &&
-           occupied[m].position.y + GRID_UNIT !== occupied[n].position.y &&
-           occupied[m].position.y < gridHeight*GRID_UNIT - GRID_UNIT) {
-          canFall.push(occupied[m])
-        }
-      }
-    }
-    */
-
-    canFall = _.uniq(canFall)
-    console.log('canFall:', slots(canFall))
-
+    slideDownIfPossible()
   }
+}
+
+function slideDownIfPossible() {
+
+  // slide the pieces down if there's nothing below them
+  var canFall = []
+  
+  // for each occupiedPiece
+  for(var m=0; m < occupied.length; m++) {
+    var canPieceFall = false
+    var pointlessPieces = []
+
+    // get a list of pieces that are NOT underneath occupied piece
+    for(var n=0; n < occupied.length; n++) {
+      if( _.isEqual(occupied[n].position
+        , new P.Point( occupied[m].position.x
+                     , occupied[m].position.y + GRID_UNIT)) === false) {
+        pointlessPieces.push(occupied[m])
+        console.log('pointlessPieces.length', pointlessPieces.length)
+      }
+    }
+
+    // if all the pieces are pointless, that means occupiedPiece can fall
+    if(pointlessPieces.length === occupied.length) {
+      canPieceFall = true
+    }
+
+    // add occupiedPiece to a list of pieces that can fall
+    if(canPieceFall === true && occupied[m].position.y < 448) {
+      canFall.push(occupied[m])
+      canFall = _.uniq(canFall)
+    }
+  }
+
+  // slide down every canFall piece
+  for(var o=0; o < canFall.length; o++) {
+    canFall[o].position.y = canFall[o].position.y + GRID_UNIT
+
+    // remove pieces from canFall if they reach the bottom
+    if(canFall[o].position.y === 448) {
+      canFall.splice(o,1)
+    }
+  }
+
+  console.log('canFall:', slots(canFall))
 }
 
 function slots(occupied) {
