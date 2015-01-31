@@ -369,90 +369,123 @@ function rotate(fp, type) {
   }
 }
 
-function wallKick(fp) {
-  var extrusion
-  for(var i=0; i < fp.children.length; i++) {
-    // if the rotated pieces intersect a resting piece
+function blocked(fp) {
+  var val = false
+  for(var i=0; i < fp.length; i++) {
     for(var l=0; l < occupied.length; l++) {
-      if( fp.children[i].position.x == occupied[l].position.x &&
-          fp.children[i].position.y == occupied[l].position.y ) {
-        console.error("Rotation with fp.children[" + _.indexOf(fp.children, fp.children[i]) + '] collided with another block')
-        for(var m=0; m < fp.children.length; m++) {
-          
-        }
+      if( fp[i][0] == occupied[l].position.x &&
+          fp[i][1] == occupied[l].position.y ) {
+        val = true
+        console.log('fp rotation blocked by other pieces')
       }
     }
-    
-    // if the rotated pieces intersect the left wall
-    if(fp.children[i].position.x < 0) {
-      console.log('this piece extrudes past the wall LEFT')
-      extrusion = fp.children[i].position.x
-      for(var j=0; j < fp.children.length; j++) {
-        //console.log('trying to put the piece back right')
-        fp.children[j].position.x = fp.children[j].position.x - extrusion
-      }
+    if(fp[i][0] < 0) {
+      val = true
+      console.log('fp rotation blocked by left wall')
     }
-    // if the rotated pieces intersect the right wall
-    if(fp.children[i].position.x > GRID_X - GU) {
-      extrusion = fp.children[i].position.x - GRID_X - GU
-      console.log('this piece extrudes past the wall RIGHT:', extrusion)
-      for(var k=0; k < fp.children.length; k++) {
-        //console.log('trying to put the piece back left')
-        fp.children[k].position.x = fp.children[k].position.x + extrusion
-      }
+    if(fp[i][0] > GRID_X - GU) {
+      val = true
+      console.log('fp rotation blocked by right wall')
     }
   }
+  return val
 }
 
 function rotateI(fp) {
+  var futurePositions = [[],[],[],[]]
+  var stop = false
   switch(SActiveFPTypeState) {
     case 1:
-      fp.children[0].position.x = fp.children[0].position.x + GU*2
-      fp.children[0].position.y = fp.children[0].position.y - GU
-      fp.children[1].position.x = fp.children[1].position.x + GU
-      fp.children[1].position.y = fp.children[1].position.y
-      fp.children[2].position.x = fp.children[2].position.x
-      fp.children[2].position.y = fp.children[2].position.y + GU
-      fp.children[3].position.x = fp.children[3].position.x - GU
-      fp.children[3].position.y = fp.children[3].position.y + GU*2
-      SActiveFPTypeState = 2
-      wallKick(fp)
+      futurePositions[0][0] = fp.children[0].position.x + GU*2
+      futurePositions[0][1] = fp.children[0].position.y - GU
+      futurePositions[1][0] = fp.children[1].position.x + GU
+      futurePositions[1][1] = fp.children[1].position.y
+      futurePositions[2][0] = fp.children[2].position.x
+      futurePositions[2][1] = fp.children[2].position.y + GU
+      futurePositions[3][0] = fp.children[3].position.x - GU
+      futurePositions[3][1] = fp.children[3].position.y + GU*2
+      stop = blocked(futurePositions)
+      if(stop === false) {
+        console.log('rotating 1')
+        fp.children[0].position.x = fp.children[0].position.x + GU*2
+        fp.children[0].position.y = fp.children[0].position.y - GU
+        fp.children[1].position.x = fp.children[1].position.x + GU
+        fp.children[1].position.y = fp.children[1].position.y
+        fp.children[2].position.x = fp.children[2].position.x
+        fp.children[2].position.y = fp.children[2].position.y + GU
+        fp.children[3].position.x = fp.children[3].position.x - GU
+        fp.children[3].position.y = fp.children[3].position.y + GU*2
+        SActiveFPTypeState = 2
+      }
       break
     case 2:
-      fp.children[0].position.x = fp.children[0].position.x + GU
-      fp.children[0].position.y = fp.children[0].position.y + GU*2
-      fp.children[1].position.x = fp.children[1].position.x
-      fp.children[1].position.y = fp.children[1].position.y + GU
-      fp.children[2].position.x = fp.children[2].position.x - GU
-      fp.children[2].position.y = fp.children[2].position.y
-      fp.children[3].position.x = fp.children[3].position.x - GU*2
-      fp.children[3].position.y = fp.children[3].position.y - GU
-      SActiveFPTypeState = 3
-      wallKick(fp)
+      futurePositions[0][0] = fp.children[0].position.x + GU
+      futurePositions[0][1] = fp.children[0].position.y + GU*2
+      futurePositions[1][0] = fp.children[1].position.x
+      futurePositions[1][1] = fp.children[1].position.y + GU
+      futurePositions[2][0] = fp.children[2].position.x - GU
+      futurePositions[2][1] = fp.children[2].position.y
+      futurePositions[3][0] = fp.children[3].position.x - GU*2
+      futurePositions[3][1] = fp.children[3].position.y - GU
+      stop = blocked(futurePositions)
+      if(stop === false) {
+        console.log('rotating 2')
+        fp.children[0].position.x = fp.children[0].position.x + GU
+        fp.children[0].position.y = fp.children[0].position.y + GU*2
+        fp.children[1].position.x = fp.children[1].position.x
+        fp.children[1].position.y = fp.children[1].position.y + GU
+        fp.children[2].position.x = fp.children[2].position.x - GU
+        fp.children[2].position.y = fp.children[2].position.y
+        fp.children[3].position.x = fp.children[3].position.x - GU*2
+        fp.children[3].position.y = fp.children[3].position.y - GU
+        SActiveFPTypeState = 3
+      }
       break
     case 3:
-      fp.children[0].position.x = fp.children[0].position.x - GU*2
-      fp.children[0].position.y = fp.children[0].position.y + GU
-      fp.children[1].position.x = fp.children[1].position.x - GU
-      fp.children[1].position.y = fp.children[1].position.y
-      fp.children[2].position.x = fp.children[2].position.x
-      fp.children[2].position.y = fp.children[2].position.y - GU
-      fp.children[3].position.x = fp.children[3].position.x + GU
-      fp.children[3].position.y = fp.children[3].position.y - GU*2
-      SActiveFPTypeState = 4
-      wallKick(fp)
+      futurePositions[0][0] = fp.children[0].position.x - GU*2
+      futurePositions[0][1] = fp.children[0].position.y + GU
+      futurePositions[1][0] = fp.children[1].position.x - GU
+      futurePositions[1][1] = fp.children[1].position.y
+      futurePositions[2][0] = fp.children[2].position.x
+      futurePositions[2][1] = fp.children[2].position.y - GU
+      futurePositions[3][0] = fp.children[3].position.x + GU
+      futurePositions[3][1] = fp.children[3].position.y - GU*2
+      stop = blocked(futurePositions)
+      if(stop === false) {
+        console.log('rotating 3')
+        fp.children[0].position.x = fp.children[0].position.x - GU*2
+        fp.children[0].position.y = fp.children[0].position.y + GU
+        fp.children[1].position.x = fp.children[1].position.x - GU
+        fp.children[1].position.y = fp.children[1].position.y
+        fp.children[2].position.x = fp.children[2].position.x
+        fp.children[2].position.y = fp.children[2].position.y - GU
+        fp.children[3].position.x = fp.children[3].position.x + GU
+        fp.children[3].position.y = fp.children[3].position.y - GU*2
+        SActiveFPTypeState = 4
+      }
       break
     case 4:
-      fp.children[0].position.x = fp.children[0].position.x - GU
-      fp.children[0].position.y = fp.children[0].position.y - GU*2
-      fp.children[1].position.x = fp.children[1].position.x
-      fp.children[1].position.y = fp.children[1].position.y - GU
-      fp.children[2].position.x = fp.children[2].position.x + GU
-      fp.children[2].position.y = fp.children[2].position.y
-      fp.children[3].position.x = fp.children[3].position.x + GU*2
-      fp.children[3].position.y = fp.children[3].position.y + GU
-      SActiveFPTypeState = 1
-      wallKick(fp)
+      futurePositions[0][0] = fp.children[0].position.x - GU
+      futurePositions[0][1] = fp.children[0].position.y - GU*2
+      futurePositions[1][0] = fp.children[1].position.x
+      futurePositions[1][1] = fp.children[1].position.y - GU
+      futurePositions[2][0] = fp.children[2].position.x + GU
+      futurePositions[2][1] = fp.children[2].position.y
+      futurePositions[3][0] = fp.children[3].position.x + GU*2
+      futurePositions[3][1] = fp.children[3].position.y + GU
+      stop = blocked(futurePositions)
+      if(stop === false) {
+        console.log('rotating 4')
+        fp.children[0].position.x = fp.children[0].position.x - GU
+        fp.children[0].position.y = fp.children[0].position.y - GU*2
+        fp.children[1].position.x = fp.children[1].position.x
+        fp.children[1].position.y = fp.children[1].position.y - GU
+        fp.children[2].position.x = fp.children[2].position.x + GU
+        fp.children[2].position.y = fp.children[2].position.y
+        fp.children[3].position.x = fp.children[3].position.x + GU*2
+        fp.children[3].position.y = fp.children[3].position.y + GU
+        SActiveFPTypeState = 1
+      }
       break
   }
 }
