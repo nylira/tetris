@@ -1,3 +1,5 @@
+// TODO: piecekick
+
 'use strict'
 
 /*============================================================================*/
@@ -134,13 +136,18 @@ function update() {
       if(collisionSouth(SActiveFP.children[j], occupied) === true) {
         LANDED = true
         break
+      } else {
+        LANDED = false
       }
 
       // stacking on ground
       if(SActiveFP.children[j].position.y === GRID_Y - GU) {
         LANDED = true
         break
+      } else {
+        LANDED = false
       }
+
     }
 
     if(timer < new Date().getTime()) {
@@ -365,21 +372,32 @@ function rotate(fp, type) {
 function wallKick(fp) {
   var extrusion
   for(var i=0; i < fp.children.length; i++) {
-    console.log(slots(fp.children))
-    console.log(GRID_X - GU)
+    // if the rotated pieces intersect a resting piece
+    for(var l=0; l < occupied.length; l++) {
+      if( fp.children[i].position.x == occupied[l].position.x &&
+          fp.children[i].position.y == occupied[l].position.y ) {
+        console.error("Rotation with fp.children[" + _.indexOf(fp.children, fp.children[i]) + '] collided with another block')
+        for(var m=0; m < fp.children.length; m++) {
+          
+        }
+      }
+    }
+    
+    // if the rotated pieces intersect the left wall
     if(fp.children[i].position.x < 0) {
       console.log('this piece extrudes past the wall LEFT')
       extrusion = fp.children[i].position.x
       for(var j=0; j < fp.children.length; j++) {
-        console.log('trying to put the piece back right')
+        //console.log('trying to put the piece back right')
         fp.children[j].position.x = fp.children[j].position.x - extrusion
       }
     }
+    // if the rotated pieces intersect the right wall
     if(fp.children[i].position.x > GRID_X - GU) {
       extrusion = fp.children[i].position.x - GRID_X - GU
       console.log('this piece extrudes past the wall RIGHT:', extrusion)
       for(var k=0; k < fp.children.length; k++) {
-        console.log('trying to put the piece back left')
+        //console.log('trying to put the piece back left')
         fp.children[k].position.x = fp.children[k].position.x + extrusion
       }
     }
