@@ -362,6 +362,30 @@ function rotate(fp, type) {
   }
 }
 
+function wallKick(fp) {
+  var extrusion
+  for(var i=0; i < fp.children.length; i++) {
+    console.log(slots(fp.children))
+    console.log(GRID_X - GU)
+    if(fp.children[i].position.x < 0) {
+      console.log('this piece extrudes past the wall LEFT')
+      extrusion = fp.children[i].position.x
+      for(var j=0; j < fp.children.length; j++) {
+        console.log('trying to put the piece back right')
+        fp.children[j].position.x = fp.children[j].position.x - extrusion
+      }
+    }
+    if(fp.children[i].position.x > GRID_X - GU) {
+      extrusion = fp.children[i].position.x - GRID_X - GU
+      console.log('this piece extrudes past the wall RIGHT:', extrusion)
+      for(var k=0; k < fp.children.length; k++) {
+        console.log('trying to put the piece back left')
+        fp.children[k].position.x = fp.children[k].position.x + extrusion
+      }
+    }
+  }
+}
+
 function rotateI(fp) {
   switch(SActiveFPTypeState) {
     case 1:
@@ -374,6 +398,7 @@ function rotateI(fp) {
       fp.children[3].position.x = fp.children[3].position.x - GU
       fp.children[3].position.y = fp.children[3].position.y + GU*2
       SActiveFPTypeState = 2
+      wallKick(fp)
       break
     case 2:
       fp.children[0].position.x = fp.children[0].position.x + GU
@@ -385,6 +410,7 @@ function rotateI(fp) {
       fp.children[3].position.x = fp.children[3].position.x - GU*2
       fp.children[3].position.y = fp.children[3].position.y - GU
       SActiveFPTypeState = 3
+      wallKick(fp)
       break
     case 3:
       fp.children[0].position.x = fp.children[0].position.x - GU*2
@@ -396,6 +422,7 @@ function rotateI(fp) {
       fp.children[3].position.x = fp.children[3].position.x + GU
       fp.children[3].position.y = fp.children[3].position.y - GU*2
       SActiveFPTypeState = 4
+      wallKick(fp)
       break
     case 4:
       fp.children[0].position.x = fp.children[0].position.x - GU
@@ -407,6 +434,7 @@ function rotateI(fp) {
       fp.children[3].position.x = fp.children[3].position.x + GU*2
       fp.children[3].position.y = fp.children[3].position.y + GU
       SActiveFPTypeState = 1
+      wallKick(fp)
       break
   }
 }
@@ -468,13 +496,13 @@ function createNewJ() {
   var piece3 = new P.Sprite(TBlockRed)
   var piece4 = new P.Sprite(TBlockRed)
   piece1.position.x = GRID_X/2 - GU
-  piece1.position.y = 0
-  piece2.position.x = GRID_X/2
+  piece1.position.y = -GU
+  piece2.position.x = GRID_X/2 -GU
   piece2.position.y = 0
-  piece3.position.x = GRID_X/2 + GU
+  piece3.position.x = GRID_X/2
   piece3.position.y = 0
   piece4.position.x = GRID_X/2 + GU
-  piece4.position.y = GU
+  piece4.position.y = 0
   fourPiece.addChild(piece1)
   fourPiece.addChild(piece2)
   fourPiece.addChild(piece3)
