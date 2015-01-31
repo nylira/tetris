@@ -1,4 +1,4 @@
-// TODO: piecekick
+// TODO: start removing pieces again
 
 'use strict'
 
