@@ -173,7 +173,6 @@ function update() {
 function addFPToOccupied(fp, occupied) {
   _.map(fp, function(piece) {
     occupied.push(piece)
-    //fieldOfPlay.addChild(piece)
   })
 }
 
@@ -188,17 +187,15 @@ function checkIfRowIsFull(piece) {
 
   // if the row is full
   if(inThisRow.length === GRID_WIDTH) {
-    console.log('row is full:', slots(inThisRow))
-    var newOccupied = []
 
     // clear the row visually
-    console.log('pre fop length:', fieldOfPlay.children.length)
+    //console.log('pre fop length:', fieldOfPlay.children.length)
     for(var l=0; l < inThisRow.length; l++) {
       fieldOfPlay.removeChild(inThisRow[l])
     }
-    console.log('post fop length:', fieldOfPlay.children.length)
+    //console.log('post fop length:', fieldOfPlay.children.length)
 
-    newOccupied = stillOccupied(inThisRow, occupied)
+    occupied = stillOccupied(inThisRow, occupied)
     console.log('occupied slots after cleanup: ', slots(occupied))
   }
 }
@@ -213,7 +210,7 @@ function inSameRow(piece, occupied) {
   return inThisRow
 }
 function stillOccupied(inThisRow, occupied) {
-  var newOccupied
+  var newOccupied = []
   // if the occupied pieces aren't in the row, add them to newOccupied
   for(var j=0; j < occupied.length; j++) {
     for(var k=0; k < inThisRow.length; k++) {
@@ -403,7 +400,7 @@ function rotateI(fp) {
       futurePositions[3][1] = fp[3].position.y + GU*2
       stop = blocked(futurePositions)
       if(stop === false) {
-        console.log('rotating 1')
+        //console.log('rotating 1')
         fp[0].position.x = fp[0].position.x + GU*2
         fp[0].position.y = fp[0].position.y - GU
         fp[1].position.x = fp[1].position.x + GU
@@ -426,7 +423,7 @@ function rotateI(fp) {
       futurePositions[3][1] = fp[3].position.y - GU
       stop = blocked(futurePositions)
       if(stop === false) {
-        console.log('rotating 2')
+        //console.log('rotating 2')
         fp[0].position.x = fp[0].position.x + GU
         fp[0].position.y = fp[0].position.y + GU*2
         fp[1].position.x = fp[1].position.x
@@ -449,7 +446,7 @@ function rotateI(fp) {
       futurePositions[3][1] = fp[3].position.y - GU*2
       stop = blocked(futurePositions)
       if(stop === false) {
-        console.log('rotating 3')
+        //console.log('rotating 3')
         fp[0].position.x = fp[0].position.x - GU*2
         fp[0].position.y = fp[0].position.y + GU
         fp[1].position.x = fp[1].position.x - GU
@@ -472,7 +469,7 @@ function rotateI(fp) {
       futurePositions[3][1] = fp[3].position.y + GU
       stop = blocked(futurePositions)
       if(stop === false) {
-        console.log('rotating 4')
+        //console.log('rotating 4')
         fp[0].position.x = fp[0].position.x - GU
         fp[0].position.y = fp[0].position.y - GU*2
         fp[1].position.x = fp[1].position.x
