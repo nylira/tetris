@@ -1,4 +1,4 @@
-// TODO: start removing pieces again
+// TODO: need to implement falling rows
 
 'use strict'
 
@@ -30,13 +30,14 @@ var R = window.devicePixelRatio
 var CANVAS_X = 320*R
 var CANVAS_Y = 568*R
 var GU = 16*R
-var REFRESH_RATE = 300
+var REFRESH_RATE = 500
 var GRID_COLS = 10
 var GRID_ROWS = 20
 var GRID_WIDTH = GRID_COLS * GU
 var GRID_HEIGHT = GRID_ROWS * GU
 var GAME_RUNNING = true
 var LANDED = false
+var GHOST_LANDED = false
 
 /*============================================================================*/
 // Variables
@@ -53,21 +54,22 @@ var sceneSummary
 
 // textures
 var TBlockRed
+var TBlockWhite
 var TBackground
 
 // sprites
-var SActivePiece
 var FourPieceArray
 var FourPiece
 var FourPieceType
 var FourPieceTypeState
+var FourPieceGhost
 var SBackground
 
 /*============================================================================*/
 // Stage
 /*============================================================================*/
 
-stage = new P.Stage(0xFFFFFF)
+stage = new P.Stage(0x333333)
 renderer = P.autoDetectRenderer(CANVAS_X, CANVAS_Y)
 document.getElementById('container').appendChild(renderer.view)
 
@@ -77,9 +79,11 @@ document.getElementById('container').appendChild(renderer.view)
 
 if(R === 2){
   TBlockRed = new P.Texture.fromImage('../img/block16x16red@x2.png')
+  TBlockWhite = new P.Texture.fromImage('../img/lightBlock16x16@x2.png')
   TBackground = new P.Texture.fromImage('../img/darkGrid16x16@x2.png')
 } else {
   TBlockRed = new P.Texture.fromImage('../img/block16x16red.png')
+  TBlockWhite = new P.Texture.fromImage('../img/lightBlock16x16.png')
   TBackground = new P.Texture.fromImage('../img/darkGrid16x16.png')
 }
 
@@ -121,6 +125,7 @@ combokeys.bind(['w', 'up'], function(){
 combokeys.bind(['x', 'space'], function(){GAME_RUNNING = !GAME_RUNNING})
 
 function moveActiveFP(fp, direction) {
+  destroyGhost(FourPieceGhost)
   switch(direction) {
     case 'w': moveWest(fp); break
     case 'e': moveEast(fp); break
@@ -128,6 +133,7 @@ function moveActiveFP(fp, direction) {
     default:
       console.error('must specify a piece and a direction')
   }
+  FourPieceGhost = newGhost(FourPiece, occupied)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -146,21 +152,37 @@ function update() {
       if(collisionSouth(FourPiece[j], occupied) === true) {
         LANDED = true
         break
+      } else {
+        LANDED = false
       }
 
       // stacking on ground
       if(FourPiece[j].position.y === GRID_HEIGHT - GU) {
         LANDED = true
         break
+      } else {
+        LANDED = false
       }
+    }
 
+    for(var k=0; k < FourPieceGhost.length; k++) {
+      if(collisionSouth(FourPieceGhost[k], occupied) === true) {
+        GHOST_LANDED = true
+      } else if (GHOST_LANDED === false){
+        moveSouth(FourPieceGhost)
+      }
+      if (FourPieceGhost[k].position.y === GRID_HEIGHT - GU) {
+        GHOST_LANDED = true
+      } else if (GHOST_LANDED === false){
+        moveSouth(FourPieceGhost)
+      }
     }
 
     if(timer < new Date().getTime()) {
 
       if(LANDED === true) {
         addFPToOccupied(FourPiece, occupied)
-        console.log('occupied slots: ', slots(occupied))
+        //console.log('occupied slots: ', slots(occupied))
 
         checkIfRowsAreFull(FourPiece)
         //slideDownIfPossible()
@@ -181,6 +203,28 @@ function update() {
 // Helpers
 /*----------------------------------------------------------------------------*/
 
+function newGhost(fp, occupied) {
+  GHOST_LANDED = false
+  var fpGhost = []
+  for(var i=0; i < fp.length; i++) {
+    fpGhost.push(new P.Sprite(TBlockWhite))
+    fpGhost[i].position.x = fp[i].position.x
+    fpGhost[i].position.y = fp[i].position.y
+    fpGhost[i].alpha = 0.20
+    fieldOfPlay.addChild(fpGhost[i])
+  }
+  return fpGhost
+}
+
+function destroyGhost(fpGhost) {
+  if(fpGhost !== undefined && fpGhost.length > 0){
+    for(var i=0; i < fpGhost.length; i++) {
+      //console.log('destroying', fpGhost[i])
+      fieldOfPlay.removeChild(fpGhost[i])
+    }
+  }
+}
+
 function addFPToOccupied(fp, occupied) {
   _.map(fp, function(piece) {
     occupied.push(piece)
@@ -199,6 +243,8 @@ function checkIfRowIsFull(piece) {
   // if the row is full
   if(inThisRow.length === GRID_COLS) {
 
+    var clearedRowY = inThisRow[0].position.y
+
     // clear the row visually
     //console.log('pre fop length:', fieldOfPlay.children.length)
     for(var l=0; l < inThisRow.length; l++) {
@@ -207,7 +253,14 @@ function checkIfRowIsFull(piece) {
     //console.log('post fop length:', fieldOfPlay.children.length)
 
     occupied = stillOccupied(inThisRow, occupied)
-    console.log('occupied slots after cleanup: ', slots(occupied))
+    //console.log('occupied slots after cleanup: ', slots(occupied))
+
+    // scooch all the rows above down
+    for(var i=0; i < occupied.length; i++) {
+      if(occupied[i].position.y < clearedRowY) {
+        occupied[i].position.y += GU
+      }
+    }
   }
 }
 
@@ -367,6 +420,9 @@ function moveSouth(fp) {
 }
 
 function destructureNewFP() {
+
+  destroyGhost(FourPieceGhost)
+
   FourPieceArray = newFP(TBlockRed, GRID_WIDTH, GU)
   FourPiece = FourPieceArray[0]
   FourPieceType = FourPieceArray[1]
@@ -374,4 +430,6 @@ function destructureNewFP() {
   for(var i=0; i < FourPiece.length; i++) {
     fieldOfPlay.addChild(FourPiece[i])
   }
+
+  FourPieceGhost = newGhost(FourPiece)
 }
