@@ -119,13 +119,14 @@ combokeys.bind(['a', 'left'], function(){moveActiveFP(FourPiece, 'w')})
 combokeys.bind(['d', 'right'], function(){moveActiveFP(FourPiece, 'e')})
 combokeys.bind(['s', 'down'], function(){moveActiveFP(FourPiece, 's')})
 combokeys.bind(['w', 'up'], function(){
+  destroyGhost(FourPieceGhost)
   FourPieceTypeState = rotateFP(
     FourPiece, FourPieceType, FourPieceTypeState, occupied, GRID_WIDTH, GU)
+  FourPieceGhost = newGhost(FourPiece, occupied)
 })
 combokeys.bind(['x', 'space'], function(){GAME_RUNNING = !GAME_RUNNING})
 
 function moveActiveFP(fp, direction) {
-  destroyGhost(FourPieceGhost)
   switch(direction) {
     case 'w': moveWest(fp); break
     case 'e': moveEast(fp); break
@@ -133,7 +134,6 @@ function moveActiveFP(fp, direction) {
     default:
       console.error('must specify a piece and a direction')
   }
-  FourPieceGhost = newGhost(FourPiece, occupied)
 }
 
 /*----------------------------------------------------------------------------*/
@@ -176,6 +176,9 @@ function update() {
       } else if (GHOST_LANDED === false){
         moveSouth(FourPieceGhost)
       }
+      if(GHOST_LANDED === true) {
+        FourPieceGhost[k].alpha = 0.33
+      }
     }
 
     if(timer < new Date().getTime()) {
@@ -210,7 +213,7 @@ function newGhost(fp, occupied) {
     fpGhost.push(new P.Sprite(TBlockWhite))
     fpGhost[i].position.x = fp[i].position.x
     fpGhost[i].position.y = fp[i].position.y
-    fpGhost[i].alpha = 0.20
+    fpGhost[i].alpha = 0.0
     fieldOfPlay.addChild(fpGhost[i])
   }
   return fpGhost
@@ -386,6 +389,8 @@ function moveWest(fp) {
     for(var k=0; k < fp.length; k++) {
       fp[k].position.x = fp[k].position.x - GU
     }
+    destroyGhost(FourPieceGhost)
+    FourPieceGhost = newGhost(FourPiece, occupied)
   }
 }
 
@@ -401,6 +406,8 @@ function moveEast(fp) {
     for(var l=0; l < fp.length; l++) {
       fp[l].position.x = fp[l].position.x + GU
     }
+    destroyGhost(FourPieceGhost)
+    FourPieceGhost = newGhost(FourPiece, occupied)
   }
 }
 
