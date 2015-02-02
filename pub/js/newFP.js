@@ -4,7 +4,7 @@ _ = require('lodash')
 function newFP(texture, GRID_WIDTH, GU) {
   FourPiece = []
   //var types = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
-  var types = ['I']
+  var types = ['J']
   var randType = _.head(_.shuffle(types))
   
   switch(randType) {

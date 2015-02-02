@@ -4,11 +4,9 @@ function rotateFP(fp, fpType, fpTypeState, occupied, GRID_WIDTH, GU) {
     case 'I':
       newOrientation = rotateI(fp, fpTypeState, occupied, GRID_WIDTH, GU)
       break
-    /*
     case 'J':
       newOrientation = rotateJ(fp, fpTypeState, occupied, GRID_WIDTH, GU)
       break
-    */
     case 'O': break;
   }
   return newOrientation
@@ -104,5 +102,60 @@ function rotateI(fp, fpTypeState, occupied, GRID_WIDTH, GU) {
   return fpTypeState
 }
 
+function rotateJ(fp, fpTypeState, occupied, GRID_WIDTH, GU) {
+  var newPositions = [[],[],[],[]]
+  var stop = false
+  switch(fpTypeState) {
+    case 1:
+      newPositions[0] = [fp[0].position.x + GU*2, fp[0].position.y       ]
+      newPositions[1] = [fp[1].position.x + GU  , fp[1].position.y - GU  ]
+      newPositions[2] = [fp[2].position.x       , fp[2].position.y       ]
+      newPositions[3] = [fp[3].position.x - GU  , fp[3].position.y + GU  ]
+      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      if(stop === false) {
+        //console.log('rotating 1')
+        setPositions(fp, newPositions)
+        fpTypeState = 2
+      }
+      break
+    case 2:
+      newPositions[0] = [fp[0].position.x       , fp[0].position.y + GU*2]
+      newPositions[1] = [fp[1].position.x + GU  , fp[1].position.y + GU  ]
+      newPositions[2] = [fp[2].position.x       , fp[2].position.y       ]
+      newPositions[3] = [fp[3].position.x - GU  , fp[3].position.y - GU  ]
+      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      if(stop === false) {
+        //console.log('rotating 2')
+        setPositions(fp, newPositions)
+        fpTypeState = 3
+      }
+      break
+    case 3:
+      newPositions[0] = [fp[0].position.x - GU*2, fp[0].position.y + GU*0]
+      newPositions[1] = [fp[1].position.x - GU  , fp[1].position.y + GU  ]
+      newPositions[2] = [fp[2].position.x       , fp[2].position.y       ]
+      newPositions[3] = [fp[3].position.x + GU  , fp[3].position.y - GU  ]
+      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      if(stop === false) {
+        //console.log('rotating 3')
+        setPositions(fp, newPositions)
+        fpTypeState = 4
+      }
+      break
+    case 4:
+      newPositions[0] = [fp[0].position.x       , fp[0].position.y - GU*2]
+      newPositions[1] = [fp[1].position.x - GU  , fp[1].position.y - GU  ]
+      newPositions[2] = [fp[2].position.x       , fp[2].position.y       ]
+      newPositions[3] = [fp[3].position.x + GU  , fp[3].position.y + GU  ]
+      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      if(stop === false) {
+        //console.log('rotating 4')
+        setPositions(fp, newPositions)
+        fpTypeState = 1
+      }
+      break
+  }
+  return fpTypeState
+}
 
 module.exports = rotateFP
