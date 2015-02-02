@@ -4,7 +4,7 @@ var _ = require('lodash')
 function newFP(texture, GRID_WIDTH, GU) {
   //var types = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
   //var types = ['I', 'J', 'L', 'O']
-  var types = ['S']
+  var types = ['T']
 
   var FourPieceTypeState = 1
   var FourPieceType = _.head(_.shuffle(types))
@@ -29,6 +29,7 @@ function newShape(type, texture, GRID_WIDTH, GU) {
     case 'L': fp = offsetFP(fp, GRID_WIDTH, GU, -2, 0, -1, 0, 0, 0, 0, -1); break
     case 'O': fp = offsetFP(fp, GRID_WIDTH, GU, -1, 0, 0, 0, -1, 1, 0, 1); break
     case 'S': fp = offsetFP(fp, GRID_WIDTH, GU, -2, 0, -1, 0, -1, -1, 0, -1); break
+    case 'T': fp = offsetFP(fp, GRID_WIDTH, GU, -2, 0, -1, 0, -1, -1, 0, 0); break
   }
   return [p1, p2, p3, p4]
 }
