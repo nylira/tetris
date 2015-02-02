@@ -27,12 +27,12 @@ var rotateFP = require('./rotateFP.js')
 
 // constants
 var R = window.devicePixelRatio
-var CANVAS_X = 320*R
-var CANVAS_Y = 568*R
-var GU = 16*R
+var CANVAS_X = 540*R
+var CANVAS_Y = 960*R
+var GU = 30*R
 var REFRESH_RATE = 500
-var GRID_COLS = 10
-var GRID_ROWS = 20
+var GRID_COLS = 12
+var GRID_ROWS = 24
 var GRID_WIDTH = GRID_COLS * GU
 var GRID_HEIGHT = GRID_ROWS * GU
 var GAME_RUNNING = true
@@ -54,8 +54,14 @@ var sceneSummary
 
 // textures
 var TBlockRed
+var TBlockGreen
+var TBlockBlue
+var TBlockCyan
+var TBlockMagenta
+var TBlockYellow
 var TBlockWhite
 var TBackground
+var blockTextures
 
 // sprites
 var FourPieceArray
@@ -69,7 +75,7 @@ var SBackground
 // Stage
 /*============================================================================*/
 
-stage = new P.Stage(0x333333)
+stage = new P.Stage(0x222222)
 renderer = P.autoDetectRenderer(CANVAS_X, CANVAS_Y)
 document.getElementById('container').appendChild(renderer.view)
 
@@ -78,14 +84,19 @@ document.getElementById('container').appendChild(renderer.view)
 /*============================================================================*/
 
 if(R === 2){
-  TBlockRed = new P.Texture.fromImage('../img/block16x16red@x2.png')
-  TBlockWhite = new P.Texture.fromImage('../img/lightBlock16x16@x2.png')
-  TBackground = new P.Texture.fromImage('../img/darkGrid16x16@x2.png')
+  TBlockRed = new P.Texture.fromImage('../img/blockRed30@x2.png')
+  TBlockGreen = new P.Texture.fromImage('../img/blockGreen30@x2.png')
+  TBlockBlue = new P.Texture.fromImage('../img/blockBlue30@x2.png')
+  TBlockCyan = new P.Texture.fromImage('../img/blockCyan30@x2.png')
+  TBlockMagenta = new P.Texture.fromImage('../img/blockMagenta30@x2.png')
+  TBlockYellow = new P.Texture.fromImage('../img/blockYellow30@x2.png')
+  TBlockWhite = new P.Texture.fromImage('../img/blockWhite30@x2.png')
+  TBackground = new P.Texture.fromImage('../img/darkGrid30@x2.png')
 } else {
-  TBlockRed = new P.Texture.fromImage('../img/block16x16red.png')
-  TBlockWhite = new P.Texture.fromImage('../img/lightBlock16x16.png')
-  TBackground = new P.Texture.fromImage('../img/darkGrid16x16.png')
+  console.error('no 1x textures')
 }
+
+blockTextures = [TBlockRed, TBlockGreen, TBlockBlue, TBlockCyan, TBlockMagenta, TBlockYellow, TBlockWhite]
 
 /*============================================================================*/
 // Sprites
@@ -179,7 +190,7 @@ function update() {
       }
       // if ghost is colliding with something
       if(GHOST_LANDED === true) {
-        FourPieceGhost[k].alpha = 0.33
+        FourPieceGhost[k].alpha = 0.15
 
         // if ghost collides with real thing
         for(var i=0; i < FourPiece.length; i++) {
@@ -435,7 +446,7 @@ function moveSouth(fp) {
 }
 
 function destructureNewFP() {
-  FourPieceArray = newFP(TBlockRed, GRID_WIDTH, GU)
+  FourPieceArray = newFP(blockTextures, GRID_WIDTH, GU)
   FourPiece = FourPieceArray[0]
   FourPieceType = FourPieceArray[1]
   FourPieceTypeState = FourPieceArray[2]
