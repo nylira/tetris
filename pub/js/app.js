@@ -120,10 +120,9 @@ combokeys.bind(['a', 'left'], function(){moveActiveFP(FourPiece, 'w')})
 combokeys.bind(['d', 'right'], function(){moveActiveFP(FourPiece, 'e')})
 combokeys.bind(['s', 'down'], function(){moveActiveFP(FourPiece, 's')})
 combokeys.bind(['w', 'up'], function(){
-  destroyGhost(FourPieceGhost)
   FourPieceTypeState = rotateFP(
     FourPiece, FourPieceType, FourPieceTypeState, occupied, GRID_WIDTH, GU)
-  FourPieceGhost = newGhost(FourPiece, occupied)
+  FourPieceGhost = newGhost(FourPiece, FourPieceGhost, occupied)
 })
 combokeys.bind(['x', 'space'], function(){GAME_RUNNING = !GAME_RUNNING})
 
@@ -218,18 +217,19 @@ function update() {
 // Helpers
 /*----------------------------------------------------------------------------*/
 
-function newGhost(fp, occupied) {
+function newGhost(fp, fpGhost, occupied) {
+  destroyGhost(fpGhost)
   GHOST_LANDED = false
-  var fpGhost = []
+
+  var newFpGhost = []
   for(var i=0; i < fp.length; i++) {
-    fpGhost.push(new P.Sprite(TBlockWhite))
-    fpGhost[i].position.x = fp[i].position.x
-    fpGhost[i].position.y = fp[i].position.y
-    fpGhost[i].alpha = 0.0
-    fieldOfPlay.addChild(fpGhost[i])
-    fieldOfPlay.children.sort()
+    newFpGhost.push(new P.Sprite(TBlockWhite))
+    newFpGhost[i].position.x = fp[i].position.x
+    newFpGhost[i].position.y = fp[i].position.y
+    newFpGhost[i].alpha = 0.0
+    fieldOfPlay.addChild(newFpGhost[i])
   }
-  return fpGhost
+  return newFpGhost
 }
 
 function destroyGhost(fpGhost) {
@@ -388,7 +388,6 @@ function collisionWest(piece, occupied) {
   return collision
 }
 
-
 function moveWest(fp) {
   var doable = 0
   for(var i=0; i < fp.length; i++) {
@@ -401,8 +400,7 @@ function moveWest(fp) {
     for(var k=0; k < fp.length; k++) {
       fp[k].position.x = fp[k].position.x - GU
     }
-    destroyGhost(FourPieceGhost)
-    FourPieceGhost = newGhost(FourPiece, occupied)
+    FourPieceGhost = newGhost(FourPiece, FourPieceGhost, occupied)
   }
 }
 
@@ -418,8 +416,7 @@ function moveEast(fp) {
     for(var l=0; l < fp.length; l++) {
       fp[l].position.x = fp[l].position.x + GU
     }
-    destroyGhost(FourPieceGhost)
-    FourPieceGhost = newGhost(FourPiece, occupied)
+    FourPieceGhost = newGhost(FourPiece, FourPieceGhost, occupied)
   }
 }
 
@@ -439,9 +436,6 @@ function moveSouth(fp) {
 }
 
 function destructureNewFP() {
-
-  destroyGhost(FourPieceGhost)
-
   FourPieceArray = newFP(TBlockRed, GRID_WIDTH, GU)
   FourPiece = FourPieceArray[0]
   FourPieceType = FourPieceArray[1]
