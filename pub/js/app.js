@@ -38,6 +38,7 @@ var GRID_HEIGHT = GRID_ROWS * GU
 var GAME_RUNNING = true
 var LANDED = false
 var GHOST_LANDED = false
+var TYPES = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
 
 /*============================================================================*/
 // Variables
@@ -46,6 +47,7 @@ var GHOST_LANDED = false
 // stage variables
 var stage, renderer
 var timer = new Date().getTime() + REFRESH_RATE
+var bag
 
 // scenes
 var sceneMenu
@@ -116,11 +118,9 @@ function makeMap(width, height) {
   }     
 }
 makeMap(GRID_COLS, GRID_ROWS)
-
 stage.addChild(fieldOfPlay)
 
 destructureNewFP()
-
 
 /*============================================================================*/
 // Bindings
@@ -445,8 +445,16 @@ function moveSouth(fp) {
   }
 }
 
-function destructureNewFP() {
-  FourPieceArray = newFP(blockTextures, GRID_WIDTH, GU)
+function destructureNewFP(type) {
+
+  if(bag === undefined || bag.length === 0) {
+    bag = _.shuffle(TYPES)
+
+  } 
+
+  FourPieceArray = newFP(bag.pop(), blockTextures, GRID_WIDTH, GU)
+  console.log('Bag:', bag)
+
   FourPiece = FourPieceArray[0]
   FourPieceType = FourPieceArray[1]
   FourPieceTypeState = FourPieceArray[2]
