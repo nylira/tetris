@@ -4,7 +4,6 @@ stylus =  ./node_modules/stylus/bin/stylus
 nib = ./node_modules/nib/
 uglify = ./node_modules/uglify-js/bin/uglifyjs
 
-
 js:
 	 $(browserify) pub/js/app.js -d -o | $(uglify) > pub/js/bundle.js
 

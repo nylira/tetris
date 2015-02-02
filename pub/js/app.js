@@ -15,6 +15,13 @@ var combokeys = new Combokeys(document)
 //attachFastClick(document.body)
 
 /*============================================================================*/
+// Parts
+/*============================================================================*/
+
+var newFP = require('./newFP.js')
+var rotateFP = require('./rotateFP.js')
+
+/*============================================================================*/
 // Constants
 /*============================================================================*/
 
@@ -24,10 +31,10 @@ var CANVAS_X = 320*R
 var CANVAS_Y = 568*R
 var GU = 16*R
 var REFRESH_RATE = 300
-var GRID_WIDTH = 10
-var GRID_HEIGHT = 20
-var GRID_X = GRID_WIDTH * GU
-var GRID_Y = GRID_HEIGHT * GU
+var GRID_COLS = 10
+var GRID_ROWS = 20
+var GRID_WIDTH = GRID_COLS * GU
+var GRID_HEIGHT = GRID_ROWS * GU
 var GAME_RUNNING = true
 var LANDED = false
 
@@ -50,6 +57,7 @@ var TBackground
 
 // sprites
 var SActivePiece
+var FourPieceArray
 var FourPiece
 var FourPieceType
 var FourPieceTypeState
@@ -92,13 +100,13 @@ function makeMap(width, height) {
     }
   }     
 }
-makeMap(GRID_WIDTH, GRID_HEIGHT)
+makeMap(GRID_COLS, GRID_ROWS)
 
 stage.addChild(fieldOfPlay)
 
-//createNewPiece()
-createNewFP()
-  
+destructureNewFP()
+
+
 /*============================================================================*/
 // Bindings
 /*============================================================================*/
@@ -106,7 +114,10 @@ createNewFP()
 combokeys.bind(['a', 'left'], function(){moveActiveFP(FourPiece, 'w')})
 combokeys.bind(['d', 'right'], function(){moveActiveFP(FourPiece, 'e')})
 combokeys.bind(['s', 'down'], function(){moveActiveFP(FourPiece, 's')})
-combokeys.bind(['w', 'up'], function(){rotate(FourPiece, FourPieceType)})
+combokeys.bind(['w', 'up'], function(){
+  FourPieceTypeState = rotateFP(
+    FourPiece, FourPieceType, FourPieceTypeState, occupied, GRID_WIDTH, GU)
+})
 combokeys.bind(['x', 'space'], function(){GAME_RUNNING = !GAME_RUNNING})
 
 function moveActiveFP(fp, direction) {
@@ -138,7 +149,7 @@ function update() {
       }
 
       // stacking on ground
-      if(FourPiece[j].position.y === GRID_Y - GU) {
+      if(FourPiece[j].position.y === GRID_HEIGHT - GU) {
         LANDED = true
         break
       }
@@ -154,7 +165,7 @@ function update() {
         checkIfRowsAreFull(FourPiece)
         //slideDownIfPossible()
 
-        createNewFP()
+        destructureNewFP()
         LANDED = false
       }
 
@@ -186,7 +197,7 @@ function checkIfRowIsFull(piece) {
   var inThisRow = inSameRow(piece, occupied)
 
   // if the row is full
-  if(inThisRow.length === GRID_WIDTH) {
+  if(inThisRow.length === GRID_COLS) {
 
     // clear the row visually
     //console.log('pre fop length:', fieldOfPlay.children.length)
@@ -249,7 +260,7 @@ function slideDownIfPossible() {
     }
 
     // add occupiedPiece to a list of pieces that can fall
-    if(canPieceFall === true && occupied[m].position.y < GRID_Y - GU) {
+    if(canPieceFall === true && occupied[m].position.y < GRID_HEIGHT - GU) {
       canFall.push(occupied[m])
       canFall = _.uniq(canFall)
     }
@@ -260,7 +271,7 @@ function slideDownIfPossible() {
     canFall[o].position.y = canFall[o].position.y + GU
 
     // remove pieces from canFall if they reach the bottom
-    if(canFall[o].position.y === GRID_Y - GU) {
+    if(canFall[o].position.y === GRID_HEIGHT - GU) {
       canFall.splice(o,1)
     }
   }
@@ -328,7 +339,7 @@ function moveWest(fp) {
 function moveEast(fp) {
   var doable = 0
   for(var j=0; j < fp.length; j++) {
-    if(fp[j].position.x !== GRID_X - GU &&
+    if(fp[j].position.x !== GRID_WIDTH - GU &&
         collisionEast(fp[j], occupied) === false) {
       doable++
     }
@@ -343,7 +354,7 @@ function moveEast(fp) {
 function moveSouth(fp) {
   var doable = 0
   for(var j=0; j < fp.length; j++) {
-    if(fp[j].position.y !== GRID_Y - GU &&
+    if(fp[j].position.y !== GRID_HEIGHT - GU &&
         collisionSouth(fp[j], occupied) === false) {
       doable++
     }
@@ -355,210 +366,12 @@ function moveSouth(fp) {
   }
 }
 
-function rotate(fp, type) {
-  switch(type) {
-    case 'I': rotateI(fp); break;
-    //case 'J': rotateJ(fp, state); break;
-    //case 'O': break;
-  }
-}
-
-function blocked(fp) {
-  var val = false
-  for(var i=0; i < fp.length; i++) {
-    for(var l=0; l < occupied.length; l++) {
-      if( fp[i][0] == occupied[l].position.x &&
-          fp[i][1] == occupied[l].position.y ) {
-        val = true
-        console.log('fp rotation blocked by other pieces')
-      }
-    }
-    if(fp[i][0] < 0) {
-      val = true
-      console.log('fp rotation blocked by left wall')
-    }
-    if(fp[i][0] > GRID_X - GU) {
-      val = true
-      console.log('fp rotation blocked by right wall')
-    }
-  }
-  return val
-}
-
-function rotateI(fp) {
-  var futurePositions = [[],[],[],[]]
-  var stop = false
-  switch(FourPieceTypeState) {
-    case 1:
-      futurePositions[0][0] = fp[0].position.x + GU*2
-      futurePositions[0][1] = fp[0].position.y - GU
-      futurePositions[1][0] = fp[1].position.x + GU
-      futurePositions[1][1] = fp[1].position.y
-      futurePositions[2][0] = fp[2].position.x
-      futurePositions[2][1] = fp[2].position.y + GU
-      futurePositions[3][0] = fp[3].position.x - GU
-      futurePositions[3][1] = fp[3].position.y + GU*2
-      stop = blocked(futurePositions)
-      if(stop === false) {
-        //console.log('rotating 1')
-        fp[0].position.x = fp[0].position.x + GU*2
-        fp[0].position.y = fp[0].position.y - GU
-        fp[1].position.x = fp[1].position.x + GU
-        fp[1].position.y = fp[1].position.y
-        fp[2].position.x = fp[2].position.x
-        fp[2].position.y = fp[2].position.y + GU
-        fp[3].position.x = fp[3].position.x - GU
-        fp[3].position.y = fp[3].position.y + GU*2
-        FourPieceTypeState = 2
-      }
-      break
-    case 2:
-      futurePositions[0][0] = fp[0].position.x + GU
-      futurePositions[0][1] = fp[0].position.y + GU*2
-      futurePositions[1][0] = fp[1].position.x
-      futurePositions[1][1] = fp[1].position.y + GU
-      futurePositions[2][0] = fp[2].position.x - GU
-      futurePositions[2][1] = fp[2].position.y
-      futurePositions[3][0] = fp[3].position.x - GU*2
-      futurePositions[3][1] = fp[3].position.y - GU
-      stop = blocked(futurePositions)
-      if(stop === false) {
-        //console.log('rotating 2')
-        fp[0].position.x = fp[0].position.x + GU
-        fp[0].position.y = fp[0].position.y + GU*2
-        fp[1].position.x = fp[1].position.x
-        fp[1].position.y = fp[1].position.y + GU
-        fp[2].position.x = fp[2].position.x - GU
-        fp[2].position.y = fp[2].position.y
-        fp[3].position.x = fp[3].position.x - GU*2
-        fp[3].position.y = fp[3].position.y - GU
-        FourPieceTypeState = 3
-      }
-      break
-    case 3:
-      futurePositions[0][0] = fp[0].position.x - GU*2
-      futurePositions[0][1] = fp[0].position.y + GU
-      futurePositions[1][0] = fp[1].position.x - GU
-      futurePositions[1][1] = fp[1].position.y
-      futurePositions[2][0] = fp[2].position.x
-      futurePositions[2][1] = fp[2].position.y - GU
-      futurePositions[3][0] = fp[3].position.x + GU
-      futurePositions[3][1] = fp[3].position.y - GU*2
-      stop = blocked(futurePositions)
-      if(stop === false) {
-        //console.log('rotating 3')
-        fp[0].position.x = fp[0].position.x - GU*2
-        fp[0].position.y = fp[0].position.y + GU
-        fp[1].position.x = fp[1].position.x - GU
-        fp[1].position.y = fp[1].position.y
-        fp[2].position.x = fp[2].position.x
-        fp[2].position.y = fp[2].position.y - GU
-        fp[3].position.x = fp[3].position.x + GU
-        fp[3].position.y = fp[3].position.y - GU*2
-        FourPieceTypeState = 4
-      }
-      break
-    case 4:
-      futurePositions[0][0] = fp[0].position.x - GU
-      futurePositions[0][1] = fp[0].position.y - GU*2
-      futurePositions[1][0] = fp[1].position.x
-      futurePositions[1][1] = fp[1].position.y - GU
-      futurePositions[2][0] = fp[2].position.x + GU
-      futurePositions[2][1] = fp[2].position.y
-      futurePositions[3][0] = fp[3].position.x + GU*2
-      futurePositions[3][1] = fp[3].position.y + GU
-      stop = blocked(futurePositions)
-      if(stop === false) {
-        //console.log('rotating 4')
-        fp[0].position.x = fp[0].position.x - GU
-        fp[0].position.y = fp[0].position.y - GU*2
-        fp[1].position.x = fp[1].position.x
-        fp[1].position.y = fp[1].position.y - GU
-        fp[2].position.x = fp[2].position.x + GU
-        fp[2].position.y = fp[2].position.y
-        fp[3].position.x = fp[3].position.x + GU*2
-        fp[3].position.y = fp[3].position.y + GU
-        FourPieceTypeState = 1
-      }
-      break
-  }
-}
-  
-function createNewFP() {
-  FourPiece = []
-  //var types = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
-  var types = ['I']
-  var randType = _.head(_.shuffle(types))
-  
-  switch(randType) {
-    case 'I':
-      FourPiece = createNewI()
-      FourPieceType = 'I'
-      break
-    case 'J':
-      FourPiece = createNewJ()
-      FourPieceType = 'J'
-      break
-    case 'O':
-      FourPiece = createNewO()
-      FourPieceType = 'O'
-      break
-  }
-
-  FourPiece[0].alpha = 1.0
-  FourPiece[1].alpha = 0.8
-  FourPiece[2].alpha = 0.6
-  FourPiece[3].alpha = 0.4
-  FourPieceTypeState = 1
+function destructureNewFP() {
+  FourPieceArray = newFP(TBlockRed, GRID_WIDTH, GU)
+  FourPiece = FourPieceArray[0]
+  FourPieceType = FourPieceArray[1]
+  FourPieceTypeState = FourPieceArray[2]
   for(var i=0; i < FourPiece.length; i++) {
     fieldOfPlay.addChild(FourPiece[i])
   }
-}
-
-function createNewI() {
-  var piece1 = new P.Sprite(TBlockRed)
-  var piece2 = new P.Sprite(TBlockRed)
-  var piece3 = new P.Sprite(TBlockRed)
-  var piece4 = new P.Sprite(TBlockRed)
-  piece1.position.x = GRID_X/2 - GU*2
-  piece1.position.y = 0
-  piece2.position.x = GRID_X/2 - GU*1
-  piece2.position.y = 0
-  piece3.position.x = GRID_X/2
-  piece3.position.y = 0
-  piece4.position.x = GRID_X/2 + GU
-  piece4.position.y = 0
-  return [piece1, piece2, piece3, piece4]
-}
-
-function createNewJ() {
-  var piece1 = new P.Sprite(TBlockRed)
-  var piece2 = new P.Sprite(TBlockRed)
-  var piece3 = new P.Sprite(TBlockRed)
-  var piece4 = new P.Sprite(TBlockRed)
-  piece1.position.x = GRID_X/2 - GU
-  piece1.position.y = -GU
-  piece2.position.x = GRID_X/2 -GU
-  piece2.position.y = 0
-  piece3.position.x = GRID_X/2
-  piece3.position.y = 0
-  piece4.position.x = GRID_X/2 + GU
-  piece4.position.y = 0
-  return [piece1, piece2, piece3, piece4]
-}
-
-function createNewO() {
-  var piece1 = new P.Sprite(TBlockRed)
-  var piece2 = new P.Sprite(TBlockRed)
-  var piece3 = new P.Sprite(TBlockRed)
-  var piece4 = new P.Sprite(TBlockRed)
-  piece1.position.x = GRID_X/2  - GU
-  piece1.position.y = 0
-  piece2.position.x = GRID_X/2
-  piece2.position.y = 0
-  piece3.position.x = GRID_X/2  - GU
-  piece3.position.y = GU
-  piece4.position.x = GRID_X/2
-  piece4.position.y = GU
-  return [piece1, piece2, piece3, piece4]
 }
