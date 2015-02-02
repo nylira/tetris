@@ -31,8 +31,8 @@ function newShape(type, texture, GRID_WIDTH, GU) {
     case 'J':
       p1.position = new P.Point(GRID_WIDTH/2 - GU*2, -GU)
       p2.position = new P.Point(GRID_WIDTH/2 - GU*2, 0)
-      p3.position = new P.Point(GRID_WIDTH/2       , 0)
-      p4.position = new P.Point(GRID_WIDTH/2 + GU*1, 0); break
+      p3.position = new P.Point(GRID_WIDTH/2 - GU*1, 0)
+      p4.position = new P.Point(GRID_WIDTH/2       , 0); break
     case 'L':
       p1.position = new P.Point(GRID_WIDTH/2 - GU*2, 0)
       p2.position = new P.Point(GRID_WIDTH/2 - GU*1, 0)
