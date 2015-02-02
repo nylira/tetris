@@ -37,6 +37,18 @@ function blocked(fp, occupied, GRID_WIDTH, GU) {
   return val
 }
 
+function setPositions(fp, futurePositions) {
+  fp[0].position.x = futurePositions[0][0]
+  fp[0].position.y = futurePositions[0][1]
+  fp[1].position.x = futurePositions[1][0]
+  fp[1].position.y = futurePositions[1][1]
+  fp[2].position.x = futurePositions[2][0]
+  fp[2].position.y = futurePositions[2][1]
+  fp[3].position.x = futurePositions[3][0]
+  fp[3].position.y = futurePositions[3][1]
+  return fp
+}
+
 function rotateI(fp, fpTypeState, occupied, GRID_WIDTH, GU) {
   var futurePositions = [[],[],[],[]]
   var stop = false
@@ -53,14 +65,7 @@ function rotateI(fp, fpTypeState, occupied, GRID_WIDTH, GU) {
       stop = blocked(futurePositions, occupied, GRID_WIDTH, GU)
       if(stop === false) {
         console.log('rotating 1')
-        fp[0].position.x = fp[0].position.x + GU*2
-        fp[0].position.y = fp[0].position.y - GU
-        fp[1].position.x = fp[1].position.x + GU
-        fp[1].position.y = fp[1].position.y
-        fp[2].position.x = fp[2].position.x
-        fp[2].position.y = fp[2].position.y + GU
-        fp[3].position.x = fp[3].position.x - GU
-        fp[3].position.y = fp[3].position.y + GU*2
+        setPositions(fp, futurePositions)
         fpTypeState = 2
       }
       break
@@ -76,14 +81,7 @@ function rotateI(fp, fpTypeState, occupied, GRID_WIDTH, GU) {
       stop = blocked(futurePositions, occupied, GRID_WIDTH, GU)
       if(stop === false) {
         console.log('rotating 2')
-        fp[0].position.x = fp[0].position.x + GU
-        fp[0].position.y = fp[0].position.y + GU*2
-        fp[1].position.x = fp[1].position.x
-        fp[1].position.y = fp[1].position.y + GU
-        fp[2].position.x = fp[2].position.x - GU
-        fp[2].position.y = fp[2].position.y
-        fp[3].position.x = fp[3].position.x - GU*2
-        fp[3].position.y = fp[3].position.y - GU
+        setPositions(fp, futurePositions)
         fpTypeState = 3
       }
       break
@@ -99,14 +97,7 @@ function rotateI(fp, fpTypeState, occupied, GRID_WIDTH, GU) {
       stop = blocked(futurePositions, occupied, GRID_WIDTH, GU)
       if(stop === false) {
         console.log('rotating 3')
-        fp[0].position.x = fp[0].position.x - GU*2
-        fp[0].position.y = fp[0].position.y + GU
-        fp[1].position.x = fp[1].position.x - GU
-        fp[1].position.y = fp[1].position.y
-        fp[2].position.x = fp[2].position.x
-        fp[2].position.y = fp[2].position.y - GU
-        fp[3].position.x = fp[3].position.x + GU
-        fp[3].position.y = fp[3].position.y - GU*2
+        setPositions(fp, futurePositions)
         fpTypeState = 4
       }
       break
@@ -122,19 +113,13 @@ function rotateI(fp, fpTypeState, occupied, GRID_WIDTH, GU) {
       stop = blocked(futurePositions, occupied, GRID_WIDTH, GU)
       if(stop === false) {
         console.log('rotating 4')
-        fp[0].position.x = fp[0].position.x - GU
-        fp[0].position.y = fp[0].position.y - GU*2
-        fp[1].position.x = fp[1].position.x
-        fp[1].position.y = fp[1].position.y - GU
-        fp[2].position.x = fp[2].position.x + GU
-        fp[2].position.y = fp[2].position.y
-        fp[3].position.x = fp[3].position.x + GU*2
-        fp[3].position.y = fp[3].position.y + GU
+        setPositions(fp, futurePositions)
         fpTypeState = 1
       }
       break
   }
   return fpTypeState
 }
+
 
 module.exports = rotateFP
