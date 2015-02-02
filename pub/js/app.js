@@ -1,4 +1,5 @@
 // TODO: need to implement falling rows
+//
 
 'use strict'
 
@@ -147,7 +148,6 @@ function update() {
   if(GAME_RUNNING === true) {
 
     for(var j=0; j < FourPiece.length; j++) {
-
       // stacking on others
       if(collisionSouth(FourPiece[j], occupied) === true) {
         LANDED = true
@@ -166,18 +166,30 @@ function update() {
     }
 
     for(var k=0; k < FourPieceGhost.length; k++) {
+
+      // if ghost collides with occupied tiles
       if(collisionSouth(FourPieceGhost[k], occupied) === true) {
         GHOST_LANDED = true
       } else if (GHOST_LANDED === false){
         moveSouth(FourPieceGhost)
       }
+      // if ghost collides with floor
       if (FourPieceGhost[k].position.y === GRID_HEIGHT - GU) {
         GHOST_LANDED = true
       } else if (GHOST_LANDED === false){
         moveSouth(FourPieceGhost)
       }
+      // if ghost is colliding with something
       if(GHOST_LANDED === true) {
         FourPieceGhost[k].alpha = 0.33
+
+        // if ghost collides with real thing
+        for(var i=0; i < FourPiece.length; i++) {
+          if(FourPieceGhost[k].position.x === FourPiece[i].position.x && 
+             FourPieceGhost[k].position.y === FourPiece[i].position.y) {
+             fieldOfPlay.removeChild(FourPieceGhost[k])
+          }
+        }
       }
     }
 
@@ -215,6 +227,7 @@ function newGhost(fp, occupied) {
     fpGhost[i].position.y = fp[i].position.y
     fpGhost[i].alpha = 0.0
     fieldOfPlay.addChild(fpGhost[i])
+    fieldOfPlay.children.sort()
   }
   return fpGhost
 }
@@ -222,7 +235,6 @@ function newGhost(fp, occupied) {
 function destroyGhost(fpGhost) {
   if(fpGhost !== undefined && fpGhost.length > 0){
     for(var i=0; i < fpGhost.length; i++) {
-      //console.log('destroying', fpGhost[i])
       fieldOfPlay.removeChild(fpGhost[i])
     }
   }
