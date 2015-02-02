@@ -2,9 +2,9 @@ var P = require('pixi.js')
 var _ = require('lodash')
 
 function newFP(texture, GRID_WIDTH, GU) {
-  //var types = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
+  var types = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
   //var types = ['I', 'J', 'L', 'O']
-  var types = ['Z']
+  //var types = ['Z']
 
   var FourPieceTypeState = 1
   var FourPieceType = _.head(_.shuffle(types))
