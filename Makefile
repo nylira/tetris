@@ -17,4 +17,4 @@ css:
 wcss:
 	$(stylus) --watch --line-numbers src/styl/screen.styl -u $(nib) -o pub/css/
 
-all: js css
+default: js css
