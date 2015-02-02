@@ -96,6 +96,14 @@ if(R === 2){
   TBlockWhite = new P.Texture.fromImage('../img/blockWhite30@x2.png')
   TBackground = new P.Texture.fromImage('../img/darkGrid30@x2.png')
 } else {
+  TBlockRed = new P.Texture.fromImage('../img/blockRed30@x2.png')
+  TBlockGreen = new P.Texture.fromImage('../img/blockGreen30@x2.png')
+  TBlockBlue = new P.Texture.fromImage('../img/blockBlue30@x2.png')
+  TBlockCyan = new P.Texture.fromImage('../img/blockCyan30@x2.png')
+  TBlockMagenta = new P.Texture.fromImage('../img/blockMagenta30@x2.png')
+  TBlockYellow = new P.Texture.fromImage('../img/blockYellow30@x2.png')
+  TBlockWhite = new P.Texture.fromImage('../img/blockWhite30@x2.png')
+  TBackground = new P.Texture.fromImage('../img/darkGrid30@x2.png')
   console.error('no 1x textures')
 }
 
