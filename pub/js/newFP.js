@@ -1,12 +1,13 @@
 var P = require('pixi.js')
 var _ = require('lodash')
+var textureFP = require('./textureFP')
 
 function newFP(type, textures, GRID_WIDTH, GU) {
   var types = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
 
   var FourPieceTypeState = 1
   var FourPieceType = type || _.head(_.shuffle(types))
-  var FourPieceTexture = fpTexture(FourPieceType, textures)
+  var FourPieceTexture = textureFP(FourPieceType, textures)
   var FourPiece = newShape(FourPieceType, FourPieceTexture, GRID_WIDTH, GU)
 
   // debug alpha
@@ -15,20 +16,6 @@ function newFP(type, textures, GRID_WIDTH, GU) {
   //FourPiece[2].alpha = 0.8
   //FourPiece[3].alpha = 0.7
   return [FourPiece, FourPieceType, FourPieceTypeState]
-}
-
-function fpTexture(FourPieceType, textures) {
-  var texture
-  switch(FourPieceType) {
-    case 'I': texture = textures[0]; break
-    case 'J': texture = textures[1]; break
-    case 'L': texture = textures[2]; break
-    case 'O': texture = textures[3]; break
-    case 'S': texture = textures[4]; break
-    case 'T': texture = textures[5]; break
-    case 'Z': texture = textures[6]; break
-  }
-  return texture
 }
 
 function newShape(type, texture, GRID_WIDTH, GU) {

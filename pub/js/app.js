@@ -20,6 +20,7 @@ var combokeys = new Combokeys(document)
 
 var newFP = require('./newFP.js')
 var rotateFP = require('./rotateFP.js')
+var textureFP = require('./textureFP')
 
 /*============================================================================*/
 // Constants
@@ -27,12 +28,12 @@ var rotateFP = require('./rotateFP.js')
 
 // constants
 var R = window.devicePixelRatio
-var CANVAS_X = 540*R
-var CANVAS_Y = 960*R
+var CANVAS_X = 300*R
+var CANVAS_Y = 600*R
 var GU = 30*R
 var REFRESH_RATE = 500
-var GRID_COLS = 12
-var GRID_ROWS = 24
+var GRID_COLS = 10
+var GRID_ROWS = 20
 var GRID_WIDTH = GRID_COLS * GU
 var GRID_HEIGHT = GRID_ROWS * GU
 var GAME_RUNNING = true
@@ -190,7 +191,7 @@ function update() {
       }
       // if ghost is colliding with something
       if(GHOST_LANDED === true) {
-        FourPieceGhost[k].alpha = 0.15
+        FourPieceGhost[k].alpha = 0.25
 
         // if ghost collides with real thing
         for(var i=0; i < FourPiece.length; i++) {
@@ -233,7 +234,7 @@ function newGhost(fp, fpGhost, occupied) {
 
   var newFpGhost = []
   for(var i=0; i < fp.length; i++) {
-    newFpGhost.push(new P.Sprite(TBlockWhite))
+    newFpGhost.push(new P.Sprite(textureFP(FourPieceType, blockTextures)))
     newFpGhost[i].position.x = fp[i].position.x
     newFpGhost[i].position.y = fp[i].position.y
     newFpGhost[i].alpha = 0.0
@@ -446,14 +447,17 @@ function moveSouth(fp) {
 }
 
 function destructureNewFP(type) {
-
   if(bag === undefined || bag.length === 0) {
     bag = _.shuffle(TYPES)
-
   } 
 
   FourPieceArray = newFP(bag.pop(), blockTextures, GRID_WIDTH, GU)
-  console.log('Bag:', bag)
+
+  if(bag === undefined || bag.length === 0) {
+    bag = _.shuffle(TYPES)
+  } 
+
+  console.log('Next Piece:', bag[bag.length - 1])
 
   FourPiece = FourPieceArray[0]
   FourPieceType = FourPieceArray[1]
