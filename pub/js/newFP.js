@@ -3,8 +3,8 @@ var _ = require('lodash')
 
 function newFP(texture, GRID_WIDTH, GU) {
   //var types = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
-  //var types = ['I', 'J', 'O']
-  var types = ['L']
+  var types = ['I', 'J', 'L', 'O']
+  //var types = ['I']
 
   var FourPieceTypeState = 1
   var FourPieceType = _.head(_.shuffle(types))
@@ -22,29 +22,22 @@ function newShape(type, texture, GRID_WIDTH, GU) {
   var p2 = new P.Sprite(texture)
   var p3 = new P.Sprite(texture)
   var p4 = new P.Sprite(texture)
+  var fp = [p1, p2, p3, p4]
   switch(type) {
-    case 'I':
-      p1.position = new P.Point(GRID_WIDTH/2 - GU*2, 0)
-      p2.position = new P.Point(GRID_WIDTH/2 - GU*1, 0)
-      p3.position = new P.Point(GRID_WIDTH/2       , 0)
-      p4.position = new P.Point(GRID_WIDTH/2 + GU  , 0); break
-    case 'J':
-      p1.position = new P.Point(GRID_WIDTH/2 - GU*2, -GU)
-      p2.position = new P.Point(GRID_WIDTH/2 - GU*2, 0)
-      p3.position = new P.Point(GRID_WIDTH/2 - GU*1, 0)
-      p4.position = new P.Point(GRID_WIDTH/2       , 0); break
-    case 'L':
-      p1.position = new P.Point(GRID_WIDTH/2 - GU*2, 0)
-      p2.position = new P.Point(GRID_WIDTH/2 - GU*1, 0)
-      p3.position = new P.Point(GRID_WIDTH/2       , 0)
-      p4.position = new P.Point(GRID_WIDTH/2       , -GU); break
-    case 'O':
-      p1.position = new P.Point(GRID_WIDTH/2 - GU, 0)
-      p2.position = new P.Point(GRID_WIDTH/2, 0)
-      p3.position = new P.Point(GRID_WIDTH/2 - GU, GU)
-      p4.position = new P.Point(GRID_WIDTH/2, GU); break
+    case 'I': fp = offsetFP(fp, GRID_WIDTH, GU, -2, 0, -1, 0, 0, 0, 1, 0); break
+    case 'J': fp = offsetFP(fp, GRID_WIDTH, GU, -2, -1, -2, 0, -1, 0, 0, 0); break
+    case 'L': fp = offsetFP(fp, GRID_WIDTH, GU, -2, 0, -1, 0, 0, 0, 0, -1); break
+    case 'O': fp = offsetFP(fp, GRID_WIDTH, GU, -1, 0, 0, 0, -1, 1, 0, 1); break
   }
   return [p1, p2, p3, p4]
+}
+
+function offsetFP(fp, GRID_WIDTH, GU, x1, y1, x2, y2, x3, y3, x4, y4) {
+  fp[0].position = new P.Point(GRID_WIDTH/2 + GU*x1, GU*y1)
+  fp[1].position = new P.Point(GRID_WIDTH/2 + GU*x2, GU*y2)
+  fp[2].position = new P.Point(GRID_WIDTH/2 + GU*x3, GU*y3)
+  fp[3].position = new P.Point(GRID_WIDTH/2 + GU*x4, GU*y4)
+  return fp
 }
 
 module.exports = newFP
