@@ -1,5 +1,4 @@
-// TODO: need to implement falling rows
-//
+// TODO: random initial rotation
 
 'use strict'
 
@@ -444,5 +443,5 @@ function destructureNewFP() {
     fieldOfPlay.addChild(FourPiece[i])
   }
 
-  FourPieceGhost = newGhost(FourPiece)
+  FourPieceGhost = newGhost(FourPiece, FourPieceGhost, occupied)
 }
