@@ -37,9 +37,6 @@ var GRID_COLS = 10
 var GRID_ROWS = 20
 var GRID_WIDTH = GRID_COLS * GU
 var GRID_HEIGHT = GRID_ROWS * GU
-var GAME_RUNNING = true
-var LANDED = false
-var GHOST_LANDED = false
 var TYPES = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
 
 /*============================================================================*/
@@ -50,6 +47,9 @@ var TYPES = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
 var stage, renderer
 var timer = new Date().getTime() + REFRESH_RATE
 var bagOfPieces
+var fpLanded = false
+var ghostLanded = false
+var gameRunning = true
 
 // scenes
 var sceneMenu
@@ -71,7 +71,7 @@ var blockTextures
 var FourPieceArray
 var FourPiece
 var FourPieceType
-var FourPieceTypeState
+var FourPieceRotation
 var FourPieceGhost
 var SBackground
 var NextFourPiece
@@ -118,11 +118,11 @@ function setup() {
   combokeys.bind(['d', 'right'], function(){moveActiveFP(FourPiece, 'e')})
   combokeys.bind(['s', 'down'], function(){moveActiveFP(FourPiece, 's')})
   combokeys.bind(['w', 'up'], function(){
-    FourPieceTypeState = rotateFP(
-      FourPiece, FourPieceType, FourPieceTypeState, occupied, GRID_WIDTH, GU)
+    FourPieceRotation = rotateFP(
+      FourPiece, FourPieceType, FourPieceRotation, occupied, GRID_WIDTH, GU)
     FourPieceGhost = newGhost(FourPiece, FourPieceGhost, occupied)
   })
-  combokeys.bind(['x', 'space'], function(){GAME_RUNNING = !GAME_RUNNING})
+  combokeys.bind(['x', 'space'], function(){gameRunning = !gameRunning})
 
   makeMap(GRID_COLS, GRID_ROWS)
   stage.addChild(fieldOfPlay)
@@ -130,13 +130,13 @@ function setup() {
 }
 
 /*----------------------------------------------------------------------------*/
-//  Update()
+//  update()
 /*----------------------------------------------------------------------------*/
 
 function update() {
   requestAnimationFrame(update)
 
-  if(GAME_RUNNING === true) {
+  if(gameRunning === true) {
     checkIfFourPieceLanded()
     updateGhost()
     if(timer < new Date().getTime()) {step()}
@@ -153,36 +153,30 @@ function checkIfFourPieceLanded() {
   for(var j=0; j < FourPiece.length; j++) {
     // stacking on others
     if(collisionSouth(FourPiece[j], occupied) === true) {
-      LANDED = true
+      fpLanded = true
       break
     } else {
-      LANDED = false
+      fpLanded = false
     }
 
     // stacking on ground
     if(FourPiece[j].position.y === GRID_HEIGHT - GU) {
-      LANDED = true
+      fpLanded = true
       break
     } else {
-      LANDED = false
+      fpLanded = false
     }
   }
 }
 
 function step(){
-  if(LANDED === true) {
+  if(fpLanded === true) {
     addFPToOccupied(FourPiece, occupied)
-    //console.log('occupied slots: ', slots(occupied))
-
     checkIfRowsAreFull(FourPiece)
-    //slideDownIfPossible()
-
     destructureNewFP()
-    LANDED = false
+    fpLanded = false
   }
-
   moveSouth(FourPiece)
-
   timer = new Date().getTime() + REFRESH_RATE
 }
 
@@ -191,18 +185,18 @@ function updateGhost(){
 
     // if ghost collides with occupied tiles
     if(collisionSouth(FourPieceGhost[k], occupied) === true) {
-      GHOST_LANDED = true
-    } else if (GHOST_LANDED === false){
+      ghostLanded = true
+    } else if (ghostLanded === false){
       moveSouth(FourPieceGhost)
     }
     // if ghost collides with floor
     if (FourPieceGhost[k].position.y === GRID_HEIGHT - GU) {
-      GHOST_LANDED = true
-    } else if (GHOST_LANDED === false){
+      ghostLanded = true
+    } else if (ghostLanded === false){
       moveSouth(FourPieceGhost)
     }
     // if ghost is colliding with something
-    if(GHOST_LANDED === true) {
+    if(ghostLanded === true) {
       FourPieceGhost[k].alpha = 0.25
 
       // if ghost collides with real thing
@@ -212,13 +206,14 @@ function updateGhost(){
            fieldOfPlay.removeChild(FourPieceGhost[k])
         }
       }
+
     }
   }
 }
 
 function newGhost(fp, fpGhost, occupied) {
   destroyGhost(fpGhost)
-  GHOST_LANDED = false
+  ghostLanded = false
 
   var newFpGhost = []
   for(var i=0; i < fp.length; i++) {
@@ -450,7 +445,7 @@ function destructureNewFP(type) {
 
   FourPiece = FourPieceArray[0]
   FourPieceType = FourPieceArray[1]
-  FourPieceTypeState = FourPieceArray[2]
+  FourPieceRotation = FourPieceArray[2]
   for(var i=0; i < FourPiece.length; i++) {
     fieldOfPlay.addChild(FourPiece[i])
   }
