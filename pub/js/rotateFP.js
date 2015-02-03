@@ -1,24 +1,24 @@
-function rotateFP(fp, fpType, fpRotation, occupied, GRID_WIDTH, GU) {
+function rotateFP(fp, fpType, fpRotation, occupied, bl, br, w, gu) {
   var newOrientation
   switch(fpType) {
     case 'I':
-      newOrientation = rotateI(fp, fpRotation, occupied, GRID_WIDTH, GU); break
+      newOrientation = rotateI(fp, fpRotation, occupied, bl, br, w, gu); break
     case 'J':
-      newOrientation = rotateJ(fp, fpRotation, occupied, GRID_WIDTH, GU); break
+      newOrientation = rotateJ(fp, fpRotation, occupied, bl, br, w, gu); break
     case 'L':
-      newOrientation = rotateL(fp, fpRotation, occupied, GRID_WIDTH, GU); break
+      newOrientation = rotateL(fp, fpRotation, occupied, bl, br, w, gu); break
     case 'O': break;
     case 'S':
-      newOrientation = rotateS(fp, fpRotation, occupied, GRID_WIDTH, GU); break
+      newOrientation = rotateS(fp, fpRotation, occupied, bl, br, w, gu); break
     case 'T':
-      newOrientation = rotateT(fp, fpRotation, occupied, GRID_WIDTH, GU); break
+      newOrientation = rotateT(fp, fpRotation, occupied, bl, br, w, gu); break
     case 'Z':
-      newOrientation = rotateZ(fp, fpRotation, occupied, GRID_WIDTH, GU); break
+      newOrientation = rotateZ(fp, fpRotation, occupied, bl, br, w, gu); break
   }
   return newOrientation
 }
 
-function blocked(fp, occupied, GRID_WIDTH, GU) {
+function blocked(fp, occupied, bl, br, w, gu) {
   var val = false
   for(var i=0; i < fp.length; i++) {
     for(var l=0; l < occupied.length; l++) {
@@ -28,11 +28,11 @@ function blocked(fp, occupied, GRID_WIDTH, GU) {
         console.error('fp rotation blocked by other pieces')
       }
     }
-    if(fp[i][0] < 0) {
+    if(fp[i][0] < bl) {
       val = true
       console.error('fp rotation blocked by left wall')
     }
-    if(fp[i][0] > GRID_WIDTH - GU) {
+    if(fp[i][0] > br) {
       val = true
       console.error('fp rotation blocked by right wall')
     }
@@ -40,12 +40,12 @@ function blocked(fp, occupied, GRID_WIDTH, GU) {
   return val
 }
 
-function offsetPositions(fp, GU, x1, y1, x2, y2, x3, y3, x4, y4) {
+function offsetPositions(fp, gu, x1, y1, x2, y2, x3, y3, x4, y4) {
   var positions = [[],[],[],[]]
-  positions[0] = [fp[0].position.x + GU*x1, fp[0].position.y + GU*y1]
-  positions[1] = [fp[1].position.x + GU*x2, fp[1].position.y + GU*y2]
-  positions[2] = [fp[2].position.x + GU*x3, fp[2].position.y + GU*y3]
-  positions[3] = [fp[3].position.x + GU*x4, fp[3].position.y + GU*y4]
+  positions[0] = [fp[0].position.x + gu*x1, fp[0].position.y + gu*y1]
+  positions[1] = [fp[1].position.x + gu*x2, fp[1].position.y + gu*y2]
+  positions[2] = [fp[2].position.x + gu*x3, fp[2].position.y + gu*y3]
+  positions[3] = [fp[3].position.x + gu*x4, fp[3].position.y + gu*y4]
   return positions
 }
 
@@ -61,34 +61,34 @@ function setPositions(fp, newPositions) {
   return fp
 }
 
-function rotateI(fp, fpRotation, occupied, GRID_WIDTH, GU) {
+function rotateI(fp, fpRotation, occupied, bl, br, w, gu) {
   var newPositions = [[],[],[],[]]
   var stop = false
   switch(fpRotation) {
     case 1:
-      newPositions = offsetPositions(fp, GU, 2, -1, 1, 0, 0, 1, -1, 2)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, 2, -1, 1, 0, 0, 1, -1, 2)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 2
       } break
     case 2:
-      newPositions = offsetPositions(fp, GU, 1, 2, 0, 1, -1, 0, -2, -1)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, 1, 2, 0, 1, -1, 0, -2, -1)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 3
       } break
     case 3:
-      newPositions = offsetPositions(fp, GU, -2, 1, -1, 0, 0, -1, 1, -2)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, -2, 1, -1, 0, 0, -1, 1, -2)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 4
       } break
     case 4:
-      newPositions = offsetPositions(fp, GU, -1, -2, 0, -1, 1, 0, 2, 1)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, -1, -2, 0, -1, 1, 0, 2, 1)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 1
@@ -97,34 +97,34 @@ function rotateI(fp, fpRotation, occupied, GRID_WIDTH, GU) {
   return fpRotation
 }
 
-function rotateJ(fp, fpRotation, occupied, GRID_WIDTH, GU) {
+function rotateJ(fp, fpRotation, occupied, bl, br, w, gu) {
   var newPositions = [[],[],[],[]]
   var stop = false
   switch(fpRotation) {
     case 1:
-      newPositions = offsetPositions(fp, GU, 2, 0, 1, -1, 0, 0, -1, 1)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, 2, 0, 1, -1, 0, 0, -1, 1)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 2
       } break
     case 2:
-      newPositions = offsetPositions(fp, GU, 0, 2, 1, 1, 0, 0, -1, -1)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, 0, 2, 1, 1, 0, 0, -1, -1)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 3
       } break
     case 3:
-      newPositions = offsetPositions(fp, GU, -2, 0, -1, 1, 0, 0, 1, -1)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, -2, 0, -1, 1, 0, 0, 1, -1)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 4
       } break
     case 4:
-      newPositions = offsetPositions(fp, GU, 0, -2, -1, -1, 0, 0, 1, 1)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, 0, -2, -1, -1, 0, 0, 1, 1)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 1
@@ -133,34 +133,34 @@ function rotateJ(fp, fpRotation, occupied, GRID_WIDTH, GU) {
   return fpRotation
 }
 
-function rotateL(fp, fpRotation, occupied, GRID_WIDTH, GU) {
+function rotateL(fp, fpRotation, occupied, bl, br, w, gu) {
   var newPositions = [[],[],[],[]]
   var stop = false
   switch(fpRotation) {
     case 1:
-      newPositions = offsetPositions(fp, GU, 1, -1, 0, 0, -1, 1, 0, 2)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, 1, -1, 0, 0, -1, 1, 0, 2)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 2
       } break
     case 2:
-      newPositions = offsetPositions(fp, GU, 1, 1, 0, 0, -1, -1, -2, 0)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, 1, 1, 0, 0, -1, -1, -2, 0)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 3
       } break
     case 3:
-      newPositions = offsetPositions(fp, GU, -1, 1, 0, 0, 1, -1, 0, -2)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, -1, 1, 0, 0, 1, -1, 0, -2)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 4
       } break
     case 4:
-      newPositions = offsetPositions(fp, GU, -1, -1, 0, 0, 1, 1, 2, 0)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, -1, -1, 0, 0, 1, 1, 2, 0)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 1
@@ -169,34 +169,34 @@ function rotateL(fp, fpRotation, occupied, GRID_WIDTH, GU) {
   return fpRotation
 }
 
-function rotateS(fp, fpRotation, occupied, GRID_WIDTH, GU) {
+function rotateS(fp, fpRotation, occupied, bl, br, w, gu) {
   var newPositions = [[],[],[],[]]
   var stop = false
   switch(fpRotation) {
     case 1:
-      newPositions = offsetPositions(fp, GU, 1, -1, 0, 0, 1, 1, 0, 2)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, 1, -1, 0, 0, 1, 1, 0, 2)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 2
       } break
     case 2:
-      newPositions = offsetPositions(fp, GU, 1, 1, 0, 0, -1, 1, -2, 0)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, 1, 1, 0, 0, -1, 1, -2, 0)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 3
       } break
     case 3:
-      newPositions = offsetPositions(fp, GU, -1, 1, 0, 0, -1, -1, 0, -2)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, -1, 1, 0, 0, -1, -1, 0, -2)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 4
       } break
     case 4:
-      newPositions = offsetPositions(fp, GU, -1, -1, 0, 0, 1, -1, 2, 0)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, -1, -1, 0, 0, 1, -1, 2, 0)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 1
@@ -205,34 +205,34 @@ function rotateS(fp, fpRotation, occupied, GRID_WIDTH, GU) {
   return fpRotation
 }
 
-function rotateT(fp, fpRotation, occupied, GRID_WIDTH, GU) {
+function rotateT(fp, fpRotation, occupied, bl, br, w, gu) {
   var newPositions = [[],[],[],[]]
   var stop = false
   switch(fpRotation) {
     case 1:
-      newPositions = offsetPositions(fp, GU, 1, -1, 0, 0, 1, 1, -1, 1)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, 1, -1, 0, 0, 1, 1, -1, 1)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 2
       } break
     case 2:
-      newPositions = offsetPositions(fp, GU, 1, 1, 0, 0, -1, 1, -1, -1)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, 1, 1, 0, 0, -1, 1, -1, -1)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 3
       } break
     case 3:
-      newPositions = offsetPositions(fp, GU, -1, 1, 0, 0, -1, -1, 1, -1)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, -1, 1, 0, 0, -1, -1, 1, -1)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 4
       } break
     case 4:
-      newPositions = offsetPositions(fp, GU, -1, -1, 0, 0, 1, -1, 1, 1)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, -1, -1, 0, 0, 1, -1, 1, 1)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 1
@@ -241,34 +241,34 @@ function rotateT(fp, fpRotation, occupied, GRID_WIDTH, GU) {
   return fpRotation
 }
 
-function rotateZ(fp, fpRotation, occupied, GRID_WIDTH, GU) {
+function rotateZ(fp, fpRotation, occupied, bl, br, w, gu) {
   var newPositions = [[],[],[],[]]
   var stop = false
   switch(fpRotation) {
     case 1:
-      newPositions = offsetPositions(fp, GU, 2, 0, 1, 1, 0, 0, -1, 1)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, 2, 0, 1, 1, 0, 0, -1, 1)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 2
       } break
     case 2:
-      newPositions = offsetPositions(fp, GU, 0, 2, -1, 1, 0, 0, -1, -1)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, 0, 2, -1, 1, 0, 0, -1, -1)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 3
       } break
     case 3:
-      newPositions = offsetPositions(fp, GU, -2, 0, -1, -1, 0, 0, 1, -1)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, -2, 0, -1, -1, 0, 0, 1, -1)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 4
       } break
     case 4:
-      newPositions = offsetPositions(fp, GU, 0, -2, 1, -1, 0, 0, 1, 1)
-      stop = blocked(newPositions, occupied, GRID_WIDTH, GU)
+      newPositions = offsetPositions(fp, gu, 0, -2, 1, -1, 0, 0, 1, 1)
+      stop = blocked(newPositions, occupied, bl, br, w, gu)
       if(stop === false) {
         setPositions(fp, newPositions)
         fpRotation = 1

@@ -32,14 +32,14 @@ var CANVAS_X = 1080/2*R
 var CANVAS_Y = 1920/2*R
 var GU = 30*R
 var REFRESH_RATE = 500
-var GRID_COLS = 11
+var GRID_COLS = 10
 var GRID_ROWS = 20
-var GRID_X = 2*GU //4
-var GRID_Y = 5*GU //6
+var GRID_X = 4*GU //4
+var GRID_Y = 6*GU //6
 var GRID_WIDTH = GRID_COLS * GU
 var GRID_HEIGHT = GRID_ROWS * GU
-var GRID_BOUNDS_LEFT = GRID_X
-var GRID_BOUNDS_RIGHT = GRID_X + GRID_WIDTH - GU
+var GRID_BOUNDS_L = GRID_X
+var GRID_BOUNDS_R = GRID_X + GRID_WIDTH - GU
 var GRID_FLOOR = GRID_Y + GRID_HEIGHT - GU
 var TYPES = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
 
@@ -352,7 +352,7 @@ function collisionWest(piece, occupied) {
 function moveWest(fp) {
   var doable = 0
   for(var i=0; i < fp.length; i++) {
-    if( fp[i].position.x !== GRID_BOUNDS_LEFT &&
+    if( fp[i].position.x !== GRID_BOUNDS_L &&
         collisionWest(fp[i], occupied) === false) {
       doable++
     }
@@ -368,7 +368,7 @@ function moveWest(fp) {
 function moveEast(fp) {
   var doable = 0
   for(var j=0; j < fp.length; j++) {
-    if(fp[j].position.x !== GRID_BOUNDS_RIGHT &&
+    if(fp[j].position.x !== GRID_BOUNDS_R &&
         collisionEast(fp[j], occupied) === false) {
       doable++
     }
@@ -446,7 +446,7 @@ function setupBindings(){
   combokeys.bind(['s', 'down'], function(){moveActiveFP(FP, 's')})
   combokeys.bind(['w', 'up'], function(){
     FPRotation = rotateFP(
-      FP, FPType, FPRotation, occupied, GRID_WIDTH, GU)
+      FP, FPType, FPRotation, occupied, GRID_BOUNDS_L, GRID_BOUNDS_R, GRID_WIDTH, GU)
     FPGhost = addGhostToField(FP, FPGhost, occupied)
   })
   combokeys.bind(['x', 'space'], function(){gameRunning = !gameRunning})
