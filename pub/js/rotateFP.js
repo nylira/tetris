@@ -25,16 +25,16 @@ function blocked(fp, occupied, GRID_WIDTH, GU) {
       if( fp[i][0] == occupied[l].position.x &&
           fp[i][1] == occupied[l].position.y ) {
         val = true
-        console.log('fp rotation blocked by other pieces')
+        console.error('fp rotation blocked by other pieces')
       }
     }
     if(fp[i][0] < 0) {
       val = true
-      console.log('fp rotation blocked by left wall')
+      console.error('fp rotation blocked by left wall')
     }
     if(fp[i][0] > GRID_WIDTH - GU) {
       val = true
-      console.log('fp rotation blocked by right wall')
+      console.error('fp rotation blocked by right wall')
     }
   }
   return val

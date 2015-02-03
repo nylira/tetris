@@ -37,10 +37,11 @@ function newShape(type, texture, x, y, w, gu) {
 }
 
 function offsetFP(fp, x, y, w, gu, x1, y1, x2, y2, x3, y3, x4, y4) {
-  fp[0].position = new P.Point(x + w/2 + gu*x1, y + gu*y1)
-  fp[1].position = new P.Point(x + w/2 + gu*x2, y + gu*y2)
-  fp[2].position = new P.Point(x + w/2 + gu*x3, y + gu*y3)
-  fp[3].position = new P.Point(x + w/2 + gu*x4, y + gu*y4)
+  offsetX = Math.round(w/gu/2) * gu
+  fp[0].position = new P.Point(x + offsetX + gu*x1, y + gu*y1)
+  fp[1].position = new P.Point(x + offsetX + gu*x2, y + gu*y2)
+  fp[2].position = new P.Point(x + offsetX + gu*x3, y + gu*y3)
+  fp[3].position = new P.Point(x + offsetX + gu*x4, y + gu*y4)
   return fp
 }
 
