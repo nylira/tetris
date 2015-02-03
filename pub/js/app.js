@@ -137,37 +137,37 @@ function update() {
   requestAnimationFrame(update)
 
   if(GAME_RUNNING === true) {
-
-    for(var j=0; j < FourPiece.length; j++) {
-      // stacking on others
-      if(collisionSouth(FourPiece[j], occupied) === true) {
-        LANDED = true
-        break
-      } else {
-        LANDED = false
-      }
-
-      // stacking on ground
-      if(FourPiece[j].position.y === GRID_HEIGHT - GU) {
-        LANDED = true
-        break
-      } else {
-        LANDED = false
-      }
-    }
-
+    checkIfFourPieceLanded()
     updateGhost()
-
-    if(timer < new Date().getTime()) {
-      step()
-    }
+    if(timer < new Date().getTime()) {step()}
   }
+
   renderer.render(stage)
 }
 
 /*----------------------------------------------------------------------------*/
 // Helpers
 /*----------------------------------------------------------------------------*/
+
+function checkIfFourPieceLanded() {
+  for(var j=0; j < FourPiece.length; j++) {
+    // stacking on others
+    if(collisionSouth(FourPiece[j], occupied) === true) {
+      LANDED = true
+      break
+    } else {
+      LANDED = false
+    }
+
+    // stacking on ground
+    if(FourPiece[j].position.y === GRID_HEIGHT - GU) {
+      LANDED = true
+      break
+    } else {
+      LANDED = false
+    }
+  }
+}
 
 function step(){
   if(LANDED === true) {
