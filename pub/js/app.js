@@ -27,7 +27,6 @@ var textureFP = require('./textureFP')
 // Constants
 /*============================================================================*/
 
-// constants
 var R = window.devicePixelRatio
 var CANVAS_X = 1080/2*R
 var CANVAS_Y = 1920/2*R
@@ -35,8 +34,13 @@ var GU = 30*R
 var REFRESH_RATE = 500
 var GRID_COLS = 10
 var GRID_ROWS = 20
+var GRID_X = 4*GU
+var GRID_Y = 6*GU
 var GRID_WIDTH = GRID_COLS * GU
 var GRID_HEIGHT = GRID_ROWS * GU
+var GRID_BOUNDS_LEFT = GRID_X
+var GRID_BOUNDS_RIGHT = GRID_X + GRID_WIDTH - GU
+var GRID_FLOOR = GRID_Y + GRID_HEIGHT - GU
 var TYPES = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
 
 /*============================================================================*/
@@ -68,15 +72,15 @@ var TBackground
 var blockTextures
 
 // sprites
-var FourPieceArray
-var FourPiece
-var FourPieceType
-var FourPieceRotation
-var FourPieceGhost
+var FPArray
+var FP
+var FPType
+var FPRotation
+var FPGhost
 var SBackground
-var NextFourPiece
+var NextFP
 
-var fieldOfPlay = new P.DisplayObjectContainer()
+var field
 var occupied = []
 
 /*============================================================================*/
@@ -84,49 +88,11 @@ var occupied = []
 /*============================================================================*/
 
 function setup() {
-
-  // Stage
-  stage = new P.Stage(0x222222)
-  renderer = P.autoDetectRenderer(CANVAS_X, CANVAS_Y)
-  document.getElementById('container').appendChild(renderer.view)
-
-  //  Textures
-  if(R === 2){
-    TBlockRed = new P.Texture.fromImage('../img/blockRed30@x2.png')
-    TBlockGreen = new P.Texture.fromImage('../img/blockGreen30@x2.png')
-    TBlockBlue = new P.Texture.fromImage('../img/blockBlue30@x2.png')
-    TBlockCyan = new P.Texture.fromImage('../img/blockCyan30@x2.png')
-    TBlockMagenta = new P.Texture.fromImage('../img/blockMagenta30@x2.png')
-    TBlockYellow = new P.Texture.fromImage('../img/blockYellow30@x2.png')
-    TBlockWhite = new P.Texture.fromImage('../img/blockWhite30@x2.png')
-    TBackground = new P.Texture.fromImage('../img/darkGrid30@x2.png')
-  } else {
-    TBlockRed = new P.Texture.fromImage('../img/blockRed30.png')
-    TBlockGreen = new P.Texture.fromImage('../img/blockGreen30.png')
-    TBlockBlue = new P.Texture.fromImage('../img/blockBlue30.png')
-    TBlockCyan = new P.Texture.fromImage('../img/blockCyan30.png')
-    TBlockMagenta = new P.Texture.fromImage('../img/blockMagenta30.png')
-    TBlockYellow = new P.Texture.fromImage('../img/blockYellow30.png')
-    TBlockWhite = new P.Texture.fromImage('../img/blockWhite30.png')
-    TBackground = new P.Texture.fromImage('../img/darkGrid30.png')
-  }
-
-  blockTextures = [TBlockRed, TBlockGreen, TBlockBlue, TBlockCyan, TBlockMagenta, TBlockYellow, TBlockWhite]
-
-  // Bindings
-  combokeys.bind(['a', 'left'], function(){moveActiveFP(FourPiece, 'w')})
-  combokeys.bind(['d', 'right'], function(){moveActiveFP(FourPiece, 'e')})
-  combokeys.bind(['s', 'down'], function(){moveActiveFP(FourPiece, 's')})
-  combokeys.bind(['w', 'up'], function(){
-    FourPieceRotation = rotateFP(
-      FourPiece, FourPieceType, FourPieceRotation, occupied, GRID_WIDTH, GU)
-    FourPieceGhost = newGhost(FourPiece, FourPieceGhost, occupied)
-  })
-  combokeys.bind(['x', 'space'], function(){gameRunning = !gameRunning})
-
-  makeMap(GRID_COLS, GRID_ROWS)
-  stage.addChild(fieldOfPlay)
-  destructureNewFP()
+  setupStage()
+  setupTextures()
+  setupBindings()
+  setupMap()
+  setupNewFP()
 }
 
 /*----------------------------------------------------------------------------*/
@@ -137,7 +103,7 @@ function update() {
   requestAnimationFrame(update)
 
   if(gameRunning === true) {
-    checkIfFourPieceLanded()
+    checkIfFPLanded()
     updateGhost()
     if(timer < new Date().getTime()) {step()}
   }
@@ -149,10 +115,10 @@ function update() {
 // Helpers
 /*----------------------------------------------------------------------------*/
 
-function checkIfFourPieceLanded() {
-  for(var j=0; j < FourPiece.length; j++) {
+function checkIfFPLanded() {
+  for(var j=0; j < FP.length; j++) {
     // stacking on others
-    if(collisionSouth(FourPiece[j], occupied) === true) {
+    if(collisionSouth(FP[j], occupied) === true) {
       fpLanded = true
       break
     } else {
@@ -160,7 +126,7 @@ function checkIfFourPieceLanded() {
     }
 
     // stacking on ground
-    if(FourPiece[j].position.y === GRID_HEIGHT - GU) {
+    if(FP[j].position.y === GRID_FLOOR) {
       fpLanded = true
       break
     } else {
@@ -171,39 +137,39 @@ function checkIfFourPieceLanded() {
 
 function step(){
   if(fpLanded === true) {
-    addFPToOccupied(FourPiece, occupied)
-    checkIfRowsAreFull(FourPiece)
-    destructureNewFP()
+    addFPToOccupied(FP, occupied)
+    checkIfRowsAreFull(FP)
+    setupNewFP()
     fpLanded = false
   }
-  moveSouth(FourPiece)
+  moveSouth(FP)
   timer = new Date().getTime() + REFRESH_RATE
 }
 
 function updateGhost(){
-  for(var k=0; k < FourPieceGhost.length; k++) {
+  for(var k=0; k < FPGhost.length; k++) {
 
     // if ghost collides with occupied tiles
-    if(collisionSouth(FourPieceGhost[k], occupied) === true) {
+    if(collisionSouth(FPGhost[k], occupied) === true) {
       ghostLanded = true
     } else if (ghostLanded === false){
-      moveSouth(FourPieceGhost)
+      moveSouth(FPGhost)
     }
     // if ghost collides with floor
-    if (FourPieceGhost[k].position.y === GRID_HEIGHT - GU) {
+    if (FPGhost[k].position.y === GRID_FLOOR) {
       ghostLanded = true
     } else if (ghostLanded === false){
-      moveSouth(FourPieceGhost)
+      moveSouth(FPGhost)
     }
     // if ghost is colliding with something
     if(ghostLanded === true) {
-      FourPieceGhost[k].alpha = 0.25
+      FPGhost[k].alpha = 0.25
 
       // if ghost collides with real thing
-      for(var i=0; i < FourPiece.length; i++) {
-        if(FourPieceGhost[k].position.x === FourPiece[i].position.x && 
-           FourPieceGhost[k].position.y === FourPiece[i].position.y) {
-           fieldOfPlay.removeChild(FourPieceGhost[k])
+      for(var i=0; i < FP.length; i++) {
+        if(FPGhost[k].position.x === FP[i].position.x && 
+           FPGhost[k].position.y === FP[i].position.y) {
+           field.removeChild(FPGhost[k])
         }
       }
 
@@ -211,25 +177,25 @@ function updateGhost(){
   }
 }
 
-function newGhost(fp, fpGhost, occupied) {
-  destroyGhost(fpGhost)
+function addGhostToField(fp, fpGhost, occupied) {
+  rmGhostFromField(fpGhost)
   ghostLanded = false
 
   var newFpGhost = []
   for(var i=0; i < fp.length; i++) {
-    newFpGhost.push(new P.Sprite(textureFP(FourPieceType, blockTextures)))
+    newFpGhost.push(new P.Sprite(textureFP(FPType, blockTextures)))
     newFpGhost[i].position.x = fp[i].position.x
     newFpGhost[i].position.y = fp[i].position.y
     newFpGhost[i].alpha = 0.0
-    fieldOfPlay.addChild(newFpGhost[i])
+    field.addChild(newFpGhost[i])
   }
   return newFpGhost
 }
 
-function destroyGhost(fpGhost) {
+function rmGhostFromField(fpGhost) {
   if(fpGhost !== undefined && fpGhost.length > 0){
     for(var i=0; i < fpGhost.length; i++) {
-      fieldOfPlay.removeChild(fpGhost[i])
+      field.removeChild(fpGhost[i])
     }
   }
 }
@@ -255,11 +221,11 @@ function checkIfRowIsFull(piece) {
     var clearedRowY = inThisRow[0].position.y
 
     // clear the row visually
-    //console.log('pre fop length:', fieldOfPlay.children.length)
+    //console.log('pre fop length:', field.children.length)
     for(var l=0; l < inThisRow.length; l++) {
-      fieldOfPlay.removeChild(inThisRow[l])
+      field.removeChild(inThisRow[l])
     }
-    //console.log('post fop length:', fieldOfPlay.children.length)
+    //console.log('post fop length:', field.children.length)
 
     occupied = stillOccupied(inThisRow, occupied)
     //console.log('occupied slots after cleanup: ', slots(occupied))
@@ -323,7 +289,7 @@ function slideDownIfPossible() {
     }
 
     // add occupiedPiece to a list of pieces that can fall
-    if(canPieceFall === true && occupied[m].position.y < GRID_HEIGHT - GU) {
+    if(canPieceFall === true && occupied[m].position.y < GRID_FLOOR) {
       canFall.push(occupied[m])
       canFall = _.uniq(canFall)
     }
@@ -334,7 +300,7 @@ function slideDownIfPossible() {
     canFall[o].position.y = canFall[o].position.y + GU
 
     // remove pieces from canFall if they reach the bottom
-    if(canFall[o].position.y === GRID_HEIGHT - GU) {
+    if(canFall[o].position.y === GRID_FLOOR) {
       canFall.splice(o,1)
     }
   }
@@ -386,7 +352,7 @@ function collisionWest(piece, occupied) {
 function moveWest(fp) {
   var doable = 0
   for(var i=0; i < fp.length; i++) {
-    if( fp[i].position.x !== 0 &&
+    if( fp[i].position.x !== GRID_BOUNDS_LEFT &&
         collisionWest(fp[i], occupied) === false) {
       doable++
     }
@@ -395,14 +361,14 @@ function moveWest(fp) {
     for(var k=0; k < fp.length; k++) {
       fp[k].position.x = fp[k].position.x - GU
     }
-    FourPieceGhost = newGhost(FourPiece, FourPieceGhost, occupied)
+    FPGhost = addGhostToField(FP, FPGhost, occupied)
   }
 }
 
 function moveEast(fp) {
   var doable = 0
   for(var j=0; j < fp.length; j++) {
-    if(fp[j].position.x !== GRID_WIDTH - GU &&
+    if(fp[j].position.x !== GRID_BOUNDS_RIGHT &&
         collisionEast(fp[j], occupied) === false) {
       doable++
     }
@@ -411,14 +377,14 @@ function moveEast(fp) {
     for(var l=0; l < fp.length; l++) {
       fp[l].position.x = fp[l].position.x + GU
     }
-    FourPieceGhost = newGhost(FourPiece, FourPieceGhost, occupied)
+    FPGhost = addGhostToField(FP, FPGhost, occupied)
   }
 }
 
 function moveSouth(fp) {
   var doable = 0
   for(var j=0; j < fp.length; j++) {
-    if(fp[j].position.y !== GRID_HEIGHT - GU &&
+    if(fp[j].position.y !== GRID_FLOOR &&
         collisionSouth(fp[j], occupied) === false) {
       doable++
     }
@@ -430,12 +396,12 @@ function moveSouth(fp) {
   }
 }
 
-function destructureNewFP(type) {
+function setupNewFP(type) {
   if(bagOfPieces === undefined || bagOfPieces.length === 0) {
     bagOfPieces = _.shuffle(TYPES)
   } 
 
-  FourPieceArray = newFP(bagOfPieces.pop(), blockTextures, GRID_WIDTH, GU)
+  FPArray = newFP(bagOfPieces.pop(), blockTextures, GRID_X, GRID_Y, GRID_WIDTH, GU)
 
   if(bagOfPieces === undefined || bagOfPieces.length === 0) {
     bagOfPieces = _.shuffle(TYPES)
@@ -443,26 +409,27 @@ function destructureNewFP(type) {
 
   console.log('Next Piece:', bagOfPieces[bagOfPieces.length - 1])
 
-  FourPiece = FourPieceArray[0]
-  FourPieceType = FourPieceArray[1]
-  FourPieceRotation = FourPieceArray[2]
-  for(var i=0; i < FourPiece.length; i++) {
-    fieldOfPlay.addChild(FourPiece[i])
+  FP = FPArray[0]
+  FPType = FPArray[1]
+  FPRotation = FPArray[2]
+  for(var i=0; i < FP.length; i++) {
+    field.addChild(FP[i])
   }
 
-  FourPieceGhost = newGhost(FourPiece, FourPieceGhost, occupied)
+  FPGhost = addGhostToField(FP, FPGhost, occupied)
 }
 
-function makeMap(width, height) {
+function makeMap(x, y, width, height) {
   for(var i=0; i < height; i++) {
     for(var j=0; j < width; j++) {
       var sprite = new P.Sprite(TBackground)
-      sprite.position.x =  GU * j
-      sprite.position.y = GU * i
+      sprite.position.x =  x + GU * j
+      sprite.position.y =  y + GU * i
       stage.addChild(sprite)
     }
   }     
 }
+
 function moveActiveFP(fp, direction) {
   switch(direction) {
     case 'w': moveWest(fp); break
@@ -471,6 +438,54 @@ function moveActiveFP(fp, direction) {
     default:
       console.error('must specify a piece and a direction')
   }
+}
+
+function setupBindings(){
+  combokeys.bind(['a', 'left'], function(){moveActiveFP(FP, 'w')})
+  combokeys.bind(['d', 'right'], function(){moveActiveFP(FP, 'e')})
+  combokeys.bind(['s', 'down'], function(){moveActiveFP(FP, 's')})
+  combokeys.bind(['w', 'up'], function(){
+    FPRotation = rotateFP(
+      FP, FPType, FPRotation, occupied, GRID_WIDTH, GU)
+    FPGhost = addGhostToField(FP, FPGhost, occupied)
+  })
+  combokeys.bind(['x', 'space'], function(){gameRunning = !gameRunning})
+}
+
+function setupTextures() {
+  if(R === 2){
+    TBlockRed = new P.Texture.fromImage('../img/blockRed30@x2.png')
+    TBlockGreen = new P.Texture.fromImage('../img/blockGreen30@x2.png')
+    TBlockBlue = new P.Texture.fromImage('../img/blockBlue30@x2.png')
+    TBlockCyan = new P.Texture.fromImage('../img/blockCyan30@x2.png')
+    TBlockMagenta = new P.Texture.fromImage('../img/blockMagenta30@x2.png')
+    TBlockYellow = new P.Texture.fromImage('../img/blockYellow30@x2.png')
+    TBlockWhite = new P.Texture.fromImage('../img/blockWhite30@x2.png')
+    TBackground = new P.Texture.fromImage('../img/darkGrid30@x2.png')
+  } else {
+    TBlockRed = new P.Texture.fromImage('../img/blockRed30.png')
+    TBlockGreen = new P.Texture.fromImage('../img/blockGreen30.png')
+    TBlockBlue = new P.Texture.fromImage('../img/blockBlue30.png')
+    TBlockCyan = new P.Texture.fromImage('../img/blockCyan30.png')
+    TBlockMagenta = new P.Texture.fromImage('../img/blockMagenta30.png')
+    TBlockYellow = new P.Texture.fromImage('../img/blockYellow30.png')
+    TBlockWhite = new P.Texture.fromImage('../img/blockWhite30.png')
+    TBackground = new P.Texture.fromImage('../img/darkGrid30.png')
+  }
+
+  blockTextures = [TBlockRed, TBlockGreen, TBlockBlue, TBlockCyan, TBlockMagenta, TBlockYellow, TBlockWhite]
+}
+
+function setupStage() {
+  stage = new P.Stage(0x222222)
+  renderer = P.autoDetectRenderer(CANVAS_X, CANVAS_Y)
+  document.getElementById('container').appendChild(renderer.view)
+}
+
+function setupMap() {
+  makeMap(GRID_X, GRID_Y, GRID_COLS, GRID_ROWS)
+  field = new P.DisplayObjectContainer()
+  stage.addChild(field)
 }
 
 /*============================================================================*/
