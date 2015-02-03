@@ -1,6 +1,7 @@
 // TODO: random initial rotation
 
-'use strict'
+(function() {
+'use strict';
 
 /*============================================================================*/
 // Modules
@@ -15,7 +16,7 @@ var combokeys = new Combokeys(document)
 //attachFastClick(document.body)
 
 /*============================================================================*/
-// Parts
+// Functions
 /*============================================================================*/
 
 var newFP = require('./newFP.js')
@@ -28,8 +29,8 @@ var textureFP = require('./textureFP')
 
 // constants
 var R = window.devicePixelRatio
-var CANVAS_X = 300*R
-var CANVAS_Y = 600*R
+var CANVAS_X = 1080/2*R
+var CANVAS_Y = 1920/2*R
 var GU = 30*R
 var REFRESH_RATE = 500
 var GRID_COLS = 10
@@ -48,7 +49,7 @@ var TYPES = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
 // stage variables
 var stage, renderer
 var timer = new Date().getTime() + REFRESH_RATE
-var bag
+var bagOfPieces
 
 // scenes
 var sceneMenu
@@ -73,93 +74,65 @@ var FourPieceType
 var FourPieceTypeState
 var FourPieceGhost
 var SBackground
-
-/*============================================================================*/
-// Stage
-/*============================================================================*/
-
-stage = new P.Stage(0x222222)
-renderer = P.autoDetectRenderer(CANVAS_X, CANVAS_Y)
-document.getElementById('container').appendChild(renderer.view)
-
-/*============================================================================*/
-//  Textures
-/*============================================================================*/
-
-if(R === 2){
-  TBlockRed = new P.Texture.fromImage('../img/blockRed30@x2.png')
-  TBlockGreen = new P.Texture.fromImage('../img/blockGreen30@x2.png')
-  TBlockBlue = new P.Texture.fromImage('../img/blockBlue30@x2.png')
-  TBlockCyan = new P.Texture.fromImage('../img/blockCyan30@x2.png')
-  TBlockMagenta = new P.Texture.fromImage('../img/blockMagenta30@x2.png')
-  TBlockYellow = new P.Texture.fromImage('../img/blockYellow30@x2.png')
-  TBlockWhite = new P.Texture.fromImage('../img/blockWhite30@x2.png')
-  TBackground = new P.Texture.fromImage('../img/darkGrid30@x2.png')
-} else {
-  TBlockRed = new P.Texture.fromImage('../img/blockRed30.png')
-  TBlockGreen = new P.Texture.fromImage('../img/blockGreen30.png')
-  TBlockBlue = new P.Texture.fromImage('../img/blockBlue30.png')
-  TBlockCyan = new P.Texture.fromImage('../img/blockCyan30.png')
-  TBlockMagenta = new P.Texture.fromImage('../img/blockMagenta30.png')
-  TBlockYellow = new P.Texture.fromImage('../img/blockYellow30.png')
-  TBlockWhite = new P.Texture.fromImage('../img/blockWhite30.png')
-  TBackground = new P.Texture.fromImage('../img/darkGrid30.png')
-  console.error('no 1x textures')
-}
-
-blockTextures = [TBlockRed, TBlockGreen, TBlockBlue, TBlockCyan, TBlockMagenta, TBlockYellow, TBlockWhite]
-
-/*============================================================================*/
-// Sprites
-/*============================================================================*/
+var NextFourPiece
 
 var fieldOfPlay = new P.DisplayObjectContainer()
 var occupied = []
 
-function makeMap(width, height) {
-  for(var i=0; i < height; i++) {
-    for(var j=0; j < width; j++) {
-      var sprite = new P.Sprite(TBackground)
-      sprite.position.x =  GU * j
-      sprite.position.y = GU * i
-      stage.addChild(sprite)
-    }
-  }     
-}
-makeMap(GRID_COLS, GRID_ROWS)
-stage.addChild(fieldOfPlay)
-
-destructureNewFP()
-
 /*============================================================================*/
-// Bindings
+// setup()
 /*============================================================================*/
 
-combokeys.bind(['a', 'left'], function(){moveActiveFP(FourPiece, 'w')})
-combokeys.bind(['d', 'right'], function(){moveActiveFP(FourPiece, 'e')})
-combokeys.bind(['s', 'down'], function(){moveActiveFP(FourPiece, 's')})
-combokeys.bind(['w', 'up'], function(){
-  FourPieceTypeState = rotateFP(
-    FourPiece, FourPieceType, FourPieceTypeState, occupied, GRID_WIDTH, GU)
-  FourPieceGhost = newGhost(FourPiece, FourPieceGhost, occupied)
-})
-combokeys.bind(['x', 'space'], function(){GAME_RUNNING = !GAME_RUNNING})
+function setup() {
 
-function moveActiveFP(fp, direction) {
-  switch(direction) {
-    case 'w': moveWest(fp); break
-    case 'e': moveEast(fp); break
-    case 's': moveSouth(fp); break
-    default:
-      console.error('must specify a piece and a direction')
+  // Stage
+  stage = new P.Stage(0x222222)
+  renderer = P.autoDetectRenderer(CANVAS_X, CANVAS_Y)
+  document.getElementById('container').appendChild(renderer.view)
+
+  //  Textures
+  if(R === 2){
+    TBlockRed = new P.Texture.fromImage('../img/blockRed30@x2.png')
+    TBlockGreen = new P.Texture.fromImage('../img/blockGreen30@x2.png')
+    TBlockBlue = new P.Texture.fromImage('../img/blockBlue30@x2.png')
+    TBlockCyan = new P.Texture.fromImage('../img/blockCyan30@x2.png')
+    TBlockMagenta = new P.Texture.fromImage('../img/blockMagenta30@x2.png')
+    TBlockYellow = new P.Texture.fromImage('../img/blockYellow30@x2.png')
+    TBlockWhite = new P.Texture.fromImage('../img/blockWhite30@x2.png')
+    TBackground = new P.Texture.fromImage('../img/darkGrid30@x2.png')
+  } else {
+    TBlockRed = new P.Texture.fromImage('../img/blockRed30.png')
+    TBlockGreen = new P.Texture.fromImage('../img/blockGreen30.png')
+    TBlockBlue = new P.Texture.fromImage('../img/blockBlue30.png')
+    TBlockCyan = new P.Texture.fromImage('../img/blockCyan30.png')
+    TBlockMagenta = new P.Texture.fromImage('../img/blockMagenta30.png')
+    TBlockYellow = new P.Texture.fromImage('../img/blockYellow30.png')
+    TBlockWhite = new P.Texture.fromImage('../img/blockWhite30.png')
+    TBackground = new P.Texture.fromImage('../img/darkGrid30.png')
   }
+
+  blockTextures = [TBlockRed, TBlockGreen, TBlockBlue, TBlockCyan, TBlockMagenta, TBlockYellow, TBlockWhite]
+
+  // Bindings
+  combokeys.bind(['a', 'left'], function(){moveActiveFP(FourPiece, 'w')})
+  combokeys.bind(['d', 'right'], function(){moveActiveFP(FourPiece, 'e')})
+  combokeys.bind(['s', 'down'], function(){moveActiveFP(FourPiece, 's')})
+  combokeys.bind(['w', 'up'], function(){
+    FourPieceTypeState = rotateFP(
+      FourPiece, FourPieceType, FourPieceTypeState, occupied, GRID_WIDTH, GU)
+    FourPieceGhost = newGhost(FourPiece, FourPieceGhost, occupied)
+  })
+  combokeys.bind(['x', 'space'], function(){GAME_RUNNING = !GAME_RUNNING})
+
+  makeMap(GRID_COLS, GRID_ROWS)
+  stage.addChild(fieldOfPlay)
+  destructureNewFP()
 }
 
 /*----------------------------------------------------------------------------*/
-//  Update
+//  Update()
 /*----------------------------------------------------------------------------*/
 
-requestAnimationFrame(update)
 function update() {
   requestAnimationFrame(update)
 
@@ -183,50 +156,10 @@ function update() {
       }
     }
 
-    for(var k=0; k < FourPieceGhost.length; k++) {
-
-      // if ghost collides with occupied tiles
-      if(collisionSouth(FourPieceGhost[k], occupied) === true) {
-        GHOST_LANDED = true
-      } else if (GHOST_LANDED === false){
-        moveSouth(FourPieceGhost)
-      }
-      // if ghost collides with floor
-      if (FourPieceGhost[k].position.y === GRID_HEIGHT - GU) {
-        GHOST_LANDED = true
-      } else if (GHOST_LANDED === false){
-        moveSouth(FourPieceGhost)
-      }
-      // if ghost is colliding with something
-      if(GHOST_LANDED === true) {
-        FourPieceGhost[k].alpha = 0.25
-
-        // if ghost collides with real thing
-        for(var i=0; i < FourPiece.length; i++) {
-          if(FourPieceGhost[k].position.x === FourPiece[i].position.x && 
-             FourPieceGhost[k].position.y === FourPiece[i].position.y) {
-             fieldOfPlay.removeChild(FourPieceGhost[k])
-          }
-        }
-      }
-    }
+    updateGhost()
 
     if(timer < new Date().getTime()) {
-
-      if(LANDED === true) {
-        addFPToOccupied(FourPiece, occupied)
-        //console.log('occupied slots: ', slots(occupied))
-
-        checkIfRowsAreFull(FourPiece)
-        //slideDownIfPossible()
-
-        destructureNewFP()
-        LANDED = false
-      }
-
-      moveSouth(FourPiece)
-    
-      timer = new Date().getTime() + REFRESH_RATE
+      step()
     }
   }
   renderer.render(stage)
@@ -235,6 +168,53 @@ function update() {
 /*----------------------------------------------------------------------------*/
 // Helpers
 /*----------------------------------------------------------------------------*/
+
+function step(){
+  if(LANDED === true) {
+    addFPToOccupied(FourPiece, occupied)
+    //console.log('occupied slots: ', slots(occupied))
+
+    checkIfRowsAreFull(FourPiece)
+    //slideDownIfPossible()
+
+    destructureNewFP()
+    LANDED = false
+  }
+
+  moveSouth(FourPiece)
+
+  timer = new Date().getTime() + REFRESH_RATE
+}
+
+function updateGhost(){
+  for(var k=0; k < FourPieceGhost.length; k++) {
+
+    // if ghost collides with occupied tiles
+    if(collisionSouth(FourPieceGhost[k], occupied) === true) {
+      GHOST_LANDED = true
+    } else if (GHOST_LANDED === false){
+      moveSouth(FourPieceGhost)
+    }
+    // if ghost collides with floor
+    if (FourPieceGhost[k].position.y === GRID_HEIGHT - GU) {
+      GHOST_LANDED = true
+    } else if (GHOST_LANDED === false){
+      moveSouth(FourPieceGhost)
+    }
+    // if ghost is colliding with something
+    if(GHOST_LANDED === true) {
+      FourPieceGhost[k].alpha = 0.25
+
+      // if ghost collides with real thing
+      for(var i=0; i < FourPiece.length; i++) {
+        if(FourPieceGhost[k].position.x === FourPiece[i].position.x && 
+           FourPieceGhost[k].position.y === FourPiece[i].position.y) {
+           fieldOfPlay.removeChild(FourPieceGhost[k])
+        }
+      }
+    }
+  }
+}
 
 function newGhost(fp, fpGhost, occupied) {
   destroyGhost(fpGhost)
@@ -307,6 +287,7 @@ function inSameRow(piece, occupied) {
   }
   return inThisRow
 }
+
 function stillOccupied(inThisRow, occupied) {
   var newOccupied = []
   // if the occupied pieces aren't in the row, add them to newOccupied
@@ -455,17 +436,17 @@ function moveSouth(fp) {
 }
 
 function destructureNewFP(type) {
-  if(bag === undefined || bag.length === 0) {
-    bag = _.shuffle(TYPES)
+  if(bagOfPieces === undefined || bagOfPieces.length === 0) {
+    bagOfPieces = _.shuffle(TYPES)
   } 
 
-  FourPieceArray = newFP(bag.pop(), blockTextures, GRID_WIDTH, GU)
+  FourPieceArray = newFP(bagOfPieces.pop(), blockTextures, GRID_WIDTH, GU)
 
-  if(bag === undefined || bag.length === 0) {
-    bag = _.shuffle(TYPES)
+  if(bagOfPieces === undefined || bagOfPieces.length === 0) {
+    bagOfPieces = _.shuffle(TYPES)
   } 
 
-  console.log('Next Piece:', bag[bag.length - 1])
+  console.log('Next Piece:', bagOfPieces[bagOfPieces.length - 1])
 
   FourPiece = FourPieceArray[0]
   FourPieceType = FourPieceArray[1]
@@ -476,3 +457,32 @@ function destructureNewFP(type) {
 
   FourPieceGhost = newGhost(FourPiece, FourPieceGhost, occupied)
 }
+
+function makeMap(width, height) {
+  for(var i=0; i < height; i++) {
+    for(var j=0; j < width; j++) {
+      var sprite = new P.Sprite(TBackground)
+      sprite.position.x =  GU * j
+      sprite.position.y = GU * i
+      stage.addChild(sprite)
+    }
+  }     
+}
+function moveActiveFP(fp, direction) {
+  switch(direction) {
+    case 'w': moveWest(fp); break
+    case 'e': moveEast(fp); break
+    case 's': moveSouth(fp); break
+    default:
+      console.error('must specify a piece and a direction')
+  }
+}
+
+/*============================================================================*/
+// play!
+/*============================================================================*/
+
+setup()
+update()
+
+})()

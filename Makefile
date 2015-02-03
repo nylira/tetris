@@ -18,4 +18,3 @@ css:
 
 wcss:
 	$(stylus) --watch --line-numbers src/styl/screen.styl -u $(nib) -o pub/css/
-
