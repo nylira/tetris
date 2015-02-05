@@ -40,6 +40,7 @@ var GRID_WIDTH = GRID_COLS * GU
 var GRID_HEIGHT = GRID_ROWS * GU
 var GRID_BOUNDS_L = GRID_X
 var GRID_BOUNDS_R = GRID_X + GRID_WIDTH - GU
+var GRID_CEIL = GRID_Y
 var GRID_FLOOR = GRID_Y + GRID_HEIGHT - GU
 var TYPES = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
 
@@ -54,6 +55,7 @@ var bagOfPieces
 var fpLanded = false
 var ghostLanded = false
 var gameRunning = true
+var gameOver = false
 
 // scenes
 var sceneMenu
@@ -102,7 +104,7 @@ function setup() {
 function update() {
   requestAnimationFrame(update)
 
-  if(gameRunning === true) {
+  if(gameRunning === true && gameOver === false) {
     checkIfFPLanded()
     updateGhost()
     if(timer < new Date().getTime()) {step()}
@@ -117,6 +119,13 @@ function update() {
 
 function checkIfFPLanded() {
   for(var j=0; j < FP.length; j++) {
+
+    // game over if piece lands and hits the ceiling
+    if(fpLanded === true && FP[j].position.y === GRID_CEIL) {
+      gameOver = true
+      console.log("GAME OVER")
+    }
+
     // stacking on others
     if(collisionSouth(FP[j], occupied) === true) {
       fpLanded = true
