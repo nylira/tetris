@@ -58,6 +58,7 @@ var gameRunning = true
 var gameOver = false
 var currentScore = 0
 var currentRowsCleared = 0
+var currentLevel = 0
 
 // scenes
 var sceneMenu
@@ -225,7 +226,20 @@ function checkIfRowsAreFull(fp) {
     }
   }
   currentRowsCleared += fullRows
-  console.log('rows cleared', currentRowsCleared)
+  console.log('Rows Cleared', currentRowsCleared)
+
+  scorePoints(fullRows)
+}
+function scorePoints(rows) {
+  var points = 0
+  switch(rows) {
+    case 1: points = 40 * (currentLevel + 1); break
+    case 2: points = 100 * (currentLevel + 1); break
+    case 3: points = 300 * (currentLevel + 1); break
+    case 4: points =1200 * (currentLevel + 1); break
+  }
+  currentScore += points
+  console.log('Current Points:', currentScore)
 }
 
 function checkIfRowIsFull(piece) {
