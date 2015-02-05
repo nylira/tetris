@@ -1,4 +1,5 @@
 // TODO: random initial rotation
+// TODO: make blocks spawn above grid
 
 (function() {
 'use strict';
@@ -43,6 +44,7 @@ var GRID_BOUNDS_R = GRID_X + GRID_WIDTH - GU
 var GRID_CEIL = GRID_Y
 var GRID_FLOOR = GRID_Y + GRID_HEIGHT - GU
 var TYPES = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
+var ROWS_TO_LEVEL_UP = 10
 
 /*============================================================================*/
 // Variables
@@ -226,10 +228,26 @@ function checkIfRowsAreFull(fp) {
     }
   }
   currentRowsCleared += fullRows
-  console.log('Rows Cleared', currentRowsCleared)
+  console.log('Current Rows Cleared:', currentRowsCleared)
+
+  if(fullRows > 0) {
+    tryLevelingUp(currentRowsCleared)
+  }
 
   scorePoints(fullRows)
 }
+
+function tryLevelingUp(rows) {
+  if(currentRowsCleared >= ROWS_TO_LEVEL_UP &&
+     currentRowsCleared % ROWS_TO_LEVEL_UP === 0) {
+    currentLevel = Math.floor(rows / ROWS_TO_LEVEL_UP)
+    REFRESH_RATE = Math.round(REFRESH_RATE * Math.pow(0.95, currentLevel))
+    console.log('Current Level:', currentLevel)
+    console.log('Current Speed:', REFRESH_RATE)
+  }
+  return currentLevel
+}
+
 function scorePoints(rows) {
   var points = 0
   switch(rows) {
