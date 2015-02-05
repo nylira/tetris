@@ -1,4 +1,4 @@
-# Snake
+# Tetris
 
 A variation on Tetris, ported to JavaScript.
 
