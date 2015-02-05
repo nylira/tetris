@@ -33,9 +33,9 @@ var CANVAS_Y = 1920/2*R
 var GU = 30*R
 var REFRESH_RATE = 500
 var GRID_COLS = 10
-var GRID_ROWS = 20
-var GRID_X = 4*GU //4
-var GRID_Y = 6*GU //6
+var GRID_ROWS = 24
+var GRID_X = 1*GU //4
+var GRID_Y = 4*GU //6
 var GRID_WIDTH = GRID_COLS * GU
 var GRID_HEIGHT = GRID_ROWS * GU
 var GRID_BOUNDS_L = GRID_X
@@ -56,6 +56,8 @@ var fpLanded = false
 var ghostLanded = false
 var gameRunning = true
 var gameOver = false
+var currentScore = 0
+var currentRowsCleared = 0
 
 // scenes
 var sceneMenu
@@ -216,16 +218,23 @@ function addFPToOccupied(fp, occupied) {
 }
 
 function checkIfRowsAreFull(fp) {
+  var fullRows = 0
   for(var k=0; k < fp.length; k++) {
-    checkIfRowIsFull(fp[k])
+    if(checkIfRowIsFull(fp[k])) {
+      fullRows++ 
+    }
   }
+  currentRowsCleared += fullRows
+  console.log('rows cleared', currentRowsCleared)
 }
 
 function checkIfRowIsFull(piece) {
   var inThisRow = inSameRow(piece, occupied)
 
+  var isRowFull
   // if the row is full
   if(inThisRow.length === GRID_COLS) {
+    isRowFull = true
 
     var clearedRowY = inThisRow[0].position.y
 
@@ -246,6 +255,7 @@ function checkIfRowIsFull(piece) {
       }
     }
   }
+  return isRowFull
 }
 
 function inSameRow(piece, occupied) {
