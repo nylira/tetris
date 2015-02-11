@@ -58,9 +58,15 @@ var fpLanded = false
 var ghostLanded = false
 var gameRunning = true
 var gameOver = false
+
 var currentScore = 0
-var currentRowsCleared = 0
+var currentRows = 0
 var currentLevel = 0
+
+// texts
+var TextScore
+var TextRows
+var TextLevel
 
 // scenes
 var sceneMenu
@@ -87,6 +93,7 @@ var FPGhost
 var SBackground
 var NextFP
 
+
 var field
 var occupied = []
 
@@ -100,6 +107,7 @@ function setup() {
   setupBindings()
   setupMap()
   setupNewFP()
+  setupText()
 }
 
 /*----------------------------------------------------------------------------*/
@@ -227,19 +235,26 @@ function checkIfRowsAreFull(fp) {
       fullRows++ 
     }
   }
-  currentRowsCleared += fullRows
-  console.log('Current Rows Cleared:', currentRowsCleared)
 
-  if(fullRows > 0) {
-    tryLevelingUp(currentRowsCleared)
-  }
-
-  scorePoints(fullRows)
+  updateUI(fullRows)
 }
 
-function tryLevelingUp(rows) {
-  if(currentRowsCleared >= ROWS_TO_LEVEL_UP &&
-     currentRowsCleared % ROWS_TO_LEVEL_UP === 0) {
+function updateUI(rows) {
+  if(rows > 0) {
+    updateRows(rows)
+    updateLevel(currentRows)
+    updatePoints(rows)
+  }
+}
+
+function updateRows(rows) {
+  currentRows += rows
+  console.log('Current Rows Cleared:', currentRows)
+}
+
+function updateLevel(rows) {
+  if(currentRows >= ROWS_TO_LEVEL_UP &&
+     currentRows % ROWS_TO_LEVEL_UP === 0) {
     currentLevel = Math.floor(rows / ROWS_TO_LEVEL_UP)
     REFRESH_RATE = Math.round(REFRESH_RATE * Math.pow(0.95, currentLevel))
     console.log('Current Level:', currentLevel)
@@ -248,7 +263,7 @@ function tryLevelingUp(rows) {
   return currentLevel
 }
 
-function scorePoints(rows) {
+function updatePoints(rows) {
   var points = 0
   switch(rows) {
     case 1: points = 40 * (currentLevel + 1); break
@@ -537,6 +552,28 @@ function setupMap() {
   makeMap(GRID_X, GRID_Y, GRID_COLS, GRID_ROWS)
   field = new P.DisplayObjectContainer()
   stage.addChild(field)
+}
+
+function setupText() {
+var textStyle = {
+  font: 'bold 64px Helvetica Neue'
+, fill: '#FFFFFF'
+}
+TextScore = new P.Text('Score: ', textStyle)
+TextScore.position.x = (CANVAS_X - TextScore.width) / 2
+TextScore.position.y = 12 * R
+stage.addChild(TextScore)
+
+TextRows = new P.Text('Rows: ', textStyle)
+TextRows.position.x = CANVAS_X / 2
+TextRows.position.x = (CANVAS_X - TextRows.width) / 2
+TextRows.position.y = 54 * R
+stage.addChild(TextRows)
+
+TextLevel = new P.Text('Level: ', textStyle)
+TextLevel.position.x = 12 * R
+TextLevel.position.y = 12 * R
+stage.addChild(TextLevel)
 }
 
 /*============================================================================*/
