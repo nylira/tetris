@@ -67,6 +67,7 @@ var currentLevel = 0
 var TextScore
 var TextRows
 var TextLevel
+var TextNextPiece
 
 // scenes
 var sceneMenu
@@ -106,8 +107,8 @@ function setup() {
   setupTextures()
   setupBindings()
   setupMap()
-  setupNewFP()
   setupText()
+  setupNewFP()
 }
 
 /*----------------------------------------------------------------------------*/
@@ -250,6 +251,7 @@ function updateUI(rows) {
 function updateRows(rows) {
   currentRows += rows
   console.log('Current Rows Cleared:', currentRows)
+  TextRows.setText("Rows: " + currentRows)
 }
 
 function updateLevel(rows) {
@@ -258,6 +260,7 @@ function updateLevel(rows) {
     currentLevel = Math.floor(rows / ROWS_TO_LEVEL_UP)
     REFRESH_RATE = Math.round(REFRESH_RATE * Math.pow(0.95, currentLevel))
     console.log('Current Level:', currentLevel)
+    TextLevel.setText("Level: " + currentLevel)
     console.log('Current Speed:', REFRESH_RATE)
   }
   return currentLevel
@@ -273,6 +276,7 @@ function updatePoints(rows) {
   }
   currentScore += points
   console.log('Current Points:', currentScore)
+  TextScore.setText("Score: " + currentScore)
 }
 
 function checkIfRowIsFull(piece) {
@@ -474,6 +478,7 @@ function setupNewFP(type) {
   } 
 
   console.log('Next Piece:', bagOfPieces[bagOfPieces.length - 1])
+  TextNextPiece.setText('Next: ' + bagOfPieces[bagOfPieces.length - 1])
 
   FP = FPArray[0]
   FPType = FPArray[1]
@@ -556,24 +561,29 @@ function setupMap() {
 
 function setupText() {
 var textStyle = {
-  font: 'bold 64px Helvetica Neue'
+  font: 'bold 48px Helvetica Neue'
 , fill: '#FFFFFF'
 }
-TextScore = new P.Text('Score: ', textStyle)
+TextScore = new P.Text('Score: 0', textStyle)
 TextScore.position.x = (CANVAS_X - TextScore.width) / 2
 TextScore.position.y = 12 * R
 stage.addChild(TextScore)
 
-TextRows = new P.Text('Rows: ', textStyle)
+TextRows = new P.Text('Rows: 0', textStyle)
 TextRows.position.x = CANVAS_X / 2
 TextRows.position.x = (CANVAS_X - TextRows.width) / 2
 TextRows.position.y = 54 * R
 stage.addChild(TextRows)
 
-TextLevel = new P.Text('Level: ', textStyle)
+TextLevel = new P.Text('Level: 0', textStyle)
 TextLevel.position.x = 12 * R
 TextLevel.position.y = 12 * R
 stage.addChild(TextLevel)
+
+TextNextPiece = new P.Text('Next: ?', textStyle)
+TextNextPiece.position.x = CANVAS_X - TextNextPiece.width - 32 * R
+TextNextPiece.position.y = 12 * R
+stage.addChild(TextNextPiece)
 }
 
 /*============================================================================*/
