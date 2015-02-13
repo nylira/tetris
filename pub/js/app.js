@@ -34,9 +34,9 @@ var CANVAS_Y = 1920/2*R
 var GU = 30*R
 var REFRESH_RATE = 500
 var GRID_COLS = 10
-var GRID_ROWS = 24
-var GRID_X = 1*GU //4
-var GRID_Y = 4*GU //6
+var GRID_ROWS = 20
+var GRID_X = 4*GU //4
+var GRID_Y = 6*GU //6
 var GRID_WIDTH = GRID_COLS * GU
 var GRID_HEIGHT = GRID_ROWS * GU
 var GRID_BOUNDS_L = GRID_X
@@ -104,6 +104,9 @@ var occupied = []
 
 function setup() {
   setupStage()
+
+  setupScenes()
+
   setupTextures()
   setupBindings()
   setupMap()
@@ -119,9 +122,10 @@ function update() {
   requestAnimationFrame(update)
 
   if(gameRunning === true && gameOver === false) {
+    maskSprites()
     checkIfFPLanded()
     updateGhost()
-    if(timer < new Date().getTime()) {step()}
+    if(timer < new Date().getTime()) {stepUpdate()}
   }
 
   renderer.render(stage)
@@ -131,6 +135,13 @@ function update() {
 // Helpers
 /*----------------------------------------------------------------------------*/
 
+function maskSprites() {
+  for(var i=0; i < occupied.length; i++) {
+    if(occupied[i].position.y < GRID_CEIL) {
+      occupied[i].opacity = 0
+    }
+  }
+}
 function checkIfFPLanded() {
   for(var j=0; j < FP.length; j++) {
 
@@ -158,7 +169,7 @@ function checkIfFPLanded() {
   }
 }
 
-function step(){
+function stepUpdate(){
   if(fpLanded === true) {
     addFPToOccupied(FP, occupied)
     checkIfRowsAreFull(FP)
@@ -251,7 +262,7 @@ function updateUI(rows) {
 function updateRows(rows) {
   currentRows += rows
   console.log('Current Rows Cleared:', currentRows)
-  TextRows.setText("Rows: " + currentRows)
+  updateText(TextRows, currentRows + ' rows', 'center', 72)
 }
 
 function updateLevel(rows) {
@@ -260,7 +271,7 @@ function updateLevel(rows) {
     currentLevel = Math.floor(rows / ROWS_TO_LEVEL_UP)
     REFRESH_RATE = Math.round(REFRESH_RATE * Math.pow(0.95, currentLevel))
     console.log('Current Level:', currentLevel)
-    TextLevel.setText("Level: " + currentLevel)
+    updateText(TextLevel, "LVL " + currentLevel, 'left', 12)
     console.log('Current Speed:', REFRESH_RATE)
   }
   return currentLevel
@@ -276,7 +287,7 @@ function updatePoints(rows) {
   }
   currentScore += points
   console.log('Current Points:', currentScore)
-  TextScore.setText("Score: " + currentScore)
+  updateText(TextScore, currentScore, 'center', 12)
 }
 
 function checkIfRowIsFull(piece) {
@@ -478,7 +489,7 @@ function setupNewFP(type) {
   } 
 
   console.log('Next Piece:', bagOfPieces[bagOfPieces.length - 1])
-  TextNextPiece.setText('Next: ' + bagOfPieces[bagOfPieces.length - 1])
+  updateText(TextNextPiece, "Next: " + bagOfPieces[bagOfPieces.length - 1], 'right', 12)
 
   FP = FPArray[0]
   FPType = FPArray[1]
@@ -496,7 +507,7 @@ function makeMap(x, y, width, height) {
       var sprite = new P.Sprite(TBackground)
       sprite.position.x =  x + GU * j
       sprite.position.y =  y + GU * i
-      stage.addChild(sprite)
+      sceneGame.addChild(sprite)
     }
   }     
 }
@@ -556,34 +567,81 @@ function setupStage() {
 function setupMap() {
   makeMap(GRID_X, GRID_Y, GRID_COLS, GRID_ROWS)
   field = new P.DisplayObjectContainer()
-  stage.addChild(field)
+  sceneGame.addChild(field)
+}
+
+function setupScenes() {
+  sceneMenu = new P.DisplayObjectContainer()
+  sceneMenu.visible = false
+  stage.addChild(sceneMenu)
+
+  sceneGame = new P.DisplayObjectContainer()
+  sceneGame.visible = true
+  stage.addChild(sceneGame)
+
+  sceneSummary = new P.DisplayObjectContainer()
+  sceneSummary.visible = false
+  stage.addChild(sceneSummary)
+}
+
+function updateText(textObject, theText, positionX, positionY) {
+  textObject.setText(theText)
+  switch(positionX) {
+    case 'center':
+      textObject.position.x = (CANVAS_X - textObject.width) / 2
+      break
+    case 'left':
+      textObject.position.x = 12 * R
+      break
+    case 'right':
+      textObject.position.x = CANVAS_X - textObject.width - 12 * R
+      break
+    default:
+      textObject.position.x = positionX
+      break
+  }
+  if(positionY === undefined) {
+    textObject.position.y = 0
+  } else {
+    textObject.position.y = positionY * R
+  }
 }
 
 function setupText() {
-var textStyle = {
-  font: 'bold 48px Helvetica Neue'
-, fill: '#FFFFFF'
-}
-TextScore = new P.Text('Score: 0', textStyle)
-TextScore.position.x = (CANVAS_X - TextScore.width) / 2
-TextScore.position.y = 12 * R
-stage.addChild(TextScore)
 
-TextRows = new P.Text('Rows: 0', textStyle)
-TextRows.position.x = CANVAS_X / 2
-TextRows.position.x = (CANVAS_X - TextRows.width) / 2
-TextRows.position.y = 54 * R
-stage.addChild(TextRows)
+  var textStyleSm = {
+    font: '40px Helvetica Neue'
+  , fill: '#FFFFFF'
+  }
+  var textStyleMd = {
+    font: 'bold 40px Helvetica Neue'
+  , fill: '#FFFFFF'
+  }
+  var textStyleLg = {
+    font: '90px Helvetica Neue'
+  , fill: '#FFFFFF'
+  }
 
-TextLevel = new P.Text('Level: 0', textStyle)
-TextLevel.position.x = 12 * R
-TextLevel.position.y = 12 * R
-stage.addChild(TextLevel)
+  TextScore = new P.Text('0', textStyleLg)
+  TextScore.position.x = (CANVAS_X - TextScore.width) / 2
+  TextScore.position.y = 12 * R
+  sceneGame.addChild(TextScore)
 
-TextNextPiece = new P.Text('Next: ?', textStyle)
-TextNextPiece.position.x = CANVAS_X - TextNextPiece.width - 32 * R
-TextNextPiece.position.y = 12 * R
-stage.addChild(TextNextPiece)
+  TextRows = new P.Text('0 rows', textStyleSm)
+  TextRows.position.x = CANVAS_X / 2
+  TextRows.position.x = (CANVAS_X - TextRows.width) / 2
+  TextRows.position.y = 72 * R
+  sceneGame.addChild(TextRows)
+
+  TextLevel = new P.Text('LVL 0', textStyleMd)
+  TextLevel.position.x = 12 * R
+  TextLevel.position.y = 12 * R
+  sceneGame.addChild(TextLevel)
+
+  TextNextPiece = new P.Text('Next: ?', textStyleMd)
+  TextNextPiece.position.x = CANVAS_X - TextNextPiece.width - 32 * R
+  TextNextPiece.position.y = 12 * R
+  sceneGame.addChild(TextNextPiece)
 }
 
 /*============================================================================*/
