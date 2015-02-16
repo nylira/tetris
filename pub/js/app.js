@@ -23,9 +23,9 @@ var combokeys = new Combokeys(document);
 // Functions;
 /*============================================================================*/
 
-var newFP = require('./newFP.js');
-var rotateFP = require('./rotateFP.js');
-var textureFP = require('./textureFP');
+var newFP = require('./modules/newFP.js');
+var rotateFP = require('./modules/rotateFP.js');
+var textureFP = require('./modules/textureFP');
 
 /*============================================================================*/
 // Constants;
