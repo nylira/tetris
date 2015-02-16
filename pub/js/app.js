@@ -26,6 +26,7 @@ var combokeys = new Combokeys(document);
 var newFP = require('./modules/newFP.js');
 var rotateFP = require('./modules/rotateFP.js');
 var textureFP = require('./modules/textureFP');
+var setupText = require('./modules/setupText');
 
 /*============================================================================*/
 // Constants;
@@ -590,41 +591,13 @@ function setupScenes() {
   stage.addChild(sceneSummary);
 }
 
-function setupText() {
+function setupTexts() {
+  var texts =setupText(sceneGame, CANVAS_X, R);
 
-  var textStyleSm = {
-    font: '40px Helvetica Neue',
-    fill: '#FFFFFF'
-  };
-  var textStyleMd = {
-    font: 'bold 40px Helvetica Neue',
-    fill: '#FFFFFF'
-  };
-  var textStyleLg = {
-    font: '90px Helvetica Neue',
-    fill: '#FFFFFF'
-  };
-
-  TextScore = new P.Text('0', textStyleLg);
-  TextScore.position.x = (CANVAS_X - TextScore.width) / 2;
-  TextScore.position.y = 12 * R;
-  sceneGame.addChild(TextScore);
-
-  TextRows = new P.Text('0 rows', textStyleSm);
-  TextRows.position.x = CANVAS_X / 2;
-  TextRows.position.x = (CANVAS_X - TextRows.width) / 2;
-  TextRows.position.y = 72 * R;
-  sceneGame.addChild(TextRows);
-
-  TextLevel = new P.Text('LVL 0', textStyleMd);
-  TextLevel.position.x = 12 * R;
-  TextLevel.position.y = 12 * R;
-  sceneGame.addChild(TextLevel);
-
-  TextNextPiece = new P.Text('Next: ?', textStyleMd);
-  TextNextPiece.position.x = CANVAS_X - TextNextPiece.width - 32 * R;
-  TextNextPiece.position.y = 12 * R;
-  sceneGame.addChild(TextNextPiece);
+  TextScore = texts[0];
+  TextRows = texts[1];
+  TextLevel = texts[2];
+  TextNextPiece = texts[3];
 }
 
 /*============================================================================*/
@@ -633,13 +606,11 @@ function setupText() {
 
 function setup() {
   setupStage();
-
   setupScenes();
-
   setupTextures();
   setupBindings();
   setupMap();
-  setupText();
+  setupTexts();
   setupNewFP();
 }
 

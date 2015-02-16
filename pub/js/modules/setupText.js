@@ -3,8 +3,9 @@
 
 var P = require('pixi.js');
 
-function setupText(TextScore, TextRows, TextLevel, TextNextPiece, sceneGame, CANVAS_X, R) {
+function setupText(sceneGame, CANVAS_X, R) {
 
+  var TextScore, TextRows, TextLevel, TextNextPiece;
   var textStyleSm = {
     font: '40px Helvetica Neue',
     fill: '#FFFFFF'
@@ -38,6 +39,8 @@ function setupText(TextScore, TextRows, TextLevel, TextNextPiece, sceneGame, CAN
   TextNextPiece.position.x = CANVAS_X - TextNextPiece.width - 32 * R;
   TextNextPiece.position.y = 12 * R;
   sceneGame.addChild(TextNextPiece);
+
+  return [TextScore, TextRows, TextLevel, TextNextPiece];
 }
 
 module.exports = setupText;
