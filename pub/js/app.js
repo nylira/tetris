@@ -1,8 +1,8 @@
 /*jslint browser: true*/
 /*global requestAnimationFrame */
 
-// random initial rotation;
-// make blocks spawn above grid;
+// TODO: random initial rotation;
+// TODO: make blocks spawn above grid;
 
 (function() {
 'use strict';
@@ -16,8 +16,8 @@ var _ = require('lodash');
 var Combokeys = require('combokeys');
 var combokeys = new Combokeys(document);
 //var Howl = require('howler').Howl;
-//var attachFastClick = require('fastclick');
-//attachFastClick(document.body);
+var attachFastClick = require('fastclick');
+attachFastClick(document.body);
 
 /*============================================================================*/
 // Functions;
@@ -60,7 +60,7 @@ var timer = new Date().getTime() + REFRESH_RATE;
 var bagOfPieces;
 var fpLanded = false;
 var ghostLanded = false;
-var gameRunning = true;
+var gameRunning = false;
 var gameOver = false;
 
 var currentScore = 0;

@@ -1,3 +1,6 @@
+(function(){
+'use strict';
+
 var P = require('pixi.js');
 var _ = require('lodash');
 var textureFP = require('./textureFP');
@@ -35,7 +38,7 @@ function newFP(type, textures, x, y, w, gu) {
   var FourPieceTypeState = 1;
   var FourPieceType = type || _.head(_.shuffle(types));
   var FourPieceTexture = textureFP(FourPieceType, textures);
-  var FourPiece = newShape(FourPieceType, FourPieceTexture, x, y, w, gu);
+  var FourPiece = newShape(FourPieceType, FourPieceTexture, x, y - gu, w, gu);
 
   // debug alpha;
   //FourPiece[0].alpha = 1.0;
@@ -45,3 +48,5 @@ function newFP(type, textures, x, y, w, gu) {
   return [FourPiece, FourPieceType, FourPieceTypeState];
 }
 module.exports = newFP;
+
+}())
