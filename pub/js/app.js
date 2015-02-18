@@ -60,7 +60,7 @@ var timer = new Date().getTime() + REFRESH_RATE;
 var bagOfPieces;
 var fpLanded = false;
 var ghostLanded = false;
-var gameRunning = false;
+var gameRunning = true;
 var gameOver = false;
 
 var currentScore = 0;
@@ -216,11 +216,11 @@ function moveSouth(fp) {
   }
 }
 
-function maskSprites() {
+function showSpritesOnceInView() {
   var i;
-  for(i=0; i < occupied.length; i++) {
-    if(occupied[i].position.y < GRID_CEIL) {
-      occupied[i].opacity = 0;
+  for(i=0; i < FP.length; i++) {
+    if(FP[i].position.y >= GRID_CEIL && FP[i].visible === false) {
+      FP[i].visible = true;
     }
   }
 }
@@ -621,8 +621,8 @@ function setup() {
 function update() {
   requestAnimationFrame(update);
 
+  showSpritesOnceInView();
   if(gameRunning === true && gameOver === false) {
-    maskSprites();
     checkIfFPLanded();
     updateGhost();
     if(timer < new Date().getTime()) {stepUpdate();}

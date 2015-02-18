@@ -45,6 +45,13 @@ function newFP(type, textures, x, y, w, gu) {
   //FourPiece[1].alpha = 0.9;
   //FourPiece[2].alpha = 0.8;
   //FourPiece[3].alpha = 0.7;
+
+  // hide pieces by default;
+  FourPiece[0].visible = false;
+  FourPiece[1].visible = false;
+  FourPiece[2].visible = false;
+  FourPiece[3].visible = false;
+
   return [FourPiece, FourPieceType, FourPieceTypeState];
 }
 module.exports = newFP;
