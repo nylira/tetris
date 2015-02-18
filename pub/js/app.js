@@ -216,7 +216,8 @@ function moveSouth(fp) {
   }
 }
 
-function showSpritesOnceInView() {
+function showFPOnceInView(FP) {
+  //console.log('checking if FP is visible')
   var i;
   for(i=0; i < FP.length; i++) {
     if(FP[i].position.y >= GRID_CEIL && FP[i].visible === false) {
@@ -406,6 +407,8 @@ function setupNewFP() {
   }
 
   FPGhost = addGhostToField(FP, FPGhost, occupied);
+
+  showFPOnceInView(FP);
 }
 
 function stepUpdate(){
@@ -416,6 +419,7 @@ function stepUpdate(){
     fpLanded = false;
   }
   moveSouth(FP);
+  showFPOnceInView(FP);
   timer = new Date().getTime() + REFRESH_RATE;
 }
 
@@ -621,7 +625,6 @@ function setup() {
 function update() {
   requestAnimationFrame(update);
 
-  showSpritesOnceInView();
   if(gameRunning === true && gameOver === false) {
     checkIfFPLanded();
     updateGhost();
