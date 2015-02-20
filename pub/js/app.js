@@ -108,7 +108,7 @@ var occupied = [];
 function rmGhostFromField(fpGhost) {
   var i;
   if(fpGhost !== undefined && fpGhost.length > 0){
-    for(i=0; i < fpGhost.length; i++) {
+    for(i=0; i < fpGhost.length; i += 1) {
       field.removeChild(fpGhost[i]);
     }
   }
@@ -120,7 +120,7 @@ function addGhostToField(fp, fpGhost) {
   var i;
   var newFpGhost = [];
 
-  for(i=0; i < fp.length; i++) {
+  for(i=0; i < fp.length; i += 1) {
     newFpGhost.push(new P.Sprite(textureFP(FPType, blockTextures)));
     newFpGhost[i].position.x = fp[i].position.x;
     newFpGhost[i].position.y = fp[i].position.y;
@@ -133,7 +133,7 @@ function addGhostToField(fp, fpGhost) {
 function collisionSouth(piece, occupied) {
   var collision = false;
   var i;
-  for(i=0; i < occupied.length; i++) {
+  for(i=0; i < occupied.length; i += 1) {
     if(occupied[i].position.x === piece.position.x &&
        occupied[i].position.y === piece.position.y + GU) {
       collision = true;
@@ -145,7 +145,7 @@ function collisionSouth(piece, occupied) {
 function collisionEast(piece, occupied) {
   var collision = false;
   var i;
-  for(i=0; i < occupied.length; i++) {
+  for(i=0; i < occupied.length; i += 1) {
     if(occupied[i].position.x === piece.position.x + GU &&
        occupied[i].position.y === piece.position.y) {
       collision= true;
@@ -157,7 +157,7 @@ function collisionEast(piece, occupied) {
 function collisionWest(piece, occupied) {
   var collision = false;
   var i;
-  for(i=0; i < occupied.length; i++) {
+  for(i=0; i < occupied.length; i += 1) {
     if(occupied[i].position.x === piece.position.x - GU &&
        occupied[i].position.y === piece.position.y) {
       collision= true;
@@ -169,14 +169,14 @@ function collisionWest(piece, occupied) {
 function moveWest(fp) {
   var doable = 0;
   var i, k;
-  for(i=0; i < fp.length; i++) {
+  for(i=0; i < fp.length; i += 1) {
     if( fp[i].position.x !== GRID_BOUNDS_L &&
         collisionWest(fp[i], occupied) === false) {
-      doable++;
+      doable += 1;
     }
   }
   if(doable === fp.length) {
-    for(k=0; k < fp.length; k++) {
+    for(k=0; k < fp.length; k += 1) {
       fp[k].position.x = fp[k].position.x - GU;
     }
     FPGhost = addGhostToField(FP, FPGhost, occupied);
@@ -186,14 +186,14 @@ function moveWest(fp) {
 function moveEast(fp) {
   var doable = 0;
   var j, l;
-  for(j=0; j < fp.length; j++) {
+  for(j=0; j < fp.length; j += 1) {
     if(fp[j].position.x !== GRID_BOUNDS_R &&
         collisionEast(fp[j], occupied) === false) {
-      doable++;
+      doable += 1;
     }
   }
   if(doable === fp.length) {
-    for(l=0; l < fp.length; l++) {
+    for(l=0; l < fp.length; l += 1) {
       fp[l].position.x = fp[l].position.x + GU;
     }
     FPGhost = addGhostToField(FP, FPGhost, occupied);
@@ -203,14 +203,14 @@ function moveEast(fp) {
 function moveSouth(fp) {
   var doable = 0;
   var j, l;
-  for(j=0; j < fp.length; j++) {
+  for(j=0; j < fp.length; j += 1) {
     if(fp[j].position.y !== GRID_FLOOR &&
         collisionSouth(fp[j], occupied) === false) {
-      doable++;
+      doable += 1;
     }
   }
   if(doable === fp.length) {
-    for(l=0; l < fp.length; l++) {
+    for(l=0; l < fp.length; l += 1) {
       fp[l].position.y = fp[l].position.y + GU;
     }
   }
@@ -219,7 +219,7 @@ function moveSouth(fp) {
 function showFPOnceInView(FP) {
   //console.log('checking if FP is visible')
   var i;
-  for(i=0; i < FP.length; i++) {
+  for(i=0; i < FP.length; i += 1) {
     if(FP[i].position.y >= GRID_CEIL && FP[i].visible === false) {
       FP[i].visible = true;
     }
@@ -228,12 +228,12 @@ function showFPOnceInView(FP) {
 
 function checkIfFPLanded() {
   var j;
-  for(j=0; j < FP.length; j++) {
+  for(j=0; j < FP.length; j += 1) {
 
     // game over if piece lands and hits the ceiling;
     if(fpLanded === true && FP[j].position.y === GRID_CEIL) {
       gameOver = true;
-      console.log("GAME OVER");
+      console.log('GAME OVER');
     }
 
     // stacking on others;
@@ -258,7 +258,7 @@ function addFPToOccupied(fp, occupied) {
 function inSameRow(piece, occupied) {
   var inThisRow = [];
   var i;
-  for(i=0; i < occupied.length; i++) {
+  for(i=0; i < occupied.length; i += 1) {
     if(occupied[i].position.y === piece.position.y) {
       inThisRow.push(occupied[i]);
     }
@@ -270,8 +270,8 @@ function stillOccupied(inThisRow, occupied) {
   var newOccupied = [];
   var j, k;
   // if the occupied pieces aren't in the row, add them to newOccupied;
-  for(j=0; j < occupied.length; j++) {
-    for(k=0; k < inThisRow.length; k++) {
+  for(j=0; j < occupied.length; j += 1) {
+    for(k=0; k < inThisRow.length; k += 1) {
       if(occupied[j].position.x !== inThisRow[k].position.x &&
          occupied[j].position.y !== inThisRow[k].position.y) {
         newOccupied.push(occupied[j]);
@@ -293,7 +293,7 @@ function checkIfRowIsFull(piece) {
 
     // clear the row visually;
     //console.log('pre fop length:', field.children.length);
-    for(l=0; l < inThisRow.length; l++) {
+    for(l=0; l < inThisRow.length; l += 1) {
       field.removeChild(inThisRow[l]);
     }
     //console.log('post fop length:', field.children.length);
@@ -302,7 +302,7 @@ function checkIfRowIsFull(piece) {
     //console.log('occupied slots after cleanup: ', slots(occupied));
 
     // scooch all the rows above down;
-    for(i=0; i < occupied.length; i++) {
+    for(i=0; i < occupied.length; i += 1) {
       if(occupied[i].position.y < clearedRowY) {
         occupied[i].position.y += GU;
       }
@@ -345,7 +345,7 @@ function updateLevel(rows) {
     currentLevel = Math.floor(rows / ROWS_TO_LEVEL_UP);
     REFRESH_RATE = Math.round(REFRESH_RATE * Math.pow(0.95, currentLevel));
     console.log('Current Level:', currentLevel);
-    updateText(TextLevel, "LVL " + currentLevel, 'left', 12);
+    updateText(TextLevel, 'LVL ' + currentLevel, 'left', 12);
     console.log('Current Speed:', REFRESH_RATE);
   }
   return currentLevel;
@@ -375,9 +375,9 @@ function updateUI(rows) {
 function checkIfRowsAreFull(fp) {
   var fullRows = 0;
   var k;
-  for(k=0; k < fp.length; k++) {
+  for(k=0; k < fp.length; k += 1) {
     if(checkIfRowIsFull(fp[k])) {
-      fullRows++ ;
+      fullRows += 1 ;
     }
   }
   updateUI(fullRows);
@@ -396,13 +396,13 @@ function setupNewFP() {
   }
 
   console.log('Next Piece:', bagOfPieces[bagOfPieces.length - 1]);
-  updateText(TextNextPiece, "Next: " + bagOfPieces[bagOfPieces.length - 1], 'right', 12);
+  updateText(TextNextPiece, 'Next: ' + bagOfPieces[bagOfPieces.length - 1], 'right', 12);
 
   FP = FPArray[0];
   FPType = FPArray[1];
   FPRotation = FPArray[2];
 
-  for(i=0; i < FP.length; i++) {
+  for(i=0; i < FP.length; i += 1) {
     field.addChild(FP[i]);
   }
 
@@ -425,7 +425,7 @@ function stepUpdate(){
 
 function updateGhost(){
   var i, k;
-  for(k=0; k < FPGhost.length; k++) {
+  for(k=0; k < FPGhost.length; k += 1) {
 
     // if ghost collides with occupied tiles;
     if(collisionSouth(FPGhost[k], occupied) === true) {
@@ -444,7 +444,7 @@ function updateGhost(){
       FPGhost[k].alpha = 0.25;
 
       // if ghost collides with real thing;
-      for(i=0; i < FP.length; i++) {
+      for(i=0; i < FP.length; i += 1) {
         if(FPGhost[k].position.x === FP[i].position.x &&
            FPGhost[k].position.y === FP[i].position.y) {
            field.removeChild(FPGhost[k]);
@@ -463,10 +463,10 @@ function slideDownIfPossible() {
   var pointlessPieces = [];
 
   // for each occupiedPiece;
-  for(m=0; m < occupied.length; m++) {
+  for(m=0; m < occupied.length; m += 1) {
 
     // get a list of pieces that are NOT underneath occupied piece;
-    for(n=0; n < occupied.length; n++) {
+    for(n=0; n < occupied.length; n += 1) {
       if( _.isEqual(occupied[n].position
         , new P.Point( occupied[m].position.x
                      , occupied[m].position.y + GU)) === false) {
@@ -488,7 +488,7 @@ function slideDownIfPossible() {
   }
 
   // slide down every canFall piece;
-  for(o=0; o < canFall.length; o++) {
+  for(o=0; o < canFall.length; o += 1) {
     canFall[o].position.y = canFall[o].position.y + GU;
 
     // remove pieces from canFall if they reach the bottom;
@@ -505,7 +505,7 @@ function slideDownIfPossible() {
 function slots(occupied) {
   var occupiedSlots = [];
   var i;
-  for(i=0; i < occupied.length; i++) {
+  for(i=0; i < occupied.length; i += 1) {
     occupiedSlots.push([occupied[i].position.x, occupied[i].position.y]);
   }
   return JSON.stringify(occupiedSlots);
@@ -514,8 +514,8 @@ function slots(occupied) {
 
 function makeMap(x, y, width, height) {
   var i, j, sprite;
-  for(i=0; i < height; i++) {
-    for(j=0; j < width; j++) {
+  for(i=0; i < height; i += 1) {
+    for(j=0; j < width; j += 1) {
       sprite = new P.Sprite(TBackground);
       sprite.position.x =  x + GU * j;
       sprite.position.y =  y + GU * i;
@@ -575,7 +575,7 @@ function setupStage() {
   document.getElementById('container').appendChild(renderer.view);
 }
 
-function setupMap() {
+function setupSceneGameMap() {
   makeMap(GRID_X, GRID_Y, GRID_COLS, GRID_ROWS);
   field = new P.DisplayObjectContainer();
   sceneGame.addChild(field);
@@ -595,13 +595,19 @@ function setupScenes() {
   stage.addChild(sceneSummary);
 }
 
-function setupTexts() {
-  var texts =setupText(sceneGame, CANVAS_X, R);
+function setupSceneGameTexts() {
+  var texts = setupText(sceneGame, CANVAS_X, R);
 
   TextScore = texts[0];
   TextRows = texts[1];
   TextLevel = texts[2];
   TextNextPiece = texts[3];
+}
+
+function setupSceneGame() {
+  setupSceneGameMap();
+  setupSceneGameTexts();
+  setupNewFP();
 }
 
 /*============================================================================*/
@@ -610,12 +616,11 @@ function setupTexts() {
 
 function setup() {
   setupStage();
-  setupScenes();
   setupTextures();
   setupBindings();
-  setupMap();
-  setupTexts();
-  setupNewFP();
+
+  setupScenes();
+  setupSceneGame();
 }
 
 /*----------------------------------------------------------------------------*/
