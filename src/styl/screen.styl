@@ -7,9 +7,20 @@ body
   font-family 'Helvetica Neue', Arial, Helvetica, sans-serif
   background #000
 
-canvas
+#container, canvas, #ui
   width (1080 / 3px)
   height (1920 / 3px)
+
+#container
+  position relative
   margin 0 auto
-  display block
   margin-top 1em
+
+canvas
+  display block
+
+#ui
+  position absolute
+  top 0
+  left 0
+  color #fff
