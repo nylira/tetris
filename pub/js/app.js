@@ -641,4 +641,6 @@ function update() {
 setup()
 update()
 
+drawUI()
+
 }())
