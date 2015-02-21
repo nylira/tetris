@@ -1,6 +1,3 @@
-/*jslint browser: true*/
-/*global requestAnimationFrame */
-
 // TODO: random initial rotation
 // TODO: make blocks spawn above grid
 
@@ -27,7 +24,7 @@ var newFP = require('./modules/logic/newFP.js')
 var rotateFP = require('./modules/logic/rotateFP.js')
 var textureFP = require('./modules/logic/textureFP')
 var setupText = require('./modules/logic/setupText')
-var drawUI = require('./modules/ui/drawUI')
+//var drawUI = require('./modules/ui/drawUI')
 
 /*============================================================================*/
 // Constants
@@ -96,8 +93,6 @@ var FP
 var FPType
 var FPRotation
 var FPGhost
-//var SBackground
-//var NextFP
 
 var field
 var occupied = []
@@ -646,5 +641,5 @@ function update() {
 setup()
 update()
 
-drawUI()
+//drawUI()
 }())
