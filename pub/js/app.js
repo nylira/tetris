@@ -38,7 +38,7 @@ var REFRESH_RATE = 500
 var GRID_COLS = 10
 var GRID_ROWS = 20
 var GRID_X = 4*GU //4
-var GRID_Y = 6*GU //6
+var GRID_Y = 3*GU //6
 var GRID_WIDTH = GRID_COLS * GU
 var GRID_HEIGHT = GRID_ROWS * GU
 var GRID_BOUNDS_L = GRID_X
@@ -67,7 +67,7 @@ var currentLevel = 0
 
 // texts
 var TextScore
-var TextRows
+//var TextRows
 var TextLevel
 var TextNextPiece
 
@@ -333,7 +333,7 @@ function updateText(textObject, theText, positionX, positionY) {
 function updateRows(rows) {
   currentRows += rows
   console.log('Current Rows Cleared:', currentRows)
-  updateText(TextRows, currentRows + ' rows', 'center', 72)
+  //updateText(TextRows, currentRows + ' rows', 'center', 72)
 }
 
 function updateLevel(rows) {
@@ -595,7 +595,7 @@ function setupSceneGameTexts() {
   var texts = setupText(sceneGame, CANVAS_X, R)
 
   TextScore = texts[0]
-  TextRows = texts[1]
+  //TextRows = texts[1]
   TextLevel = texts[2]
   TextNextPiece = texts[3]
 }

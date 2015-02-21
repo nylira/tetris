@@ -24,11 +24,13 @@ function setupText(sceneGame, CANVAS_X, R) {
   TextScore.position.y = 12 * R;
   sceneGame.addChild(TextScore);
 
+  /*
   TextRows = new P.Text('0 rows', textStyleSm);
   TextRows.position.x = CANVAS_X / 2;
   TextRows.position.x = (CANVAS_X - TextRows.width) / 2;
   TextRows.position.y = 72 * R;
   sceneGame.addChild(TextRows);
+  */
 
   TextLevel = new P.Text('LVL 0', textStyleMd);
   TextLevel.position.x = 12 * R;

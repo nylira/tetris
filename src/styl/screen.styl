@@ -9,6 +9,7 @@ html
   box-sizing inherit
 
 gu = 20px
+btnSize = gu * 4
 
 body
   font-size 16px
@@ -35,19 +36,19 @@ canvas
 
 .btn-group-controls
   position absolute 
-  top gu * 26
-  left gu * 4.5
-  width gu*9
+  top gu*24
+  left gu*3
+  width btnSize*3
 
 .btn
-  width gu*3
-  height gu*3
-  background #777
-  border 1px solid #000
+  width btnSize
+  height btnSize
+  background hsl(0,0,30)
+  border 1px solid hsl(0,0,15)
 
   text-align center
   font 2em 'Helvetica Neue', sans-serif
-  line-height gu*3
+  line-height btnSize
 
   // cursor stuff
   user-select none
@@ -57,14 +58,14 @@ canvas
 
   &.btn-north
     top 0
-    left gu*3
+    left btnSize
   &.btn-south
-    top gu*3
-    left gu*3
+    top btnSize
+    left btnSize
   &.btn-east
-    top gu*3
-    left gu*6
+    top btnSize
+    left btnSize*2
   &.btn-west
-    top gu*3
+    top btnSize
     left 0
 
