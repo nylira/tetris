@@ -2,6 +2,14 @@
 
 global-reset()
 
+html
+  box-sizing border-box;
+
+*, *:before, *:after
+  box-sizing inherit
+
+gu = 20px
+
 body
   font-size 16px
   font-family 'Helvetica Neue', Arial, Helvetica, sans-serif
@@ -24,3 +32,39 @@ canvas
   top 0
   left 0
   color #fff
+
+.btn-group-controls
+  position absolute 
+  top gu * 26
+  left gu * 4.5
+  width gu*9
+
+.btn
+  width gu*3
+  height gu*3
+  background #777
+  border 1px solid #000
+
+  text-align center
+  font 2em 'Helvetica Neue', sans-serif
+  line-height gu*3
+
+  // cursor stuff
+  user-select none
+  cursor pointer
+
+  position absolute
+
+  &.btn-north
+    top 0
+    left gu*3
+  &.btn-south
+    top gu*3
+    left gu*3
+  &.btn-east
+    top gu*3
+    left gu*6
+  &.btn-west
+    top gu*3
+    left 0
+
