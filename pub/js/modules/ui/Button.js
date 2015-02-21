@@ -1,12 +1,14 @@
 (function() {
 'use strict'
 
+// TODO: Make scaling work better
+
 //==============================================================================
 // Modules
 //==============================================================================
 
 var P = require('pixi.js')
-var TBtnBackground = new P.Texture.fromImage('./textures/btnBackground.png')
+var TBtnBackground = new P.Texture.fromImage('../img/btnBackground.png')
 
 //==============================================================================
 // Functions
@@ -19,7 +21,7 @@ function Button(text, btnOptions, textOptions) {
   defaultBtnTexture = TBtnBackground
 
   defaultTextStyle = {
-    font: 'bold 20px Arial'
+    font: 'bold 80px Arial'
   , fill: '#000000'
   , align: 'left'
   }
@@ -45,7 +47,7 @@ function Button(text, btnOptions, textOptions) {
     btnOptions.y = typeof btnOptions.y !== 'undefined' ? btnOptions.y : 0
     btnOptions.y = typeof btnOptions.y !== 'undefined' ? btnOptions.y : 0
     if(typeof btnOptions.width === 'undefined') {
-      btnOptions.width = btnText.width
+      btnOptions.width = btnText.width / 2
     }
     if(typeof btnOptions.height === 'undefined') {
       btnOptions.height = btnText.height
@@ -55,6 +57,7 @@ function Button(text, btnOptions, textOptions) {
   btn = new P.Sprite(btnOptions.texture)
   btn.position.x = btnOptions.x
   btn.position.y = btnOptions.y
+  btn.width = btnOptions.width
 
   btn.addChild(btnText)
 

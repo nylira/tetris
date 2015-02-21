@@ -24,8 +24,7 @@ var newFP = require('./modules/logic/newFP.js')
 var rotateFP = require('./modules/logic/rotateFP.js')
 var textureFP = require('./modules/logic/textureFP')
 var setupText = require('./modules/logic/setupText')
-var E = require('./modules/ui/PIXIElement')
-//var drawUI = require('./modules/ui/drawUI')
+var drawUI = require('./modules/react/drawUI')
 
 /*============================================================================*/
 // Constants
@@ -642,6 +641,4 @@ function update() {
 setup()
 update()
 
-var newButton = E.Button('cool Button')
-sceneGame.addChild(newButton)
 }())
