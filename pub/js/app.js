@@ -46,6 +46,7 @@ var ROWS_TO_LEVEL_UP = 10
 // collections
 var GRID = {}
 var TEXTURES = {}
+var SCENES = {}
 
 // stage variables
 var stage, renderer
@@ -66,10 +67,6 @@ var TextScore
 var TextLevel
 var TextNextPiece
 
-// scenes
-var sceneMenu
-var sceneGame
-var sceneSummary
 
 // sprites
 var FPArray
@@ -527,7 +524,7 @@ function makeMap(x, y, width, height) {
       sprite = new P.Sprite(TEXTURES.background)
       sprite.position.x =  x + GU * j
       sprite.position.y =  y + GU * i
-      sceneGame.addChild(sprite)
+      SCENES.game.addChild(sprite)
     }
   }
 }
@@ -584,25 +581,25 @@ function setupStage() {
 function setupSceneGameMap() {
   makeMap(GRID.x, GRID.y, GRID.cols, GRID.rows)
   field = new P.DisplayObjectContainer()
-  sceneGame.addChild(field)
+  SCENES.game.addChild(field)
 }
 
 function setupScenes() {
-  sceneMenu = new P.DisplayObjectContainer()
-  sceneMenu.visible = false
-  stage.addChild(sceneMenu)
+  SCENES.menu = new P.DisplayObjectContainer()
+  SCENES.menu.visible = false
+  stage.addChild(SCENES.menu)
 
-  sceneGame = new P.DisplayObjectContainer()
-  sceneGame.visible = true
-  stage.addChild(sceneGame)
+  SCENES.game = new P.DisplayObjectContainer()
+  SCENES.game.visible = true
+  stage.addChild(SCENES.game)
 
-  sceneSummary = new P.DisplayObjectContainer()
-  sceneSummary.visible = false
-  stage.addChild(sceneSummary)
+  SCENES.summary = new P.DisplayObjectContainer()
+  SCENES.summary.visible = false
+  stage.addChild(SCENES.summary)
 }
 
 function setupSceneGameTexts() {
-  var texts = setupText(sceneGame, CANVAS_X, R)
+  var texts = setupText(SCENES.game, CANVAS_X, R)
 
   TextScore = texts[0]
   //TextRows = texts[1]
