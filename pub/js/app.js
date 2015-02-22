@@ -8,6 +8,7 @@
 // Modules
 /*============================================================================*/
 
+//var $ = require('jquery')
 var P = require('pixi.js')
 var _ = require('lodash')
 var Combokeys = require('combokeys')
@@ -35,16 +36,7 @@ var CANVAS_X = 1080/2*R
 var CANVAS_Y = 1920/2*R
 var GU = 30*R
 var REFRESH_RATE = 500
-var GRID_COLS = 10
-var GRID_ROWS = 20
-var GRID_X = 4*GU //4
-var GRID_Y = 3*GU //6
-var GRID_WIDTH = GRID_COLS * GU
-var GRID_HEIGHT = GRID_ROWS * GU
-var GRID_BOUNDS_L = GRID_X
-var GRID_BOUNDS_R = GRID_X + GRID_WIDTH - GU
-var GRID_CEIL = GRID_Y
-var GRID_FLOOR = GRID_Y + GRID_HEIGHT - GU
+var GRID = {}
 var TYPES = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
 var ROWS_TO_LEVEL_UP = 10
 
@@ -100,6 +92,34 @@ var occupied = []
 /*----------------------------------------------------------------------------*/
 // Helpers
 /*----------------------------------------------------------------------------*/
+
+function setupGrid() {
+  var gridCols = 10
+  var gridRows = 20
+  var gridX = 4*GU //4
+  var gridY = 3*GU //6
+  var gridWidth = gridCols * GU
+  var gridHeight = gridRows * GU
+  var gridBoundsLeft = gridX
+  var gridBoundsRight = gridX + gridWidth - GU
+  var gridCeil = gridY
+  var gridFloor = gridY + gridHeight - GU
+
+  var grid = {
+    cols: gridCols
+  , rows: gridRows
+  , x: gridX
+  , y: gridY
+  , width: gridWidth
+  , height: gridHeight
+  , boundsLeft: gridBoundsLeft
+  , boundsRight: gridBoundsRight
+  , ciel: gridCeil
+  , floor: gridFloor
+  }
+
+  return grid
+}
 
 function rmGhostFromField(fpGhost) {
   var i
@@ -166,7 +186,7 @@ function moveWest(fp) {
   var doable = 0
   var i, k
   for(i=0; i < fp.length; i++) {
-    if( fp[i].position.x !== GRID_BOUNDS_L &&
+    if( fp[i].position.x !== GRID.boundsLeft &&
         collisionWest(fp[i], occupied) === false) {
       doable++
     }
@@ -183,7 +203,7 @@ function moveEast(fp) {
   var doable = 0
   var j, l
   for(j=0; j < fp.length; j++) {
-    if(fp[j].position.x !== GRID_BOUNDS_R &&
+    if(fp[j].position.x !== GRID.boundsRight &&
         collisionEast(fp[j], occupied) === false) {
       doable++
     }
@@ -200,7 +220,7 @@ function moveSouth(fp) {
   var doable = 0
   var j, l
   for(j=0; j < fp.length; j++) {
-    if(fp[j].position.y !== GRID_FLOOR &&
+    if(fp[j].position.y !== GRID.floor &&
         collisionSouth(fp[j], occupied) === false) {
       doable++
     }
@@ -216,7 +236,7 @@ function showFPOnceInView(FP) {
   //console.log('checking if FP is visible')
   var i
   for(i=0; i < FP.length; i++) {
-    if(FP[i].position.y >= GRID_CEIL && FP[i].visible === false) {
+    if(FP[i].position.y >= GRID.ciel && FP[i].visible === false) {
       FP[i].visible = true
     }
   }
@@ -227,7 +247,7 @@ function checkIfFPLanded() {
   for(j=0; j < FP.length; j++) {
 
     // game over if piece lands and hits the ceiling
-    if(fpLanded === true && FP[j].position.y === GRID_CEIL) {
+    if(fpLanded === true && FP[j].position.y === GRID.ciel) {
       gameOver = true
       console.log('GAME OVER')
     }
@@ -238,7 +258,7 @@ function checkIfFPLanded() {
       break
     }
     // stacking on ground
-    if(FP[j].position.y === GRID_FLOOR) {
+    if(FP[j].position.y === GRID.floor) {
       fpLanded = true
       break
     }
@@ -282,7 +302,7 @@ function checkIfRowIsFull(piece) {
   var inThisRow = inSameRow(piece, occupied)
   var isRowFull, i, l
   // if the row is full
-  if(inThisRow.length === GRID_COLS) {
+  if(inThisRow.length === GRID.cols) {
     isRowFull = true
 
     var clearedRowY = inThisRow[0].position.y
@@ -385,7 +405,7 @@ function setupNewFP() {
     bagOfPieces = _.shuffle(TYPES)
   }
 
-  FPArray = newFP(bagOfPieces.pop(), blockTextures, GRID_X, GRID_Y, GRID_WIDTH, GU)
+  FPArray = newFP(bagOfPieces.pop(), blockTextures, GRID.x, GRID.y, GRID.width, GU)
 
   if(bagOfPieces === undefined || bagOfPieces.length === 0) {
     bagOfPieces = _.shuffle(TYPES)
@@ -430,7 +450,7 @@ function updateGhost(){
       moveSouth(FPGhost)
     }
     // if ghost collides with floor
-    if (FPGhost[k].position.y === GRID_FLOOR) {
+    if (FPGhost[k].position.y === GRID.floor) {
       ghostLanded = true
     } else if (ghostLanded === false){
       moveSouth(FPGhost)
@@ -477,7 +497,7 @@ function slideDownIfPossible() {
     }
 
     // add occupiedPiece to a list of pieces that can fall
-    if(canPieceFall === true && occupied[m].position.y < GRID_FLOOR) {
+    if(canPieceFall === true && occupied[m].position.y < GRID.floor) {
       canFall.push(occupied[m])
       canFall = _.uniq(canFall)
     }
@@ -488,7 +508,7 @@ function slideDownIfPossible() {
     canFall[o].position.y = canFall[o].position.y + GU
 
     // remove pieces from canFall if they reach the bottom
-    if(canFall[o].position.y === GRID_FLOOR) {
+    if(canFall[o].position.y === GRID.floor) {
       canFall.splice(o,1)
     }
   }
@@ -535,7 +555,7 @@ function setupBindings(){
   combokeys.bind(['d', 'right'], function(){moveActiveFP(FP, 'e')})
   combokeys.bind(['s', 'down'], function(){moveActiveFP(FP, 's')})
   combokeys.bind(['w', 'up'], function(){
-    FPRotation = rotateFP(FP, FPType, FPRotation, occupied, GRID_BOUNDS_L, GRID_BOUNDS_R, GRID_WIDTH, GU)
+    FPRotation = rotateFP(FP, FPType, FPRotation, occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GU)
     FPGhost = addGhostToField(FP, FPGhost, occupied)
   })
   combokeys.bind(['x', 'space'], function(){gameRunning = !gameRunning})
@@ -572,7 +592,7 @@ function setupStage() {
 }
 
 function setupSceneGameMap() {
-  makeMap(GRID_X, GRID_Y, GRID_COLS, GRID_ROWS)
+  makeMap(GRID.x, GRID.y, GRID.cols, GRID.rows)
   field = new P.DisplayObjectContainer()
   sceneGame.addChild(field)
 }
@@ -611,6 +631,7 @@ function setupSceneGame() {
 /*============================================================================*/
 
 function setup() {
+  GRID = setupGrid()
   setupStage()
   setupTextures()
   setupBindings()
@@ -640,7 +661,6 @@ function update() {
 
 setup()
 update()
-
 drawUI()
 
 }())

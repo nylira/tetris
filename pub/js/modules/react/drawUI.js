@@ -18,10 +18,10 @@ btnControls = R.createClass({
   render: function() {
     return(
       E('div', {className: 'btn-group btn-group-controls'},
-        E('div', {className: 'btn btn-north'}, '⟳')
-      , E('div', {className: 'btn btn-south'}, '↓')
-      , E('div', {className: 'btn btn-east'}, '→')
-      , E('div', {className: 'btn btn-west'}, '←')
+        E('div', {className: 'btn btn-north', id: 'btnNorth'}, '⟳')
+      , E('div', {className: 'btn btn-south', id: 'btnSouth'}, '↓')
+      , E('div', {className: 'btn btn-east', id: 'btnEast'}, '→')
+      , E('div', {className: 'btn btn-west', id: 'btnWest'}, '←')
       )
     )
   }
