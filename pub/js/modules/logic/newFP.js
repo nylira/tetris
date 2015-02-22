@@ -35,24 +35,28 @@ function newShape(type, texture, x, y, w, gu) {
 function newFP(type, textures, x, y, w, gu) {
   var types = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
 
-  var FourPieceTypeState = 1;
-  var FourPieceType = type || _.head(_.shuffle(types));
-  var FourPieceTexture = textureFP(FourPieceType, textures);
-  var FourPiece = newShape(FourPieceType, FourPieceTexture, x, y - gu, w, gu);
+  var FPTypeState = 1;
+  var FPType = type || _.head(_.shuffle(types));
+  var FPTexture = textureFP(FPType, textures);
+  var FP = newShape(FPType, FPTexture, x, y - gu, w, gu);
 
   // debug alpha;
-  //FourPiece[0].alpha = 1.0;
-  //FourPiece[1].alpha = 0.9;
-  //FourPiece[2].alpha = 0.8;
-  //FourPiece[3].alpha = 0.7;
+  //FP[0].alpha = 1.0;
+  //FP[1].alpha = 0.9;
+  //FP[2].alpha = 0.8;
+  //FP[3].alpha = 0.7;
 
   // hide pieces by default;
-  FourPiece[0].visible = false;
-  FourPiece[1].visible = false;
-  FourPiece[2].visible = false;
-  FourPiece[3].visible = false;
+  FP[0].visible = false;
+  FP[1].visible = false;
+  FP[2].visible = false;
+  FP[3].visible = false;
 
-  return [FourPiece, FourPieceType, FourPieceTypeState];
+  return {
+    pieces: FP
+  , type: FPType
+  , state: FPTypeState
+  };
 }
 module.exports = newFP;
 

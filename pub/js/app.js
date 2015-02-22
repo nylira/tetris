@@ -33,19 +33,22 @@ var drawUI = require('./modules/react/drawUI')
 /*============================================================================*/
 
 var R = window.devicePixelRatio
-var CANVAS_X = 1080/2*R
-var CANVAS_Y = 1920/2*R
 var GU = 30*R
 var REFRESH_RATE = 500
-var TYPES = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
-var ROWS_TO_LEVEL_UP = 10
 
 /*============================================================================*/
 // Variables
 /*============================================================================*/
 
-// collections
+var GAME = {
+  fpTypes: ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
+, rowsToLevel: 10
+, timer: new Date().getTime() + REFRESH_RATE
+, x: 1080/2*R
+, y: 1920/2*R
+}
 var GRID = {}
+var FP = {}
 var TEXTURES = {}
 var SCENES = {}
 
@@ -60,25 +63,6 @@ var STATE = {
 , occupied: []
 , bag: []
 }
-
-// stage variables
-var stage, renderer
-var timer = new Date().getTime() + REFRESH_RATE
-
-// texts
-var TextScore
-//var TextRows
-var TextLevel
-var TextNextPiece
-
-// sprites
-var FPArray
-var FP
-var FPType
-var FPRotation
-var FPGhost
-
-var field
 
 /*----------------------------------------------------------------------------*/
 // Helpers
@@ -116,7 +100,7 @@ function rmGhostFromField(fpGhost) {
   var i
   if(fpGhost !== undefined && fpGhost.length > 0){
     for(i=0; i < fpGhost.length; i++) {
-      field.removeChild(fpGhost[i])
+      SCENES.game.removeChild(fpGhost[i])
     }
   }
 }
@@ -128,11 +112,11 @@ function addGhostToField(fp, fpGhost) {
   var newFpGhost = []
 
   for(i=0; i < fp.length; i++) {
-    newFpGhost.push(new P.Sprite(textureFP(FPType, TEXTURES)))
+    newFpGhost.push(new P.Sprite(textureFP(FP.type, TEXTURES)))
     newFpGhost[i].position.x = fp[i].position.x
     newFpGhost[i].position.y = fp[i].position.y
     newFpGhost[i].alpha = 0.0
-    field.addChild(newFpGhost[i])
+    SCENES.game.addChild(newFpGhost[i])
   }
   return newFpGhost
 }
@@ -186,7 +170,7 @@ function moveWest(fp) {
     for(k=0; k < fp.length; k++) {
       fp[k].position.x = fp[k].position.x - GU
     }
-    FPGhost = addGhostToField(FP, FPGhost, STATE.occupied)
+    FP.ghost = addGhostToField(FP.pieces, FP.ghost, STATE.occupied)
   }
 }
 
@@ -203,7 +187,7 @@ function moveEast(fp) {
     for(l=0; l < fp.length; l++) {
       fp[l].position.x = fp[l].position.x + GU
     }
-    FPGhost = addGhostToField(FP, FPGhost, STATE.occupied)
+    FP.ghost = addGhostToField(FP.pieces, FP.ghost, STATE.occupied)
   }
 }
 
@@ -223,33 +207,33 @@ function moveSouth(fp) {
   }
 }
 
-function showFPOnceInView(FP) {
-  //console.log('checking if FP is visible')
+function showFPOnceInView(fp) {
+  //console.log('checking if fp is visible')
   var i
-  for(i=0; i < FP.length; i++) {
-    if(FP[i].position.y >= GRID.ciel && FP[i].visible === false) {
-      FP[i].visible = true
+  for(i=0; i < fp.length; i++) {
+    if(fp[i].position.y >= GRID.ciel && fp[i].visible === false) {
+      fp[i].visible = true
     }
   }
 }
 
-function checkIfFPLanded() {
+function checkIfFPLanded(fp) {
   var j
-  for(j=0; j < FP.length; j++) {
+  for(j=0; j < fp.length; j++) {
 
     // game over if piece lands and hits the ceiling
-    if(STATE.fpLanded === true && FP[j].position.y === GRID.ciel) {
+    if(STATE.fpLanded === true && fp[j].position.y === GRID.ciel) {
       STATE.gameOver = true
       console.log('GAME OVER')
     }
 
     // stacking on others
-    if(collisionSouth(FP[j], STATE.occupied) === true) {
+    if(collisionSouth(fp[j], STATE.occupied) === true) {
       STATE.fpLanded = true
       break
     }
     // stacking on ground
-    if(FP[j].position.y === GRID.floor) {
+    if(fp[j].position.y === GRID.floor) {
       STATE.fpLanded = true
       break
     }
@@ -299,11 +283,11 @@ function checkIfRowIsFull(piece) {
     var clearedRowY = inThisRow[0].position.y
 
     // clear the row visually
-    //console.log('pre fop length:', field.children.length)
+    //console.log('pre fop length:', SCENES.game.children.length)
     for(l=0; l < inThisRow.length; l++) {
-      field.removeChild(inThisRow[l])
+      SCENES.game.removeChild(inThisRow[l])
     }
-    //console.log('post fop length:', field.children.length)
+    //console.log('post fop length:', SCENES.game.children.length)
 
     STATE.occupied = stillOccupied(inThisRow, STATE.occupied)
     //console.log('STATE.occupied slots after cleanup: ', slots(STATE.occupied))
@@ -322,13 +306,13 @@ function updateText(textObject, theText, positionX, positionY) {
   textObject.setText(theText)
   switch(positionX) {
     case 'center':
-      textObject.position.x = (CANVAS_X - textObject.width) / 2
+      textObject.position.x = (GAME.x - textObject.width) / 2
       break
     case 'left':
       textObject.position.x = 12 * R
       break
     case 'right':
-      textObject.position.x = CANVAS_X - textObject.width - 12 * R
+      textObject.position.x = GAME.x - textObject.width - 12 * R
       break
     default:
       textObject.position.x = positionX
@@ -344,15 +328,15 @@ function updateText(textObject, theText, positionX, positionY) {
 function updateRows(rows) {
   STATE.rows += rows
   console.log('Current Rows Cleared:', STATE.rows)
-  //updateText(TextRows, STATE.rows + ' rows', 'center', 72)
+  //updateText(textRows, STATE.rows + ' rows', 'center', 72)
 }
 
 function updateLevel(rows) {
-  if(STATE.rows >= ROWS_TO_LEVEL_UP && STATE.rows % ROWS_TO_LEVEL_UP === 0) {
-    STATE.level = Math.floor(rows / ROWS_TO_LEVEL_UP)
+  if(STATE.rows >= GAME.rowsToLevel && STATE.rows % GAME.rowsToLevel === 0) {
+    STATE.level = Math.floor(rows / GAME.rowsToLevel)
     REFRESH_RATE = Math.round(REFRESH_RATE * Math.pow(0.95, STATE.level))
     console.log('Current Level:', STATE.level)
-    updateText(TextLevel, 'LVL ' + STATE.level, 'left', 12)
+    updateText(STATE.textLevel, 'LVL ' + STATE.level, 'left', 12)
     console.log('Current Speed:', REFRESH_RATE)
   }
   return STATE.level
@@ -368,7 +352,7 @@ function updatePoints(rows) {
   }
   STATE.score += points
   console.log('Current Points:', STATE.score)
-  updateText(TextScore, STATE.score, 'center', 12)
+  updateText(STATE.textScore, STATE.score, 'center', 12)
 }
 
 function updateUI(rows) {
@@ -393,68 +377,64 @@ function checkIfRowsAreFull(fp) {
 function setupNewFP() {
   var i
   if(STATE.bag === undefined || STATE.bag.length === 0) {
-    STATE.bag = _.shuffle(TYPES)
+    STATE.bag = _.shuffle(GAME.fpTypes)
   }
 
-  FPArray = newFP(STATE.bag.pop(), TEXTURES, GRID.x, GRID.y, GRID.width, GU)
+  FP = newFP(STATE.bag.pop(), TEXTURES, GRID.x, GRID.y, GRID.width, GU)
 
   if(STATE.bag === undefined || STATE.bag.length === 0) {
-    STATE.bag = _.shuffle(TYPES)
+    STATE.bag = _.shuffle(GAME.fpTypes)
   }
 
   console.log('Next Piece:', STATE.bag[STATE.bag.length - 1])
-  updateText(TextNextPiece, 'Next: ' + STATE.bag[STATE.bag.length - 1], 'right', 12)
+  updateText(STATE.textNextPiece, 'Next: ' + STATE.bag[STATE.bag.length - 1], 'right', 12)
 
-  FP = FPArray[0]
-  FPType = FPArray[1]
-  FPRotation = FPArray[2]
-
-  for(i=0; i < FP.length; i++) {
-    field.addChild(FP[i])
+  for(i=0; i < FP.pieces.length; i++) {
+    SCENES.game.addChild(FP.pieces[i])
   }
 
-  FPGhost = addGhostToField(FP, FPGhost, STATE.occupied)
+  FP.ghost = addGhostToField(FP.pieces, FP.ghost, STATE.occupied)
 
-  showFPOnceInView(FP)
+  showFPOnceInView(FP.pieces)
 }
 
 function stepUpdate(){
   if(STATE.fpLanded === true) {
-    addFPToOccupied(FP, STATE.occupied)
-    checkIfRowsAreFull(FP)
+    addFPToOccupied(FP.pieces, STATE.occupied)
+    checkIfRowsAreFull(FP.pieces)
     setupNewFP()
     STATE.fpLanded = false
   }
-  moveSouth(FP)
-  showFPOnceInView(FP)
-  timer = new Date().getTime() + REFRESH_RATE
+  moveSouth(FP.pieces)
+  showFPOnceInView(FP.pieces)
+  GAME.timer = new Date().getTime() + REFRESH_RATE
 }
 
 function updateGhost(){
   var i, k
-  for(k=0; k < FPGhost.length; k++) {
+  for(k=0; k < FP.ghost.length; k++) {
 
     // if ghost collides with STATE.occupied tiles
-    if(collisionSouth(FPGhost[k], STATE.occupied) === true) {
+    if(collisionSouth(FP.ghost[k], STATE.occupied) === true) {
       STATE.ghostLanded = true
     } else if (STATE.ghostLanded === false){
-      moveSouth(FPGhost)
+      moveSouth(FP.ghost)
     }
     // if ghost collides with floor
-    if (FPGhost[k].position.y === GRID.floor) {
+    if (FP.ghost[k].position.y === GRID.floor) {
       STATE.ghostLanded = true
     } else if (STATE.ghostLanded === false){
-      moveSouth(FPGhost)
+      moveSouth(FP.ghost)
     }
     // if ghost is colliding with something
     if(STATE.ghostLanded === true) {
-      FPGhost[k].alpha = 0.25
+      FP.ghost[k].alpha = 0.25
 
       // if ghost collides with real thing
-      for(i=0; i < FP.length; i++) {
-        if(FPGhost[k].position.x === FP[i].position.x &&
-           FPGhost[k].position.y === FP[i].position.y) {
-           field.removeChild(FPGhost[k])
+      for(i=0; i < FP.pieces.length; i++) {
+        if(FP.ghost[k].position.x === FP.pieces[i].position.x &&
+           FP.ghost[k].position.y === FP.pieces[i].position.y) {
+           SCENES.game.removeChild(FP.ghost[k])
         }
       }
     }
@@ -542,12 +522,12 @@ function moveActiveFP(fp, direction) {
 }
 
 function setupBindings(){
-  combokeys.bind(['a', 'left'], function(){moveActiveFP(FP, 'w')})
-  combokeys.bind(['d', 'right'], function(){moveActiveFP(FP, 'e')})
-  combokeys.bind(['s', 'down'], function(){moveActiveFP(FP, 's')})
+  combokeys.bind(['a', 'left'], function(){moveActiveFP(FP.pieces, 'w')})
+  combokeys.bind(['d', 'right'], function(){moveActiveFP(FP.pieces, 'e')})
+  combokeys.bind(['s', 'down'], function(){moveActiveFP(FP.pieces, 's')})
   combokeys.bind(['w', 'up'], function(){
-    FPRotation = rotateFP(FP, FPType, FPRotation, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GU)
-    FPGhost = addGhostToField(FP, FPGhost, STATE.occupied)
+    FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GU)
+    FP.ghost = addGhostToField(FP.pieces, FP.ghost, STATE.occupied)
   })
   combokeys.bind(['x', 'space'], function(){STATE.gameRunning = !STATE.gameRunning})
 }
@@ -575,38 +555,36 @@ function setupTextures() {
 }
 
 function setupStage() {
-  stage = new P.Stage(0x222222)
-  renderer = P.autoDetectRenderer(CANVAS_X, CANVAS_Y)
-  document.getElementById('container').appendChild(renderer.view)
+  GAME.stage = new P.Stage(0x222222)
+  GAME.renderer = P.autoDetectRenderer(GAME.x, GAME.y)
+  document.getElementById('container').appendChild(GAME.renderer.view)
 }
 
 function setupSceneGameMap() {
   makeMap(GRID.x, GRID.y, GRID.cols, GRID.rows)
-  field = new P.DisplayObjectContainer()
-  SCENES.game.addChild(field)
 }
 
 function setupScenes() {
   SCENES.menu = new P.DisplayObjectContainer()
   SCENES.menu.visible = false
-  stage.addChild(SCENES.menu)
+  GAME.stage.addChild(SCENES.menu)
 
   SCENES.game = new P.DisplayObjectContainer()
   SCENES.game.visible = true
-  stage.addChild(SCENES.game)
+  GAME.stage.addChild(SCENES.game)
 
   SCENES.summary = new P.DisplayObjectContainer()
   SCENES.summary.visible = false
-  stage.addChild(SCENES.summary)
+  GAME.stage.addChild(SCENES.summary)
 }
 
 function setupSceneGameTexts() {
-  var texts = setupText(SCENES.game, CANVAS_X, R)
+  var texts = setupText(SCENES.game, GAME.x, R)
 
-  TextScore = texts[0]
-  //TextRows = texts[1]
-  TextLevel = texts[2]
-  TextNextPiece = texts[3]
+  STATE.textScore = texts[0]
+  //STATE.textRows = texts[1]
+  STATE.textLevel = texts[2]
+  STATE.textNextPiece = texts[3]
 }
 
 function setupSceneGame() {
@@ -637,12 +615,12 @@ function update() {
   requestAnimationFrame(update)
 
   if(STATE.gameRunning === true && STATE.gameOver === false) {
-    checkIfFPLanded()
+    checkIfFPLanded(FP.pieces)
     updateGhost()
-    if(timer < new Date().getTime()) {stepUpdate()}
+    if(GAME.timer < new Date().getTime()) {stepUpdate()}
   }
 
-  renderer.render(stage)
+  GAME.renderer.render(GAME.stage)
 }
 /*============================================================================*/
 // play!
