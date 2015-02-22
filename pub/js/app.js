@@ -1,5 +1,4 @@
 // TODO: random initial rotation
-// TODO: make blocks spawn above grid
 // TODO: paint four piece after if you press the down button
 
 (function() {
