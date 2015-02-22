@@ -29,28 +29,22 @@ var setupText = require('./modules/logic/setupText')
 var drawUI = require('./modules/react/drawUI')
 
 /*============================================================================*/
-// Constants
-/*============================================================================*/
-
-var R = window.devicePixelRatio
-var GU = 30*R
-var REFRESH_RATE = 500
-
-/*============================================================================*/
 // Variables
 /*============================================================================*/
+
+var GRID = {}
+  , FP = {}
+  , TEXTURES = {}
+  , SCENES = {}
 
 var GAME = {
   fpTypes: ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
 , rowsToLevel: 10
-, timer: new Date().getTime() + REFRESH_RATE
-, x: 1080/2*R
-, y: 1920/2*R
+, tick: 500
+, timer: new Date().getTime() + 500
+, x: 1080/2 * window.devicePixelRatio
+, y: 1920/2 * window.devicePixelRatio
 }
-var GRID = {}
-var FP = {}
-var TEXTURES = {}
-var SCENES = {}
 
 var STATE = {
   score: 0
@@ -69,16 +63,20 @@ var STATE = {
 /*----------------------------------------------------------------------------*/
 
 function setupGrid() {
+
+  var gridR = window.devicePixelRatio
+  var gridU = 30 * gridR
+
   var gridCols = 10
   var gridRows = 20
-  var gridX = 4*GU //4
-  var gridY = 3*GU //6
-  var gridWidth = gridCols * GU
-  var gridHeight = gridRows * GU
+  var gridX = 4*gridU //4
+  var gridY = 3*gridU //6
+  var gridWidth = gridCols * gridU
+  var gridHeight = gridRows * gridU
   var gridBoundsLeft = gridX
-  var gridBoundsRight = gridX + gridWidth - GU
+  var gridBoundsRight = gridX + gridWidth - gridU
   var gridCeil = gridY
-  var gridFloor = gridY + gridHeight - GU
+  var gridFloor = gridY + gridHeight - gridU
 
   var grid = {
     cols: gridCols
@@ -91,6 +89,8 @@ function setupGrid() {
   , boundsRight: gridBoundsRight
   , ciel: gridCeil
   , floor: gridFloor
+  , u: gridU
+  , r: gridR
   }
 
   return grid
@@ -126,7 +126,7 @@ function collisionSouth(piece, occupied) {
   var i
   for(i=0; i < occupied.length; i++) {
     if(STATE.occupied[i].position.x === piece.position.x &&
-       STATE.occupied[i].position.y === piece.position.y + GU) {
+       STATE.occupied[i].position.y === piece.position.y + GRID.u) {
       collision = true
     }
   }
@@ -137,9 +137,9 @@ function collisionEast(piece, occupied) {
   var collision = false
   var i
   for(i=0; i < occupied.length; i++) {
-    if(STATE.occupied[i].position.x === piece.position.x + GU &&
+    if(STATE.occupied[i].position.x === piece.position.x + GRID.u &&
        STATE.occupied[i].position.y === piece.position.y) {
-      collision= true
+      collision = true
     }
   }
   return collision
@@ -149,7 +149,7 @@ function collisionWest(piece, occupied) {
   var collision = false
   var i
   for(i=0; i < occupied.length; i++) {
-    if(STATE.occupied[i].position.x === piece.position.x - GU &&
+    if(STATE.occupied[i].position.x === piece.position.x - GRID.u &&
        STATE.occupied[i].position.y === piece.position.y) {
       collision= true
     }
@@ -168,7 +168,7 @@ function moveWest(fp) {
   }
   if(doable === fp.length) {
     for(k=0; k < fp.length; k++) {
-      fp[k].position.x = fp[k].position.x - GU
+      fp[k].position.x = fp[k].position.x - GRID.u
     }
     FP.ghost = addGhostToField(FP.pieces, FP.ghost, STATE.occupied)
   }
@@ -185,7 +185,7 @@ function moveEast(fp) {
   }
   if(doable === fp.length) {
     for(l=0; l < fp.length; l++) {
-      fp[l].position.x = fp[l].position.x + GU
+      fp[l].position.x = fp[l].position.x + GRID.u
     }
     FP.ghost = addGhostToField(FP.pieces, FP.ghost, STATE.occupied)
   }
@@ -202,7 +202,7 @@ function moveSouth(fp) {
   }
   if(doable === fp.length) {
     for(l=0; l < fp.length; l++) {
-      fp[l].position.y = fp[l].position.y + GU
+      fp[l].position.y = fp[l].position.y + GRID.u
     }
   }
 }
@@ -295,7 +295,7 @@ function checkIfRowIsFull(piece) {
     // scooch all the rows above down
     for(i=0; i < STATE.occupied.length; i++) {
       if(STATE.occupied[i].position.y < clearedRowY) {
-        STATE.occupied[i].position.y += GU
+        STATE.occupied[i].position.y += GRID.u
       }
     }
   }
@@ -309,10 +309,10 @@ function updateText(textObject, theText, positionX, positionY) {
       textObject.position.x = (GAME.x - textObject.width) / 2
       break
     case 'left':
-      textObject.position.x = 12 * R
+      textObject.position.x = 12 * GRID.r
       break
     case 'right':
-      textObject.position.x = GAME.x - textObject.width - 12 * R
+      textObject.position.x = GAME.x - textObject.width - 12 * GRID.r
       break
     default:
       textObject.position.x = positionX
@@ -321,7 +321,7 @@ function updateText(textObject, theText, positionX, positionY) {
   if(positionY === undefined) {
     textObject.position.y = 0
   } else {
-    textObject.position.y = positionY * R
+    textObject.position.y = positionY * GRID.r
   }
 }
 
@@ -334,10 +334,10 @@ function updateRows(rows) {
 function updateLevel(rows) {
   if(STATE.rows >= GAME.rowsToLevel && STATE.rows % GAME.rowsToLevel === 0) {
     STATE.level = Math.floor(rows / GAME.rowsToLevel)
-    REFRESH_RATE = Math.round(REFRESH_RATE * Math.pow(0.95, STATE.level))
+    GAME.tick = Math.round(GAME.tick * Math.pow(0.95, STATE.level))
     console.log('Current Level:', STATE.level)
     updateText(STATE.textLevel, 'LVL ' + STATE.level, 'left', 12)
-    console.log('Current Speed:', REFRESH_RATE)
+    console.log('Current Speed:', GAME.tick)
   }
   return STATE.level
 }
@@ -380,7 +380,7 @@ function setupNewFP() {
     STATE.bag = _.shuffle(GAME.fpTypes)
   }
 
-  FP = newFP(STATE.bag.pop(), TEXTURES, GRID.x, GRID.y, GRID.width, GU)
+  FP = newFP(STATE.bag.pop(), TEXTURES, GRID.x, GRID.y, GRID.width, GRID.u)
 
   if(STATE.bag === undefined || STATE.bag.length === 0) {
     STATE.bag = _.shuffle(GAME.fpTypes)
@@ -407,7 +407,7 @@ function stepUpdate(){
   }
   moveSouth(FP.pieces)
   showFPOnceInView(FP.pieces)
-  GAME.timer = new Date().getTime() + REFRESH_RATE
+  GAME.timer = new Date().getTime() + GAME.tick
 }
 
 function updateGhost(){
@@ -456,7 +456,7 @@ function slideDownIfPossible() {
     for(n=0; n < STATE.occupied.length; n++) {
       if( _.isEqual(STATE.occupied[n].position
         , new P.Point( STATE.occupied[m].position.x
-                     , STATE.occupied[m].position.y + GU)) === false) {
+                     , STATE.occupied[m].position.y + GRID.u)) === false) {
         pointlessPieces.push(STATE.occupied[m])
         //console.log('pointlessPieces.length', pointlessPieces.length)
       }
@@ -476,7 +476,7 @@ function slideDownIfPossible() {
 
   // slide down every canFall piece
   for(o=0; o < canFall.length; o++) {
-    canFall[o].position.y = canFall[o].position.y + GU
+    canFall[o].position.y = canFall[o].position.y + GRID.u
 
     // remove pieces from canFall if they reach the bottom
     if(canFall[o].position.y === GRID.floor) {
@@ -499,13 +499,13 @@ function slots(STATE.occupied) {
 }
 */
 
-function makeMap(x, y, width, height) {
+function setupSceneGameMap(grid) {
   var i, j, sprite
-  for(i=0; i < height; i++) {
-    for(j=0; j < width; j++) {
+  for(i=0; i < grid.rows; i++) {
+    for(j=0; j < grid.cols; j++) {
       sprite = new P.Sprite(TEXTURES.background)
-      sprite.position.x =  x + GU * j
-      sprite.position.y =  y + GU * i
+      sprite.position.x = grid.x + GRID.u * j
+      sprite.position.y = grid.y + GRID.u * i
       SCENES.game.addChild(sprite)
     }
   }
@@ -526,14 +526,14 @@ function setupBindings(){
   combokeys.bind(['d', 'right'], function(){moveActiveFP(FP.pieces, 'e')})
   combokeys.bind(['s', 'down'], function(){moveActiveFP(FP.pieces, 's')})
   combokeys.bind(['w', 'up'], function(){
-    FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GU)
+    FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
     FP.ghost = addGhostToField(FP.pieces, FP.ghost, STATE.occupied)
   })
   combokeys.bind(['x', 'space'], function(){STATE.gameRunning = !STATE.gameRunning})
 }
 
 function setupTextures() {
-  if(R === 2){
+  if(GRID.r === 2){
     TEXTURES.blockRed = new P.Texture.fromImage('../img/blockRed30@x2.png')
     TEXTURES.blockGreen = new P.Texture.fromImage('../img/blockGreen30@x2.png')
     TEXTURES.blockBlue = new P.Texture.fromImage('../img/blockBlue30@x2.png')
@@ -560,10 +560,6 @@ function setupStage() {
   document.getElementById('container').appendChild(GAME.renderer.view)
 }
 
-function setupSceneGameMap() {
-  makeMap(GRID.x, GRID.y, GRID.cols, GRID.rows)
-}
-
 function setupScenes() {
   SCENES.menu = new P.DisplayObjectContainer()
   SCENES.menu.visible = false
@@ -579,7 +575,7 @@ function setupScenes() {
 }
 
 function setupSceneGameTexts() {
-  var texts = setupText(SCENES.game, GAME.x, R)
+  var texts = setupText(SCENES.game, GAME.x, GRID.r)
 
   STATE.textScore = texts[0]
   //STATE.textRows = texts[1]
@@ -588,7 +584,7 @@ function setupSceneGameTexts() {
 }
 
 function setupSceneGame() {
-  setupSceneGameMap()
+  setupSceneGameMap(GRID)
   setupSceneGameTexts()
   setupNewFP()
 }
