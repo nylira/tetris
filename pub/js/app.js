@@ -36,13 +36,16 @@ var CANVAS_X = 1080/2*R
 var CANVAS_Y = 1920/2*R
 var GU = 30*R
 var REFRESH_RATE = 500
-var GRID = {}
 var TYPES = ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
 var ROWS_TO_LEVEL_UP = 10
 
 /*============================================================================*/
 // Variables
 /*============================================================================*/
+
+// collections
+var GRID = {}
+var TEXTURES = {}
 
 // stage variables
 var stage, renderer
@@ -67,17 +70,6 @@ var TextNextPiece
 var sceneMenu
 var sceneGame
 var sceneSummary
-
-// textures
-var TBlockRed
-var TBlockGreen
-var TBlockBlue
-var TBlockCyan
-var TBlockMagenta
-var TBlockYellow
-var TBlockWhite
-var TBackground
-var blockTextures
 
 // sprites
 var FPArray
@@ -137,7 +129,7 @@ function addGhostToField(fp, fpGhost) {
   var newFpGhost = []
 
   for(i=0; i < fp.length; i++) {
-    newFpGhost.push(new P.Sprite(textureFP(FPType, blockTextures)))
+    newFpGhost.push(new P.Sprite(textureFP(FPType, TEXTURES)))
     newFpGhost[i].position.x = fp[i].position.x
     newFpGhost[i].position.y = fp[i].position.y
     newFpGhost[i].alpha = 0.0
@@ -405,7 +397,7 @@ function setupNewFP() {
     bagOfPieces = _.shuffle(TYPES)
   }
 
-  FPArray = newFP(bagOfPieces.pop(), blockTextures, GRID.x, GRID.y, GRID.width, GU)
+  FPArray = newFP(bagOfPieces.pop(), TEXTURES, GRID.x, GRID.y, GRID.width, GU)
 
   if(bagOfPieces === undefined || bagOfPieces.length === 0) {
     bagOfPieces = _.shuffle(TYPES)
@@ -532,7 +524,7 @@ function makeMap(x, y, width, height) {
   var i, j, sprite
   for(i=0; i < height; i++) {
     for(j=0; j < width; j++) {
-      sprite = new P.Sprite(TBackground)
+      sprite = new P.Sprite(TEXTURES.background)
       sprite.position.x =  x + GU * j
       sprite.position.y =  y + GU * i
       sceneGame.addChild(sprite)
@@ -563,26 +555,24 @@ function setupBindings(){
 
 function setupTextures() {
   if(R === 2){
-    TBlockRed = new P.Texture.fromImage('../img/blockRed30@x2.png')
-    TBlockGreen = new P.Texture.fromImage('../img/blockGreen30@x2.png')
-    TBlockBlue = new P.Texture.fromImage('../img/blockBlue30@x2.png')
-    TBlockCyan = new P.Texture.fromImage('../img/blockCyan30@x2.png')
-    TBlockMagenta = new P.Texture.fromImage('../img/blockMagenta30@x2.png')
-    TBlockYellow = new P.Texture.fromImage('../img/blockYellow30@x2.png')
-    TBlockWhite = new P.Texture.fromImage('../img/blockWhite30@x2.png')
-    TBackground = new P.Texture.fromImage('../img/darkGrid30@x2.png')
+    TEXTURES.blockRed = new P.Texture.fromImage('../img/blockRed30@x2.png')
+    TEXTURES.blockGreen = new P.Texture.fromImage('../img/blockGreen30@x2.png')
+    TEXTURES.blockBlue = new P.Texture.fromImage('../img/blockBlue30@x2.png')
+    TEXTURES.blockCyan = new P.Texture.fromImage('../img/blockCyan30@x2.png')
+    TEXTURES.blockMagenta = new P.Texture.fromImage('../img/blockMagenta30@x2.png')
+    TEXTURES.blockYellow = new P.Texture.fromImage('../img/blockYellow30@x2.png')
+    TEXTURES.blockWhite = new P.Texture.fromImage('../img/blockWhite30@x2.png')
+    TEXTURES.background = new P.Texture.fromImage('../img/darkGrid30@x2.png')
   } else {
-    TBlockRed = new P.Texture.fromImage('../img/blockRed30.png')
-    TBlockGreen = new P.Texture.fromImage('../img/blockGreen30.png')
-    TBlockBlue = new P.Texture.fromImage('../img/blockBlue30.png')
-    TBlockCyan = new P.Texture.fromImage('../img/blockCyan30.png')
-    TBlockMagenta = new P.Texture.fromImage('../img/blockMagenta30.png')
-    TBlockYellow = new P.Texture.fromImage('../img/blockYellow30.png')
-    TBlockWhite = new P.Texture.fromImage('../img/blockWhite30.png')
-    TBackground = new P.Texture.fromImage('../img/darkGrid30.png')
+    TEXTURES.blockRed = new P.Texture.fromImage('../img/blockRed30.png')
+    TEXTURES.blockGreen = new P.Texture.fromImage('../img/blockGreen30.png')
+    TEXTURES.blockBlue = new P.Texture.fromImage('../img/blockBlue30.png')
+    TEXTURES.blockCyan = new P.Texture.fromImage('../img/blockCyan30.png')
+    TEXTURES.blockMagenta = new P.Texture.fromImage('../img/blockMagenta30.png')
+    TEXTURES.blockYellow = new P.Texture.fromImage('../img/blockYellow30.png')
+    TEXTURES.blockWhite = new P.Texture.fromImage('../img/blockWhite30.png')
+    TEXTURES.background = new P.Texture.fromImage('../img/darkGrid30.png')
   }
-
-  blockTextures = [TBlockRed, TBlockGreen, TBlockBlue, TBlockCyan, TBlockMagenta, TBlockYellow, TBlockWhite]
 }
 
 function setupStage() {

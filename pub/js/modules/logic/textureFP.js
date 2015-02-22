@@ -1,15 +1,20 @@
+(function(){
+'use strict'
+
 function textureFP(FourPieceType, textures) {
   var texture;
   switch(FourPieceType) {
-    case 'I': texture = textures[0]; break;
-    case 'J': texture = textures[1]; break;
-    case 'L': texture = textures[2]; break;
-    case 'O': texture = textures[3]; break;
-    case 'S': texture = textures[4]; break;
-    case 'T': texture = textures[5]; break;
-    case 'Z': texture = textures[6]; break;
+    case 'I': texture = textures.blockRed; break;
+    case 'J': texture = textures.blockGreen; break;
+    case 'L': texture = textures.blockBlue; break;
+    case 'O': texture = textures.blockCyan; break;
+    case 'S': texture = textures.blockMagenta; break;
+    case 'T': texture = textures.blockYellow; break;
+    case 'Z': texture = textures.blockWhite; break;
   }
   return texture;
 }
 
 module.exports = textureFP;
+
+}())
