@@ -1,5 +1,6 @@
 // TODO: random initial rotation
 // TODO: make blocks spawn above grid
+// TODO: paint four piece after if you press the down button
 
 (function() {
 'use strict'
@@ -48,25 +49,27 @@ var GRID = {}
 var TEXTURES = {}
 var SCENES = {}
 
+var STATE = {
+  score: 0
+, rows: 0
+, level: 0
+, fpLanded: false
+, ghostLanded: false
+, gameRunning: true
+, gameOver: false
+, occupied: []
+, bag: []
+}
+
 // stage variables
 var stage, renderer
 var timer = new Date().getTime() + REFRESH_RATE
-var bagOfPieces
-var fpLanded = false
-var ghostLanded = false
-var gameRunning = true
-var gameOver = false
-
-var currentScore = 0
-var currentRows = 0
-var currentLevel = 0
 
 // texts
 var TextScore
 //var TextRows
 var TextLevel
 var TextNextPiece
-
 
 // sprites
 var FPArray
@@ -76,7 +79,6 @@ var FPRotation
 var FPGhost
 
 var field
-var occupied = []
 
 /*----------------------------------------------------------------------------*/
 // Helpers
@@ -121,7 +123,7 @@ function rmGhostFromField(fpGhost) {
 
 function addGhostToField(fp, fpGhost) {
   rmGhostFromField(fpGhost)
-  ghostLanded = false
+  STATE.ghostLanded = false
   var i
   var newFpGhost = []
 
@@ -139,8 +141,8 @@ function collisionSouth(piece, occupied) {
   var collision = false
   var i
   for(i=0; i < occupied.length; i++) {
-    if(occupied[i].position.x === piece.position.x &&
-       occupied[i].position.y === piece.position.y + GU) {
+    if(STATE.occupied[i].position.x === piece.position.x &&
+       STATE.occupied[i].position.y === piece.position.y + GU) {
       collision = true
     }
   }
@@ -151,8 +153,8 @@ function collisionEast(piece, occupied) {
   var collision = false
   var i
   for(i=0; i < occupied.length; i++) {
-    if(occupied[i].position.x === piece.position.x + GU &&
-       occupied[i].position.y === piece.position.y) {
+    if(STATE.occupied[i].position.x === piece.position.x + GU &&
+       STATE.occupied[i].position.y === piece.position.y) {
       collision= true
     }
   }
@@ -163,8 +165,8 @@ function collisionWest(piece, occupied) {
   var collision = false
   var i
   for(i=0; i < occupied.length; i++) {
-    if(occupied[i].position.x === piece.position.x - GU &&
-       occupied[i].position.y === piece.position.y) {
+    if(STATE.occupied[i].position.x === piece.position.x - GU &&
+       STATE.occupied[i].position.y === piece.position.y) {
       collision= true
     }
   }
@@ -176,7 +178,7 @@ function moveWest(fp) {
   var i, k
   for(i=0; i < fp.length; i++) {
     if( fp[i].position.x !== GRID.boundsLeft &&
-        collisionWest(fp[i], occupied) === false) {
+        collisionWest(fp[i], STATE.occupied) === false) {
       doable++
     }
   }
@@ -184,7 +186,7 @@ function moveWest(fp) {
     for(k=0; k < fp.length; k++) {
       fp[k].position.x = fp[k].position.x - GU
     }
-    FPGhost = addGhostToField(FP, FPGhost, occupied)
+    FPGhost = addGhostToField(FP, FPGhost, STATE.occupied)
   }
 }
 
@@ -193,7 +195,7 @@ function moveEast(fp) {
   var j, l
   for(j=0; j < fp.length; j++) {
     if(fp[j].position.x !== GRID.boundsRight &&
-        collisionEast(fp[j], occupied) === false) {
+        collisionEast(fp[j], STATE.occupied) === false) {
       doable++
     }
   }
@@ -201,7 +203,7 @@ function moveEast(fp) {
     for(l=0; l < fp.length; l++) {
       fp[l].position.x = fp[l].position.x + GU
     }
-    FPGhost = addGhostToField(FP, FPGhost, occupied)
+    FPGhost = addGhostToField(FP, FPGhost, STATE.occupied)
   }
 }
 
@@ -210,7 +212,7 @@ function moveSouth(fp) {
   var j, l
   for(j=0; j < fp.length; j++) {
     if(fp[j].position.y !== GRID.floor &&
-        collisionSouth(fp[j], occupied) === false) {
+        collisionSouth(fp[j], STATE.occupied) === false) {
       doable++
     }
   }
@@ -236,19 +238,19 @@ function checkIfFPLanded() {
   for(j=0; j < FP.length; j++) {
 
     // game over if piece lands and hits the ceiling
-    if(fpLanded === true && FP[j].position.y === GRID.ciel) {
-      gameOver = true
+    if(STATE.fpLanded === true && FP[j].position.y === GRID.ciel) {
+      STATE.gameOver = true
       console.log('GAME OVER')
     }
 
     // stacking on others
-    if(collisionSouth(FP[j], occupied) === true) {
-      fpLanded = true
+    if(collisionSouth(FP[j], STATE.occupied) === true) {
+      STATE.fpLanded = true
       break
     }
     // stacking on ground
     if(FP[j].position.y === GRID.floor) {
-      fpLanded = true
+      STATE.fpLanded = true
       break
     }
   }
@@ -264,8 +266,8 @@ function inSameRow(piece, occupied) {
   var inThisRow = []
   var i
   for(i=0; i < occupied.length; i++) {
-    if(occupied[i].position.y === piece.position.y) {
-      inThisRow.push(occupied[i])
+    if(STATE.occupied[i].position.y === piece.position.y) {
+      inThisRow.push(STATE.occupied[i])
     }
   }
   return inThisRow
@@ -274,7 +276,7 @@ function inSameRow(piece, occupied) {
 function stillOccupied(inThisRow, occupied) {
   var newOccupied = []
   var j, k
-  // if the occupied pieces aren't in the row, add them to newOccupied
+  // if the STATE.occupied pieces aren't in the row, add them to newOccupied
   for(j=0; j < occupied.length; j++) {
     for(k=0; k < inThisRow.length; k++) {
       if(occupied[j].position.x !== inThisRow[k].position.x &&
@@ -288,7 +290,7 @@ function stillOccupied(inThisRow, occupied) {
 }
 
 function checkIfRowIsFull(piece) {
-  var inThisRow = inSameRow(piece, occupied)
+  var inThisRow = inSameRow(piece, STATE.occupied)
   var isRowFull, i, l
   // if the row is full
   if(inThisRow.length === GRID.cols) {
@@ -303,13 +305,13 @@ function checkIfRowIsFull(piece) {
     }
     //console.log('post fop length:', field.children.length)
 
-    occupied = stillOccupied(inThisRow, occupied)
-    //console.log('occupied slots after cleanup: ', slots(occupied))
+    STATE.occupied = stillOccupied(inThisRow, STATE.occupied)
+    //console.log('STATE.occupied slots after cleanup: ', slots(STATE.occupied))
 
     // scooch all the rows above down
-    for(i=0; i < occupied.length; i++) {
-      if(occupied[i].position.y < clearedRowY) {
-        occupied[i].position.y += GU
+    for(i=0; i < STATE.occupied.length; i++) {
+      if(STATE.occupied[i].position.y < clearedRowY) {
+        STATE.occupied[i].position.y += GU
       }
     }
   }
@@ -340,39 +342,39 @@ function updateText(textObject, theText, positionX, positionY) {
 }
 
 function updateRows(rows) {
-  currentRows += rows
-  console.log('Current Rows Cleared:', currentRows)
-  //updateText(TextRows, currentRows + ' rows', 'center', 72)
+  STATE.rows += rows
+  console.log('Current Rows Cleared:', STATE.rows)
+  //updateText(TextRows, STATE.rows + ' rows', 'center', 72)
 }
 
 function updateLevel(rows) {
-  if(currentRows >= ROWS_TO_LEVEL_UP && currentRows % ROWS_TO_LEVEL_UP === 0) {
-    currentLevel = Math.floor(rows / ROWS_TO_LEVEL_UP)
-    REFRESH_RATE = Math.round(REFRESH_RATE * Math.pow(0.95, currentLevel))
-    console.log('Current Level:', currentLevel)
-    updateText(TextLevel, 'LVL ' + currentLevel, 'left', 12)
+  if(STATE.rows >= ROWS_TO_LEVEL_UP && STATE.rows % ROWS_TO_LEVEL_UP === 0) {
+    STATE.level = Math.floor(rows / ROWS_TO_LEVEL_UP)
+    REFRESH_RATE = Math.round(REFRESH_RATE * Math.pow(0.95, STATE.level))
+    console.log('Current Level:', STATE.level)
+    updateText(TextLevel, 'LVL ' + STATE.level, 'left', 12)
     console.log('Current Speed:', REFRESH_RATE)
   }
-  return currentLevel
+  return STATE.level
 }
 
 function updatePoints(rows) {
   var points = 0
   switch(rows) {
-    case 1: points = 40 * (currentLevel + 1); break
-    case 2: points = 100 * (currentLevel + 1); break
-    case 3: points = 300 * (currentLevel + 1); break
-    case 4: points = 1200 * (currentLevel + 1); break
+    case 1: points = 40 * (STATE.level + 1); break
+    case 2: points = 100 * (STATE.level + 1); break
+    case 3: points = 300 * (STATE.level + 1); break
+    case 4: points = 1200 * (STATE.level + 1); break
   }
-  currentScore += points
-  console.log('Current Points:', currentScore)
-  updateText(TextScore, currentScore, 'center', 12)
+  STATE.score += points
+  console.log('Current Points:', STATE.score)
+  updateText(TextScore, STATE.score, 'center', 12)
 }
 
 function updateUI(rows) {
   if(rows > 0) {
     updateRows(rows)
-    updateLevel(currentRows)
+    updateLevel(STATE.rows)
     updatePoints(rows)
   }
 }
@@ -390,18 +392,18 @@ function checkIfRowsAreFull(fp) {
 
 function setupNewFP() {
   var i
-  if(bagOfPieces === undefined || bagOfPieces.length === 0) {
-    bagOfPieces = _.shuffle(TYPES)
+  if(STATE.bag === undefined || STATE.bag.length === 0) {
+    STATE.bag = _.shuffle(TYPES)
   }
 
-  FPArray = newFP(bagOfPieces.pop(), TEXTURES, GRID.x, GRID.y, GRID.width, GU)
+  FPArray = newFP(STATE.bag.pop(), TEXTURES, GRID.x, GRID.y, GRID.width, GU)
 
-  if(bagOfPieces === undefined || bagOfPieces.length === 0) {
-    bagOfPieces = _.shuffle(TYPES)
+  if(STATE.bag === undefined || STATE.bag.length === 0) {
+    STATE.bag = _.shuffle(TYPES)
   }
 
-  console.log('Next Piece:', bagOfPieces[bagOfPieces.length - 1])
-  updateText(TextNextPiece, 'Next: ' + bagOfPieces[bagOfPieces.length - 1], 'right', 12)
+  console.log('Next Piece:', STATE.bag[STATE.bag.length - 1])
+  updateText(TextNextPiece, 'Next: ' + STATE.bag[STATE.bag.length - 1], 'right', 12)
 
   FP = FPArray[0]
   FPType = FPArray[1]
@@ -411,17 +413,17 @@ function setupNewFP() {
     field.addChild(FP[i])
   }
 
-  FPGhost = addGhostToField(FP, FPGhost, occupied)
+  FPGhost = addGhostToField(FP, FPGhost, STATE.occupied)
 
   showFPOnceInView(FP)
 }
 
 function stepUpdate(){
-  if(fpLanded === true) {
-    addFPToOccupied(FP, occupied)
+  if(STATE.fpLanded === true) {
+    addFPToOccupied(FP, STATE.occupied)
     checkIfRowsAreFull(FP)
     setupNewFP()
-    fpLanded = false
+    STATE.fpLanded = false
   }
   moveSouth(FP)
   showFPOnceInView(FP)
@@ -432,20 +434,20 @@ function updateGhost(){
   var i, k
   for(k=0; k < FPGhost.length; k++) {
 
-    // if ghost collides with occupied tiles
-    if(collisionSouth(FPGhost[k], occupied) === true) {
-      ghostLanded = true
-    } else if (ghostLanded === false){
+    // if ghost collides with STATE.occupied tiles
+    if(collisionSouth(FPGhost[k], STATE.occupied) === true) {
+      STATE.ghostLanded = true
+    } else if (STATE.ghostLanded === false){
       moveSouth(FPGhost)
     }
     // if ghost collides with floor
     if (FPGhost[k].position.y === GRID.floor) {
-      ghostLanded = true
-    } else if (ghostLanded === false){
+      STATE.ghostLanded = true
+    } else if (STATE.ghostLanded === false){
       moveSouth(FPGhost)
     }
     // if ghost is colliding with something
-    if(ghostLanded === true) {
+    if(STATE.ghostLanded === true) {
       FPGhost[k].alpha = 0.25
 
       // if ghost collides with real thing
@@ -467,27 +469,27 @@ function slideDownIfPossible() {
   var canPieceFall = false
   var pointlessPieces = []
 
-  // for each occupiedPiece
-  for(m=0; m < occupied.length; m++) {
+  // for each STATE.occupiedPiece
+  for(m=0; m < STATE.occupied.length; m++) {
 
-    // get a list of pieces that are NOT underneath occupied piece
-    for(n=0; n < occupied.length; n++) {
-      if( _.isEqual(occupied[n].position
-        , new P.Point( occupied[m].position.x
-                     , occupied[m].position.y + GU)) === false) {
-        pointlessPieces.push(occupied[m])
+    // get a list of pieces that are NOT underneath STATE.occupied piece
+    for(n=0; n < STATE.occupied.length; n++) {
+      if( _.isEqual(STATE.occupied[n].position
+        , new P.Point( STATE.occupied[m].position.x
+                     , STATE.occupied[m].position.y + GU)) === false) {
+        pointlessPieces.push(STATE.occupied[m])
         //console.log('pointlessPieces.length', pointlessPieces.length)
       }
     }
 
-    // if all the pieces are pointless, that means occupiedPiece can fall
-    if(pointlessPieces.length === occupied.length) {
+    // if all the pieces are pointless, that means STATE.occupiedPiece can fall
+    if(pointlessPieces.length === STATE.occupied.length) {
       canPieceFall = true
     }
 
-    // add occupiedPiece to a list of pieces that can fall
-    if(canPieceFall === true && occupied[m].position.y < GRID.floor) {
-      canFall.push(occupied[m])
+    // add STATE.occupiedPiece to a list of pieces that can fall
+    if(canPieceFall === true && STATE.occupied[m].position.y < GRID.floor) {
+      canFall.push(STATE.occupied[m])
       canFall = _.uniq(canFall)
     }
   }
@@ -507,13 +509,13 @@ function slideDownIfPossible() {
 */
 
 /*
-function slots(occupied) {
-  var occupiedSlots = []
+function slots(STATE.occupied) {
+  var STATE.occupiedSlots = []
   var i
-  for(i=0; i < occupied.length; i++) {
-    occupiedSlots.push([occupied[i].position.x, occupied[i].position.y])
+  for(i=0; i < STATE.occupied.length; i++) {
+    STATE.occupiedSlots.push([STATE.occupied[i].position.x, STATE.occupied[i].position.y])
   }
-  return JSON.stringify(occupiedSlots)
+  return JSON.stringify(STATE.occupiedSlots)
 }
 */
 
@@ -544,10 +546,10 @@ function setupBindings(){
   combokeys.bind(['d', 'right'], function(){moveActiveFP(FP, 'e')})
   combokeys.bind(['s', 'down'], function(){moveActiveFP(FP, 's')})
   combokeys.bind(['w', 'up'], function(){
-    FPRotation = rotateFP(FP, FPType, FPRotation, occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GU)
-    FPGhost = addGhostToField(FP, FPGhost, occupied)
+    FPRotation = rotateFP(FP, FPType, FPRotation, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GU)
+    FPGhost = addGhostToField(FP, FPGhost, STATE.occupied)
   })
-  combokeys.bind(['x', 'space'], function(){gameRunning = !gameRunning})
+  combokeys.bind(['x', 'space'], function(){STATE.gameRunning = !STATE.gameRunning})
 }
 
 function setupTextures() {
@@ -634,7 +636,7 @@ function setup() {
 function update() {
   requestAnimationFrame(update)
 
-  if(gameRunning === true && gameOver === false) {
+  if(STATE.gameRunning === true && STATE.gameOver === false) {
     checkIfFPLanded()
     updateGhost()
     if(timer < new Date().getTime()) {stepUpdate()}
