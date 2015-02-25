@@ -1,3 +1,6 @@
+(function(){
+'use strict'
+
 function blocked(fp, occupied, bl, br) {
   var val = false;
   var i, l;
@@ -280,3 +283,5 @@ function rotateFP(fp, fpType, fpRotation, occupied, bl, br, w, gu) {
 
 
 module.exports = rotateFP;
+
+}())

@@ -8,7 +8,7 @@
 // Modules
 /*============================================================================*/
 
-//var $ = require('jquery')
+var $ = require('jquery')
 var P = require('pixi.js')
 var _ = require('lodash')
 var Combokeys = require('combokeys')
@@ -602,6 +602,7 @@ function setup() {
   setupSceneGame()
 }
 
+
 /*----------------------------------------------------------------------------*/
 //  update()
 /*----------------------------------------------------------------------------*/
@@ -624,5 +625,23 @@ function update() {
 setup()
 update()
 drawUI()
+
+/*----------------------------------------------------------------------------*/
+//  watch for jquery events after map is drawn
+/*----------------------------------------------------------------------------*/
+
+$('#btnNorth').click(function() {
+  FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
+  FP.ghost = addGhostToField(FP.pieces, FP.ghost, STATE.occupied)
+})
+$('#btnSouth').click(function() {
+  moveActiveFP(FP.pieces, 's')
+})
+$('#btnEast').click(function() {
+  moveActiveFP(FP.pieces, 'e')
+})
+$('#btnWest').click(function() {
+  moveActiveFP(FP.pieces, 'w')
+})
 
 }())
