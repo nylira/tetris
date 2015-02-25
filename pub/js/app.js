@@ -57,6 +57,8 @@ var STATE = {
 , bag: []
 }
 
+var moveSouthInterval
+
 /*----------------------------------------------------------------------------*/
 // Helpers
 /*----------------------------------------------------------------------------*/
@@ -399,13 +401,15 @@ function setupNewFP() {
 
 function stepUpdate(){
   if(STATE.fpLanded === true) {
+
+    clearInterval(moveSouthInterval)
+
     addFPToOccupied(FP.pieces, STATE.occupied)
     checkIfRowsAreFull(FP.pieces)
     setupNewFP()
     STATE.fpLanded = false
   }
   moveSouth(FP.pieces)
-  showFPOnceInView(FP.pieces)
   GAME.timer = new Date().getTime() + GAME.tick
 }
 
@@ -524,6 +528,16 @@ function setupBindings(){
   combokeys.bind(['a', 'left'], function(){moveActiveFP(FP.pieces, 'w')})
   combokeys.bind(['d', 'right'], function(){moveActiveFP(FP.pieces, 'e')})
   combokeys.bind(['s', 'down'], function(){moveActiveFP(FP.pieces, 's')})
+  /*
+  combokeys.bind(['s', 'down'], function(){
+    moveSouthPeriodically()
+    console.log('down key')
+  }, 'keydown')
+  combokeys.bind(['s', 'down'], function(){
+    console.log('up key')
+    clearInterval(moveSouthInterval)
+  }, 'keyup')
+  */
   combokeys.bind(['w', 'up'], function(){
     FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
     FP.ghost = addGhostToField(FP.pieces, FP.ghost, STATE.occupied)
@@ -588,6 +602,16 @@ function setupSceneGame() {
   setupNewFP()
 }
 
+function moveSouthPeriodically() {
+  moveActiveFP(FP.pieces, 's')
+
+  moveSouthInterval = setInterval(function () {
+    moveActiveFP(FP.pieces, 's')
+  }, 50)
+}
+
+
+
 /*============================================================================*/
 // setup()
 /*============================================================================*/
@@ -611,8 +635,12 @@ function update() {
   requestAnimationFrame(update)
 
   if(STATE.gameRunning === true && STATE.gameOver === false) {
+    showFPOnceInView(FP.pieces)
+
     checkIfFPLanded(FP.pieces)
+
     updateGhost()
+
     if(GAME.timer < new Date().getTime()) {stepUpdate()}
   }
 
@@ -634,13 +662,23 @@ $('#btnNorth').click(function() {
   FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
   FP.ghost = addGhostToField(FP.pieces, FP.ghost, STATE.occupied)
 })
-$('#btnSouth').click(function() {
-  moveActiveFP(FP.pieces, 's')
+
+$('#btnSouth').on('mousedown touchstart', function() {
+  moveSouthPeriodically()
 })
-$('#btnEast').click(function() {
+$('#btnSouth').on('mouseup touchend', function() {
+  console.log('mouse up')
+  clearInterval(moveSouthInterval)
+})
+$('#btnSouth').on('mouseout', function() {
+  console.log('mouse out')
+  clearInterval(moveSouthInterval)
+})
+
+$('#btnEast').on('mousedown touchstart', function() {
   moveActiveFP(FP.pieces, 'e')
 })
-$('#btnWest').click(function() {
+$('#btnWest').on('mousedown touchstart', function() {
   moveActiveFP(FP.pieces, 'w')
 })
 
