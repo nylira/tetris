@@ -57,7 +57,7 @@ var STATE = {
 , bag: []
 }
 
-var moveSouthInterval
+var moveInterval
 
 /*----------------------------------------------------------------------------*/
 // Helpers
@@ -402,7 +402,7 @@ function setupNewFP() {
 function stepUpdate(){
   if(STATE.fpLanded === true) {
 
-    clearInterval(moveSouthInterval)
+    clearInterval(moveInterval)
 
     addFPToOccupied(FP.pieces, STATE.occupied)
     checkIfRowsAreFull(FP.pieces)
@@ -528,16 +528,6 @@ function setupBindings(){
   combokeys.bind(['a', 'left'], function(){moveActiveFP(FP.pieces, 'w')})
   combokeys.bind(['d', 'right'], function(){moveActiveFP(FP.pieces, 'e')})
   combokeys.bind(['s', 'down'], function(){moveActiveFP(FP.pieces, 's')})
-  /*
-  combokeys.bind(['s', 'down'], function(){
-    moveSouthPeriodically()
-    console.log('down key')
-  }, 'keydown')
-  combokeys.bind(['s', 'down'], function(){
-    console.log('up key')
-    clearInterval(moveSouthInterval)
-  }, 'keyup')
-  */
   combokeys.bind(['w', 'up'], function(){
     FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
     FP.ghost = addGhostToField(FP.pieces, FP.ghost, STATE.occupied)
@@ -602,12 +592,14 @@ function setupSceneGame() {
   setupNewFP()
 }
 
-function moveSouthPeriodically() {
-  moveActiveFP(FP.pieces, 's')
+function movePeriodically(direction, delay) {
+  delay = typeof delay !== 'undefined' ? delay : 100
 
-  moveSouthInterval = setInterval(function () {
-    moveActiveFP(FP.pieces, 's')
-  }, 50)
+  moveActiveFP(FP.pieces, direction)
+
+  moveInterval = setInterval(function () {
+    moveActiveFP(FP.pieces, direction)
+  }, delay)
 }
 
 
@@ -664,22 +656,34 @@ $('#btnNorth').click(function() {
 })
 
 $('#btnSouth').on('mousedown touchstart', function() {
-  moveSouthPeriodically()
+  movePeriodically('s', 50)
 })
 $('#btnSouth').on('mouseup touchend', function() {
-  console.log('mouse up')
-  clearInterval(moveSouthInterval)
+  clearInterval(moveInterval)
 })
 $('#btnSouth').on('mouseout', function() {
-  console.log('mouse out')
-  clearInterval(moveSouthInterval)
+  clearInterval(moveInterval)
 })
 
 $('#btnEast').on('mousedown touchstart', function() {
-  moveActiveFP(FP.pieces, 'e')
+  movePeriodically('e')
 })
+$('#btnEast').on('mouseup touchend', function() {
+  clearInterval(moveInterval)
+})
+$('#btnEast').on('mouseout', function() {
+  clearInterval(moveInterval)
+})
+
 $('#btnWest').on('mousedown touchstart', function() {
-  moveActiveFP(FP.pieces, 'w')
+  movePeriodically('w')
+})
+
+$('#btnWest').on('mouseup touchend', function() {
+  clearInterval(moveInterval)
+})
+$('#btnWest').on('mouseout', function() {
+  clearInterval(moveInterval)
 })
 
 }())
