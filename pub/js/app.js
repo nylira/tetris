@@ -57,7 +57,7 @@ var STATE = {
 , bag: []
 }
 
-var moveInterval
+var moveInterval, moveTimeout
 
 /*----------------------------------------------------------------------------*/
 // Helpers
@@ -399,11 +399,14 @@ function setupNewFP() {
   showFPOnceInView(FP.pieces)
 }
 
+function clearMovement() {
+  clearInterval(moveInterval)
+  clearTimeout(moveTimeout)
+}
+
 function stepUpdate(){
   if(STATE.fpLanded === true) {
-
-    clearInterval(moveInterval)
-
+    clearMovement()
     addFPToOccupied(FP.pieces, STATE.occupied)
     checkIfRowsAreFull(FP.pieces)
     setupNewFP()
@@ -593,13 +596,19 @@ function setupSceneGame() {
 }
 
 function movePeriodically(direction, delay) {
-  delay = typeof delay !== 'undefined' ? delay : 100
+  delay = typeof delay !== 'undefined' ? delay : 30
 
   moveActiveFP(FP.pieces, direction)
 
-  moveInterval = setInterval(function () {
-    moveActiveFP(FP.pieces, direction)
-  }, delay)
+  // wait 225ms until starting the repeat process
+  moveTimeout = setTimeout(function() {
+
+    // repeat every 30ms
+    moveInterval = setInterval(function () {
+      moveActiveFP(FP.pieces, direction)
+    }, delay)
+
+  }, 225)
 }
 
 
@@ -656,23 +665,23 @@ $('#btnNorth').click(function() {
 })
 
 $('#btnSouth').on('mousedown touchstart', function() {
-  movePeriodically('s', 50)
+  movePeriodically('s')
 })
 $('#btnSouth').on('mouseup touchend', function() {
-  clearInterval(moveInterval)
+  clearMovement()
 })
 $('#btnSouth').on('mouseout', function() {
-  clearInterval(moveInterval)
+  clearMovement()
 })
 
 $('#btnEast').on('mousedown touchstart', function() {
   movePeriodically('e')
 })
 $('#btnEast').on('mouseup touchend', function() {
-  clearInterval(moveInterval)
+  clearMovement()
 })
 $('#btnEast').on('mouseout', function() {
-  clearInterval(moveInterval)
+  clearMovement()
 })
 
 $('#btnWest').on('mousedown touchstart', function() {
@@ -680,10 +689,10 @@ $('#btnWest').on('mousedown touchstart', function() {
 })
 
 $('#btnWest').on('mouseup touchend', function() {
-  clearInterval(moveInterval)
+  clearMovement()
 })
 $('#btnWest').on('mouseout', function() {
-  clearInterval(moveInterval)
+  clearMovement()
 })
 
 }())
