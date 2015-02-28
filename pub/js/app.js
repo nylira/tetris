@@ -21,11 +21,10 @@ attachFastClick(document.body)
 // Functions
 /*============================================================================*/
 
-var newFP = require('./modules/logic/newFP.js')
-var rotateFP = require('./modules/logic/rotateFP.js')
-var textureFP = require('./modules/logic/textureFP')
-var setupText = require('./modules/logic/setupText')
-//var drawUI = require('./modules/react/drawUI')
+var newFP = require('./modules/game/newFP.js')
+var rotateFP = require('./modules/game/rotateFP.js')
+var textureFP = require('./modules/game/textureFP')
+var setupText = require('./modules/game/setupText')
 
 /*============================================================================*/
 // Variables
@@ -655,7 +654,6 @@ function update() {
 
 setup()
 update()
-//drawUI()
 
 /*----------------------------------------------------------------------------*/
 //  watch for jquery events after map is drawn
