@@ -8,7 +8,6 @@
 // Modules
 /*============================================================================*/
 
-//var $ = require('jquery')
 var P = require('pixi.js')
 var _ = require('lodash')
 var Combokeys = require('combokeys')
@@ -25,6 +24,7 @@ var newFP = require('./modules/game/newFP.js')
 var rotateFP = require('./modules/game/rotateFP.js')
 var textureFP = require('./modules/game/textureFP')
 var setupText = require('./modules/game/setupText')
+//var PIXIElement = require('./modules/interface/PIXIElement')
 
 /*============================================================================*/
 // Variables
