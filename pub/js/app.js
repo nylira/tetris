@@ -22,10 +22,11 @@ attachFastClick(document.body)
 
 var newFP = require('./modules/game/newFP.js')
 var rotateFP = require('./modules/game/rotateFP.js')
-var textureFP = require('./modules/game/textureFP')
 var setupText = require('./modules/game/setupText')
 var setupGrid = require('./modules/game/setupGrid')
 var collision = require('./modules/game/collision')
+var newGhost = require('./modules/game/newGhost')
+var move = require('./modules/game/move')
 //var PIXIElement = require('./modules/interface/PIXIElement')
 
 /*============================================================================*/
@@ -64,78 +65,6 @@ var moveInterval, moveTimeout
 // Helpers
 /*----------------------------------------------------------------------------*/
 
-function rmGhostFromGame(fpGhost) {
-  if(fpGhost !== undefined && fpGhost.length > 0){
-    for(var i=0; i < fpGhost.length; i++) {
-      SCENES.game.removeChild(fpGhost[i])
-    }
-  }
-}
-
-function addGhostToGame(fp, fpGhost) {
-  rmGhostFromGame(fpGhost)
-  STATE.ghostLanded = false
-  var newFpGhost = []
-
-  for(var i=0; i < fp.length; i++) {
-    newFpGhost.push(new P.Sprite(textureFP(FP.type, TEXTURES)))
-    newFpGhost[i].position.x = fp[i].position.x
-    newFpGhost[i].position.y = fp[i].position.y
-    newFpGhost[i].alpha = 0.0
-    SCENES.game.addChild(newFpGhost[i])
-  }
-  return newFpGhost
-}
-
-function moveWest(fp) {
-  var doable = 0
-  for(var i=0; i < fp.length; i++) {
-    if( fp[i].position.x !== GRID.boundsLeft &&
-        collision('w', GRID, STATE, fp[i]) === false) {
-      doable++
-    }
-  }
-  if(doable === fp.length) {
-    for(var k=0; k < fp.length; k++) {
-      fp[k].position.x = fp[k].position.x - GRID.u
-    }
-    FP.ghost = addGhostToGame(FP.pieces, FP.ghost, STATE.occupied)
-  }
-}
-
-function moveEast(fp) {
-  var doable = 0
-  var i, l
-  for(i=0; i < fp.length; i++) {
-    if(fp[i].position.x !== GRID.boundsRight &&
-        collision('e', GRID, STATE, fp[i]) === false) {
-      doable++
-    }
-  }
-  if(doable === fp.length) {
-    for(l=0; l < fp.length; l++) {
-      fp[l].position.x = fp[l].position.x + GRID.u
-    }
-    FP.ghost = addGhostToGame(FP.pieces, FP.ghost, STATE.occupied)
-  }
-}
-
-function moveSouth(fp) {
-  var doable = 0
-  var i, l
-  for(i=0; i < fp.length; i++) {
-    if(fp[i].position.y !== GRID.floor &&
-        collision('s', GRID, STATE, fp[i]) === false) {
-      doable++
-    }
-  }
-  if(doable === fp.length) {
-    for(l=0; l < fp.length; l++) {
-      fp[l].position.y = fp[l].position.y + GRID.u
-    }
-  }
-}
-
 function showFPOnceInView(fp) {
   //console.log('checking if fp is visible')
   for(var i=0; i < fp.length; i++) {
@@ -146,8 +75,7 @@ function showFPOnceInView(fp) {
 }
 
 function checkIfFPLanded(fp) {
-  var j
-  for(j=0; j < fp.length; j++) {
+  for(var j=0; j < fp.length; j++) {
 
     // game over if piece lands and hits the ceiling
     if(STATE.fpLanded === true && fp[j].position.y === GRID.ciel) {
@@ -186,10 +114,9 @@ function inSameRow(piece, occupied) {
 
 function stillOccupied(inThisRow, occupied) {
   var newOccupied = []
-  var j, k
   // if the STATE.occupied pieces aren't in the row, add them to newOccupied
-  for(j=0; j < occupied.length; j++) {
-    for(k=0; k < inThisRow.length; k++) {
+  for(var j=0; j < occupied.length; j++) {
+    for(var k=0; k < inThisRow.length; k++) {
       if(occupied[j].position.x !== inThisRow[k].position.x &&
          occupied[j].position.y !== inThisRow[k].position.y) {
         newOccupied.push(occupied[j])
@@ -292,8 +219,7 @@ function updateUI(rows) {
 
 function checkIfRowsAreFull(fp) {
   var fullRows = 0
-  var k
-  for(k=0; k < fp.length; k++) {
+  for(var k=0; k < fp.length; k++) {
     if(checkIfRowIsFull(fp[k])) {
       fullRows++
     }
@@ -319,7 +245,7 @@ function setupNewFP() {
     SCENES.game.addChild(FP.pieces[i])
   }
 
-  FP.ghost = addGhostToGame(FP.pieces, FP.ghost, STATE.occupied)
+  FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
 
   showFPOnceInView(FP.pieces)
 }
@@ -337,7 +263,7 @@ function stepUpdate(){
     setupNewFP()
     STATE.fpLanded = false
   }
-  moveSouth(FP.pieces)
+  move('s', FP, GRID, SCENES, STATE, TEXTURES)
   GAME.timer = new Date().getTime() + GAME.tick
 }
 
@@ -348,13 +274,13 @@ function updateGhost(){
     if(collision('s', GRID, STATE, FP.ghost[k]) === true) {
       STATE.ghostLanded = true
     } else if (STATE.ghostLanded === false){
-      moveSouth(FP.ghost)
+      move('s', FP, GRID, SCENES, STATE, TEXTURES, true)
     }
     // if ghost collides with floor
     if (FP.ghost[k].position.y === GRID.floor) {
       STATE.ghostLanded = true
     } else if (STATE.ghostLanded === false){
-      moveSouth(FP.ghost)
+      move('s', FP, GRID, SCENES, STATE, TEXTURES, true)
     }
     // if ghost is colliding with something
     if(STATE.ghostLanded === true) {
@@ -440,23 +366,19 @@ function setupSceneGameMap(grid) {
   }
 }
 
-function moveActiveFP(fp, direction) {
-  switch(direction) {
-    case 'w': moveWest(fp); break
-    case 'e': moveEast(fp); break
-    case 's': moveSouth(fp); break
-    default:
-      console.error('must specify a piece and a direction')
-  }
-}
-
 function setupBindings(){
-  combokeys.bind(['a', 'left'], function(){moveActiveFP(FP.pieces, 'w')})
-  combokeys.bind(['d', 'right'], function(){moveActiveFP(FP.pieces, 'e')})
-  combokeys.bind(['s', 'down'], function(){moveActiveFP(FP.pieces, 's')})
+  combokeys.bind(['a', 'left'], function(){
+    move('w', FP, GRID, SCENES, STATE, TEXTURES)
+  })
+  combokeys.bind(['d', 'right'], function(){
+    move('e', FP, GRID, SCENES, STATE, TEXTURES)
+  })
+  combokeys.bind(['s', 'down'], function(){
+    move('s', FP, GRID, SCENES, STATE, TEXTURES)
+  })
   combokeys.bind(['w', 'up'], function(){
     FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
-    FP.ghost = addGhostToGame(FP.pieces, FP.ghost, STATE.occupied)
+    FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
   })
   combokeys.bind(['x', 'space'], function(){STATE.gameRunning = !STATE.gameRunning})
 }
@@ -522,21 +444,19 @@ function setupSceneGame() {
 function movePeriodically(direction, delay) {
   delay = typeof delay !== 'undefined' ? delay : 30
 
-  moveActiveFP(FP.pieces, direction)
+  move(direction, FP, GRID, STATE)
 
   // wait 225ms until starting the repeat process
   moveTimeout = setTimeout(function() {
 
     // repeat every 30ms
     moveInterval = setInterval(function () {
-      moveActiveFP(FP.pieces, direction)
+      move(direction, FP, GRID, STATE)
     }, delay)
 
   }, 225)
 }
 */
-
-
 
 /*============================================================================*/
 // setup()
@@ -551,7 +471,6 @@ function setup() {
   setupScenes()
   setupSceneGame()
 }
-
 
 /*----------------------------------------------------------------------------*/
 //  update()
@@ -586,7 +505,7 @@ update()
 
 $('#btnNorth').click(function() {
   FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
-  FP.ghost = addGhostToGame(FP.pieces, FP.ghost, STATE.occupied)
+  FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
 })
 
 $('#btnSouth').on('mousedown touchstart', function() {
