@@ -24,6 +24,7 @@ var newFP = require('./modules/game/newFP.js')
 var rotateFP = require('./modules/game/rotateFP.js')
 var textureFP = require('./modules/game/textureFP')
 var setupText = require('./modules/game/setupText')
+var setupGrid = require('./modules/game/setupGrid')
 //var PIXIElement = require('./modules/interface/PIXIElement')
 
 /*============================================================================*/
@@ -62,44 +63,9 @@ var moveInterval, moveTimeout
 // Helpers
 /*----------------------------------------------------------------------------*/
 
-function setupGrid() {
-
-  var gridR = window.devicePixelRatio
-  var gridU = 30 * gridR
-
-  var gridCols = 10
-  var gridRows = 20
-  var gridX = 4*gridU //4
-  var gridY = 3*gridU //6
-  var gridWidth = gridCols * gridU
-  var gridHeight = gridRows * gridU
-  var gridBoundsLeft = gridX
-  var gridBoundsRight = gridX + gridWidth - gridU
-  var gridCeil = gridY
-  var gridFloor = gridY + gridHeight - gridU
-
-  var grid = {
-    cols: gridCols
-  , rows: gridRows
-  , x: gridX
-  , y: gridY
-  , width: gridWidth
-  , height: gridHeight
-  , boundsLeft: gridBoundsLeft
-  , boundsRight: gridBoundsRight
-  , ciel: gridCeil
-  , floor: gridFloor
-  , u: gridU
-  , r: gridR
-  }
-
-  return grid
-}
-
 function rmGhostFromField(fpGhost) {
-  var i
   if(fpGhost !== undefined && fpGhost.length > 0){
-    for(i=0; i < fpGhost.length; i++) {
+    for(var i=0; i < fpGhost.length; i++) {
       SCENES.game.removeChild(fpGhost[i])
     }
   }
@@ -108,10 +74,9 @@ function rmGhostFromField(fpGhost) {
 function addGhostToField(fp, fpGhost) {
   rmGhostFromField(fpGhost)
   STATE.ghostLanded = false
-  var i
   var newFpGhost = []
 
-  for(i=0; i < fp.length; i++) {
+  for(var i=0; i < fp.length; i++) {
     newFpGhost.push(new P.Sprite(textureFP(FP.type, TEXTURES)))
     newFpGhost[i].position.x = fp[i].position.x
     newFpGhost[i].position.y = fp[i].position.y
@@ -123,8 +88,7 @@ function addGhostToField(fp, fpGhost) {
 
 function collisionSouth(piece, occupied) {
   var collision = false
-  var i
-  for(i=0; i < occupied.length; i++) {
+  for(var i=0; i < occupied.length; i++) {
     if(STATE.occupied[i].position.x === piece.position.x &&
        STATE.occupied[i].position.y === piece.position.y + GRID.u) {
       collision = true
@@ -135,8 +99,7 @@ function collisionSouth(piece, occupied) {
 
 function collisionEast(piece, occupied) {
   var collision = false
-  var i
-  for(i=0; i < occupied.length; i++) {
+  for(var i=0; i < occupied.length; i++) {
     if(STATE.occupied[i].position.x === piece.position.x + GRID.u &&
        STATE.occupied[i].position.y === piece.position.y) {
       collision = true
@@ -147,8 +110,7 @@ function collisionEast(piece, occupied) {
 
 function collisionWest(piece, occupied) {
   var collision = false
-  var i
-  for(i=0; i < occupied.length; i++) {
+  for(var i=0; i < occupied.length; i++) {
     if(STATE.occupied[i].position.x === piece.position.x - GRID.u &&
        STATE.occupied[i].position.y === piece.position.y) {
       collision= true
@@ -159,15 +121,14 @@ function collisionWest(piece, occupied) {
 
 function moveWest(fp) {
   var doable = 0
-  var i, k
-  for(i=0; i < fp.length; i++) {
+  for(var i=0; i < fp.length; i++) {
     if( fp[i].position.x !== GRID.boundsLeft &&
         collisionWest(fp[i], STATE.occupied) === false) {
       doable++
     }
   }
   if(doable === fp.length) {
-    for(k=0; k < fp.length; k++) {
+    for(var k=0; k < fp.length; k++) {
       fp[k].position.x = fp[k].position.x - GRID.u
     }
     FP.ghost = addGhostToField(FP.pieces, FP.ghost, STATE.occupied)
@@ -209,8 +170,7 @@ function moveSouth(fp) {
 
 function showFPOnceInView(fp) {
   //console.log('checking if fp is visible')
-  var i
-  for(i=0; i < fp.length; i++) {
+  for(var i=0; i < fp.length; i++) {
     if(fp[i].position.y >= GRID.ciel && fp[i].visible === false) {
       fp[i].visible = true
     }
@@ -248,8 +208,7 @@ function addFPToOccupied(fp, occupied) {
 
 function inSameRow(piece, occupied) {
   var inThisRow = []
-  var i
-  for(i=0; i < occupied.length; i++) {
+  for(var i=0; i < occupied.length; i++) {
     if(STATE.occupied[i].position.y === piece.position.y) {
       inThisRow.push(STATE.occupied[i])
     }
@@ -275,7 +234,7 @@ function stillOccupied(inThisRow, occupied) {
 
 function checkIfRowIsFull(piece) {
   var inThisRow = inSameRow(piece, STATE.occupied)
-  var isRowFull, i, l
+  var isRowFull
   // if the row is full
   if(inThisRow.length === GRID.cols) {
     isRowFull = true
@@ -284,8 +243,8 @@ function checkIfRowIsFull(piece) {
 
     // clear the row visually
     //console.log('pre fop length:', SCENES.game.children.length)
-    for(l=0; l < inThisRow.length; l++) {
-      SCENES.game.removeChild(inThisRow[l])
+    for(var j=0; j < inThisRow.length; j++) {
+      SCENES.game.removeChild(inThisRow[j])
     }
     //console.log('post fop length:', SCENES.game.children.length)
 
@@ -293,7 +252,7 @@ function checkIfRowIsFull(piece) {
     //console.log('STATE.occupied slots after cleanup: ', slots(STATE.occupied))
 
     // scooch all the rows above down
-    for(i=0; i < STATE.occupied.length; i++) {
+    for(var i=0; i < STATE.occupied.length; i++) {
       if(STATE.occupied[i].position.y < clearedRowY) {
         STATE.occupied[i].position.y += GRID.u
       }
@@ -375,7 +334,6 @@ function checkIfRowsAreFull(fp) {
 }
 
 function setupNewFP() {
-  var i
   if(STATE.bag === undefined || STATE.bag.length === 0) {
     STATE.bag = _.shuffle(GAME.fpTypes)
   }
@@ -389,7 +347,7 @@ function setupNewFP() {
   console.log('Next Piece:', STATE.bag[STATE.bag.length - 1])
   updateText(STATE.textNextPiece, 'Next: ' + STATE.bag[STATE.bag.length - 1], 'right', 12)
 
-  for(i=0; i < FP.pieces.length; i++) {
+  for(var i=0; i < FP.pieces.length; i++) {
     SCENES.game.addChild(FP.pieces[i])
   }
 
@@ -416,8 +374,7 @@ function stepUpdate(){
 }
 
 function updateGhost(){
-  var i, k
-  for(k=0; k < FP.ghost.length; k++) {
+  for(var k=0; k < FP.ghost.length; k++) {
 
     // if ghost collides with STATE.occupied tiles
     if(collisionSouth(FP.ghost[k], STATE.occupied) === true) {
@@ -436,7 +393,7 @@ function updateGhost(){
       FP.ghost[k].alpha = 0.25
 
       // if ghost collides with real thing
-      for(i=0; i < FP.pieces.length; i++) {
+      for(var i=0; i < FP.pieces.length; i++) {
         if(FP.ghost[k].position.x === FP.pieces[i].position.x &&
            FP.ghost[k].position.y === FP.pieces[i].position.y) {
            SCENES.game.removeChild(FP.ghost[k])
@@ -496,8 +453,7 @@ function slideDownIfPossible() {
 /*
 function slots(STATE.occupied) {
   var STATE.occupiedSlots = []
-  var i
-  for(i=0; i < STATE.occupied.length; i++) {
+  for(var i=0; i < STATE.occupied.length; i++) {
     STATE.occupiedSlots.push([STATE.occupied[i].position.x, STATE.occupied[i].position.y])
   }
   return JSON.stringify(STATE.occupiedSlots)
@@ -505,9 +461,9 @@ function slots(STATE.occupied) {
 */
 
 function setupSceneGameMap(grid) {
-  var i, j, sprite
-  for(i=0; i < grid.rows; i++) {
-    for(j=0; j < grid.cols; j++) {
+  var sprite
+  for(var i=0; i < grid.rows; i++) {
+    for(var j=0; j < grid.cols; j++) {
       sprite = new P.Sprite(TEXTURES.background)
       sprite.position.x = grid.x + GRID.u * j
       sprite.position.y = grid.y + GRID.u * i
