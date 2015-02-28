@@ -1,9 +1,9 @@
 (function(){
 'use strict'
 
-var PIXIElement = {
+var Elements = {
   Button: require('./Button')
 }
 
-module.exports = PIXIElement
+module.exports = Elements
 }())

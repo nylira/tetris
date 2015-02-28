@@ -27,7 +27,7 @@ var setupGrid = require('./modules/game/setupGrid')
 var collision = require('./modules/game/collision')
 var newGhost = require('./modules/game/newGhost')
 var move = require('./modules/game/move')
-//var PIXIElement = require('./modules/interface/PIXIElement')
+var Elements = require('./modules/interface/Elements')
 
 /*============================================================================*/
 // Variables
@@ -497,6 +497,9 @@ function update() {
 
 setup()
 update()
+
+var btnNorth = new Elements.Button('lol')
+SCENES.game.addChild(btnNorth)
 
 /*----------------------------------------------------------------------------*/
 //  watch for jquery events after map is drawn

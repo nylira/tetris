@@ -60,7 +60,6 @@ function moveSouth(fp, grid, state, ghost) {
   }
 }
 
-
 function move(direction, fp, grid, scenes, state, textures, ghost) {
   switch(direction) {
     case 'w': moveWest(fp, grid, scenes, state, textures); break
