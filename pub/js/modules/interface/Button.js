@@ -38,16 +38,13 @@ function Button(text, btnOptions, textOptions) {
 
   //
   btnText = new P.Text(text, textOptions.style)
-  console.log('btnText.width', btnText.width)
+  //console.log('btnText.width', btnText.width)
 
   //------------------------------------------------------------
   // SETUP SPRITE
 
-  console.log('btnOptions:', btnOptions)
-
   // set btn options if they don't exist
   if(typeof btnOptions === 'undefined') {
-    console.log('setting btn options to empty')
     btnOptions = {}
   }
   if(typeof btnOptions.texture === 'undefined') {

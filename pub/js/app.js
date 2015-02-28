@@ -37,6 +37,7 @@ var GRID = {}
   , FP = {}
   , TEXTURES = {}
   , SCENES = {}
+  , BUTTONS = {}
 
 var GAME = {
   fpTypes: ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
@@ -58,6 +59,7 @@ var STATE = {
 , occupied: []
 , bag: []
 }
+
 
 var moveInterval, moveTimeout
 
@@ -366,23 +368,6 @@ function setupSceneGameMap(grid) {
   }
 }
 
-function setupBindings(){
-  combokeys.bind(['a', 'left'], function(){
-    move('w', FP, GRID, SCENES, STATE, TEXTURES)
-  })
-  combokeys.bind(['d', 'right'], function(){
-    move('e', FP, GRID, SCENES, STATE, TEXTURES)
-  })
-  combokeys.bind(['s', 'down'], function(){
-    move('s', FP, GRID, SCENES, STATE, TEXTURES)
-  })
-  combokeys.bind(['w', 'up'], function(){
-    FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
-    FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
-  })
-  combokeys.bind(['x', 'space'], function(){STATE.gameRunning = !STATE.gameRunning})
-}
-
 function setupTextures() {
   if(GRID.r === 2){
     TEXTURES.blockRed = new P.Texture.fromImage('../img/blockRed30@x2.png')
@@ -458,6 +443,37 @@ function movePeriodically(direction, delay) {
 }
 */
 
+function setupButtons() {
+  BUTTONS.rotate = new Elements.Button('Rotate', {x: GRID.u*7, y: GRID.u*24, width: GRID.u*4, height: GRID.u*4})
+  SCENES.game.addChild(BUTTONS.rotate)
+
+  BUTTONS.south = new Elements.Button('South', {x: GRID.u*7, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
+  SCENES.game.addChild(BUTTONS.south)
+
+  BUTTONS.west = new Elements.Button('West', {x: GRID.u*3, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
+  SCENES.game.addChild(BUTTONS.west)
+
+  BUTTONS.east = new Elements.Button('East', {x: GRID.u*11, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
+  SCENES.game.addChild(BUTTONS.east)
+}
+
+function setupBindings(){
+  combokeys.bind(['a', 'left'], function(){
+    move('w', FP, GRID, SCENES, STATE, TEXTURES)
+  })
+  combokeys.bind(['d', 'right'], function(){
+    move('e', FP, GRID, SCENES, STATE, TEXTURES)
+  })
+  combokeys.bind(['s', 'down'], function(){
+    move('s', FP, GRID, SCENES, STATE, TEXTURES)
+  })
+  combokeys.bind(['w', 'up'], function(){
+    FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
+    FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
+  })
+  combokeys.bind(['x', 'space'], function(){STATE.gameRunning = !STATE.gameRunning})
+}
+
 /*============================================================================*/
 // setup()
 /*============================================================================*/
@@ -466,10 +482,12 @@ function setup() {
   GRID = setupGrid()
   setupStage()
   setupTextures()
-  setupBindings()
 
   setupScenes()
   setupSceneGame()
+
+  setupButtons()
+  setupBindings()
 }
 
 /*----------------------------------------------------------------------------*/
@@ -498,8 +516,37 @@ function update() {
 setup()
 update()
 
-var btnNorth = new Elements.Button('Rotate', {x: GRID.u*7, y: GRID.u*24, width: GRID.u*4, height: GRID.u*4})
-SCENES.game.addChild(btnNorth)
+
+
+/*----------------------------------------------------------------------------*/
+//  watch for jquery events after map is drawn
+/*----------------------------------------------------------------------------*/
+/*
+
+$('#btnNorth').click(function() {
+  FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
+  FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
+})
+
+$('#btnSouth').on('mousedown touchstart', function() {
+  movePeriodically('s')
+})
+$('#btnSouth').on('mouseup touchend', function() {
+  clearMovement()
+})
+$('#btnSouth').on('mouseout', function() {
+  clearMovement()
+})
+
+$('#btnEast').on('mousedown touchstart', function() {
+  movePeriodically('e')
+})
+$('#btnEast').on('mouseup touchend', function() {
+  clearMovement()
+})
+$('#btnEast').on('mouseout', function() {
+  clearMovement()
+})
 
 /*----------------------------------------------------------------------------*/
 //  watch for jquery events after map is drawn
