@@ -25,6 +25,7 @@ var rotateFP = require('./modules/game/rotateFP.js')
 var textureFP = require('./modules/game/textureFP')
 var setupText = require('./modules/game/setupText')
 var setupGrid = require('./modules/game/setupGrid')
+var collision = require('./modules/game/collision')
 //var PIXIElement = require('./modules/interface/PIXIElement')
 
 /*============================================================================*/
@@ -63,7 +64,7 @@ var moveInterval, moveTimeout
 // Helpers
 /*----------------------------------------------------------------------------*/
 
-function rmGhostFromField(fpGhost) {
+function rmGhostFromGame(fpGhost) {
   if(fpGhost !== undefined && fpGhost.length > 0){
     for(var i=0; i < fpGhost.length; i++) {
       SCENES.game.removeChild(fpGhost[i])
@@ -71,8 +72,8 @@ function rmGhostFromField(fpGhost) {
   }
 }
 
-function addGhostToField(fp, fpGhost) {
-  rmGhostFromField(fpGhost)
+function addGhostToGame(fp, fpGhost) {
+  rmGhostFromGame(fpGhost)
   STATE.ghostLanded = false
   var newFpGhost = []
 
@@ -86,44 +87,11 @@ function addGhostToField(fp, fpGhost) {
   return newFpGhost
 }
 
-function collisionSouth(piece, occupied) {
-  var collision = false
-  for(var i=0; i < occupied.length; i++) {
-    if(STATE.occupied[i].position.x === piece.position.x &&
-       STATE.occupied[i].position.y === piece.position.y + GRID.u) {
-      collision = true
-    }
-  }
-  return collision
-}
-
-function collisionEast(piece, occupied) {
-  var collision = false
-  for(var i=0; i < occupied.length; i++) {
-    if(STATE.occupied[i].position.x === piece.position.x + GRID.u &&
-       STATE.occupied[i].position.y === piece.position.y) {
-      collision = true
-    }
-  }
-  return collision
-}
-
-function collisionWest(piece, occupied) {
-  var collision = false
-  for(var i=0; i < occupied.length; i++) {
-    if(STATE.occupied[i].position.x === piece.position.x - GRID.u &&
-       STATE.occupied[i].position.y === piece.position.y) {
-      collision= true
-    }
-  }
-  return collision
-}
-
 function moveWest(fp) {
   var doable = 0
   for(var i=0; i < fp.length; i++) {
     if( fp[i].position.x !== GRID.boundsLeft &&
-        collisionWest(fp[i], STATE.occupied) === false) {
+        collision('w', GRID, STATE, fp[i]) === false) {
       doable++
     }
   }
@@ -131,16 +99,16 @@ function moveWest(fp) {
     for(var k=0; k < fp.length; k++) {
       fp[k].position.x = fp[k].position.x - GRID.u
     }
-    FP.ghost = addGhostToField(FP.pieces, FP.ghost, STATE.occupied)
+    FP.ghost = addGhostToGame(FP.pieces, FP.ghost, STATE.occupied)
   }
 }
 
 function moveEast(fp) {
   var doable = 0
-  var j, l
-  for(j=0; j < fp.length; j++) {
-    if(fp[j].position.x !== GRID.boundsRight &&
-        collisionEast(fp[j], STATE.occupied) === false) {
+  var i, l
+  for(i=0; i < fp.length; i++) {
+    if(fp[i].position.x !== GRID.boundsRight &&
+        collision('e', GRID, STATE, fp[i]) === false) {
       doable++
     }
   }
@@ -148,16 +116,16 @@ function moveEast(fp) {
     for(l=0; l < fp.length; l++) {
       fp[l].position.x = fp[l].position.x + GRID.u
     }
-    FP.ghost = addGhostToField(FP.pieces, FP.ghost, STATE.occupied)
+    FP.ghost = addGhostToGame(FP.pieces, FP.ghost, STATE.occupied)
   }
 }
 
 function moveSouth(fp) {
   var doable = 0
-  var j, l
-  for(j=0; j < fp.length; j++) {
-    if(fp[j].position.y !== GRID.floor &&
-        collisionSouth(fp[j], STATE.occupied) === false) {
+  var i, l
+  for(i=0; i < fp.length; i++) {
+    if(fp[i].position.y !== GRID.floor &&
+        collision('s', GRID, STATE, fp[i]) === false) {
       doable++
     }
   }
@@ -188,7 +156,7 @@ function checkIfFPLanded(fp) {
     }
 
     // stacking on others
-    if(collisionSouth(fp[j], STATE.occupied) === true) {
+    if(collision('s', GRID, STATE, fp[j]) === true) {
       STATE.fpLanded = true
       break
     }
@@ -351,7 +319,7 @@ function setupNewFP() {
     SCENES.game.addChild(FP.pieces[i])
   }
 
-  FP.ghost = addGhostToField(FP.pieces, FP.ghost, STATE.occupied)
+  FP.ghost = addGhostToGame(FP.pieces, FP.ghost, STATE.occupied)
 
   showFPOnceInView(FP.pieces)
 }
@@ -377,7 +345,7 @@ function updateGhost(){
   for(var k=0; k < FP.ghost.length; k++) {
 
     // if ghost collides with STATE.occupied tiles
-    if(collisionSouth(FP.ghost[k], STATE.occupied) === true) {
+    if(collision('s', GRID, STATE, FP.ghost[k]) === true) {
       STATE.ghostLanded = true
     } else if (STATE.ghostLanded === false){
       moveSouth(FP.ghost)
@@ -488,7 +456,7 @@ function setupBindings(){
   combokeys.bind(['s', 'down'], function(){moveActiveFP(FP.pieces, 's')})
   combokeys.bind(['w', 'up'], function(){
     FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
-    FP.ghost = addGhostToField(FP.pieces, FP.ghost, STATE.occupied)
+    FP.ghost = addGhostToGame(FP.pieces, FP.ghost, STATE.occupied)
   })
   combokeys.bind(['x', 'space'], function(){STATE.gameRunning = !STATE.gameRunning})
 }
@@ -618,7 +586,7 @@ update()
 
 $('#btnNorth').click(function() {
   FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
-  FP.ghost = addGhostToField(FP.pieces, FP.ghost, STATE.occupied)
+  FP.ghost = addGhostToGame(FP.pieces, FP.ghost, STATE.occupied)
 })
 
 $('#btnSouth').on('mousedown touchstart', function() {
