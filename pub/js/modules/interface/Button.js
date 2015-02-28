@@ -15,15 +15,13 @@ var TBtnBackground = new P.Texture.fromImage('../img/btnBackground.png')
 //==============================================================================
 
 function Button(text, btnOptions, textOptions) {
-  var btn, btnText
-  var defaultBtnTexture, defaultTextStyle
-
-  defaultBtnTexture = TBtnBackground
+  var btn, btnText, defaultTextStyle
+  var defaultBtnTexture = TBtnBackground
 
   //------------------------------------------------------------
   // SETUP TEXT
   defaultTextStyle = {
-    font: 'bold 80px Arial'
+    font: 'bold 72px Arial'
   , fill: '#000000'
   , align: 'left'
   }
@@ -38,7 +36,6 @@ function Button(text, btnOptions, textOptions) {
 
   //
   btnText = new P.Text(text, textOptions.style)
-  //console.log('btnText.width', btnText.width)
 
   //------------------------------------------------------------
   // SETUP SPRITE
@@ -59,6 +56,7 @@ function Button(text, btnOptions, textOptions) {
     btnOptions.height = btnText.height
   }
 
+  // setup button
   btn = new P.Sprite(btnOptions.texture)
   btn.position.x = btnOptions.x
   btn.position.y = btnOptions.y
@@ -66,8 +64,12 @@ function Button(text, btnOptions, textOptions) {
   btn.height = btnOptions.height
 
   btn.addChild(btnText)
-  console.log('btn.width', btn.width)
 
+  // make it interactive
+  btn.interactive = true
+  btn.buttonMode = true
+
+  console.log(btn)
   return btn
 }
 

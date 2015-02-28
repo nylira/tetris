@@ -392,6 +392,7 @@ function setupTextures() {
 
 function setupStage() {
   GAME.stage = new P.Stage(0x222222)
+  GAME.stage.interactive = true
   GAME.renderer = P.autoDetectRenderer(GAME.x, GAME.y)
   document.getElementById('container').appendChild(GAME.renderer.view)
 }
@@ -444,18 +445,43 @@ function movePeriodically(direction, delay) {
 */
 
 function setupButtons() {
+  var TBtnBackground = new P.Texture.fromImage('../img/btnBackground.png')
+  var testButton = new P.Sprite(TBtnBackground)
+  testButton.interactive = true
+  testButton.buttonMode = true
+  SCENES.game.addChild(testButton)
+
+  // BUTTON: rotate
   BUTTONS.rotate = new Elements.Button('Rotate', {x: GRID.u*7, y: GRID.u*24, width: GRID.u*4, height: GRID.u*4})
   SCENES.game.addChild(BUTTONS.rotate)
 
+  BUTTONS.rotate.click = function() {
+    alert('rotating')
+  }
+
+  /*
+  BUTTONS.rotate.click = BUTTONS.rotate.tap = function() {
+    FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
+    FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
+  }
+  */
+
+
+  // BUTTON: south
   BUTTONS.south = new Elements.Button('South', {x: GRID.u*7, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
   SCENES.game.addChild(BUTTONS.south)
 
+  // BUTTON: east
+  BUTTONS.east = new Elements.Button('East', {x: GRID.u*11, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
+  SCENES.game.addChild(BUTTONS.east)
+
+  // BUTTON: west
   BUTTONS.west = new Elements.Button('West', {x: GRID.u*3, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
   SCENES.game.addChild(BUTTONS.west)
 
-  BUTTONS.east = new Elements.Button('East', {x: GRID.u*11, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
-  SCENES.game.addChild(BUTTONS.east)
+  console.log(SCENES.game.children)
 }
+
 
 function setupBindings(){
   combokeys.bind(['a', 'left'], function(){
@@ -482,20 +508,18 @@ function setup() {
   GRID = setupGrid()
   setupStage()
   setupTextures()
-
   setupScenes()
   setupSceneGame()
-
   setupButtons()
   setupBindings()
 }
 
 /*----------------------------------------------------------------------------*/
-//  update()
+//  gameLoop()
 /*----------------------------------------------------------------------------*/
 
-function update() {
-  requestAnimationFrame(update)
+function gameLoop() {
+  requestAnimationFrame(gameLoop)
 
   if(STATE.gameRunning === true && STATE.gameOver === false) {
     showFPOnceInView(FP.pieces)
@@ -514,39 +538,7 @@ function update() {
 /*============================================================================*/
 
 setup()
-update()
-
-
-
-/*----------------------------------------------------------------------------*/
-//  watch for jquery events after map is drawn
-/*----------------------------------------------------------------------------*/
-/*
-
-$('#btnNorth').click(function() {
-  FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
-  FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
-})
-
-$('#btnSouth').on('mousedown touchstart', function() {
-  movePeriodically('s')
-})
-$('#btnSouth').on('mouseup touchend', function() {
-  clearMovement()
-})
-$('#btnSouth').on('mouseout', function() {
-  clearMovement()
-})
-
-$('#btnEast').on('mousedown touchstart', function() {
-  movePeriodically('e')
-})
-$('#btnEast').on('mouseup touchend', function() {
-  clearMovement()
-})
-$('#btnEast').on('mouseout', function() {
-  clearMovement()
-})
+gameLoop()
 
 /*----------------------------------------------------------------------------*/
 //  watch for jquery events after map is drawn
