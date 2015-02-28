@@ -498,7 +498,7 @@ function update() {
 setup()
 update()
 
-var btnNorth = new Elements.Button('Up', {width: GRID.u*4, height: GRID.u*4})
+var btnNorth = new Elements.Button('Rotate', {x: GRID.u*7, y: GRID.u*24, width: GRID.u*4, height: GRID.u*4})
 SCENES.game.addChild(btnNorth)
 
 /*----------------------------------------------------------------------------*/
