@@ -31,9 +31,9 @@ function Button(text, btnOptions, textOptions) {
   // set text options if they don't exist
   if(typeof textOptions === 'undefined') {
     textOptions = {}
-    if(typeof textOptions.style === 'undefined') {
-      textOptions.style = defaultTextStyle
-    }
+  }
+  if(typeof textOptions.style === 'undefined') {
+    textOptions.style = defaultTextStyle
   }
 
   //
@@ -43,26 +43,30 @@ function Button(text, btnOptions, textOptions) {
   //------------------------------------------------------------
   // SETUP SPRITE
 
+  console.log('btnOptions:', btnOptions)
+
   // set btn options if they don't exist
   if(typeof btnOptions === 'undefined') {
+    console.log('setting btn options to empty')
     btnOptions = {}
-    if(typeof btnOptions.texture === 'undefined') {
-      btnOptions.texture = defaultBtnTexture
-    }
-    btnOptions.x = typeof btnOptions.x !== 'undefined' ? btnOptions.x : 0
-    btnOptions.y = typeof btnOptions.y !== 'undefined' ? btnOptions.y : 0
-    if(typeof btnOptions.width === 'undefined') {
-      btnOptions.width = btnText.width
-      btnOptions.width = 200
-    }
-    if(typeof btnOptions.height === 'undefined') {
-      btnOptions.height = btnText.height
-    }
+  }
+  if(typeof btnOptions.texture === 'undefined') {
+    btnOptions.texture = defaultBtnTexture
+  }
+  btnOptions.x = typeof btnOptions.x !== 'undefined' ? btnOptions.x : 0
+  btnOptions.y = typeof btnOptions.y !== 'undefined' ? btnOptions.y : 0
+  if(typeof btnOptions.width === 'undefined') {
+    btnOptions.width = btnText.width
+  }
+  if(typeof btnOptions.height === 'undefined') {
+    btnOptions.height = btnText.height
   }
 
   btn = new P.Sprite(btnOptions.texture)
   btn.position.x = btnOptions.x
   btn.position.y = btnOptions.y
+  btn.width = btnOptions.width
+  btn.height = btnOptions.height
 
   btn.addChild(btnText)
   console.log('btn.width', btn.width)

@@ -498,7 +498,7 @@ function update() {
 setup()
 update()
 
-var btnNorth = new Elements.Button('lol')
+var btnNorth = new Elements.Button('Up', {width: GRID.u*4, height: GRID.u*4})
 SCENES.game.addChild(btnNorth)
 
 /*----------------------------------------------------------------------------*/
