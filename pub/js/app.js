@@ -8,7 +8,7 @@
 // Modules
 /*============================================================================*/
 
-var $ = require('jquery')
+//var $ = require('jquery')
 var P = require('pixi.js')
 var _ = require('lodash')
 var Combokeys = require('combokeys')
@@ -25,7 +25,7 @@ var newFP = require('./modules/logic/newFP.js')
 var rotateFP = require('./modules/logic/rotateFP.js')
 var textureFP = require('./modules/logic/textureFP')
 var setupText = require('./modules/logic/setupText')
-var drawUI = require('./modules/react/drawUI')
+//var drawUI = require('./modules/react/drawUI')
 
 /*============================================================================*/
 // Variables
@@ -595,6 +595,7 @@ function setupSceneGame() {
   setupNewFP()
 }
 
+/*
 function movePeriodically(direction, delay) {
   delay = typeof delay !== 'undefined' ? delay : 30
 
@@ -610,6 +611,7 @@ function movePeriodically(direction, delay) {
 
   }, 225)
 }
+*/
 
 
 
@@ -653,11 +655,12 @@ function update() {
 
 setup()
 update()
-drawUI()
+//drawUI()
 
 /*----------------------------------------------------------------------------*/
 //  watch for jquery events after map is drawn
 /*----------------------------------------------------------------------------*/
+/*
 
 $('#btnNorth').click(function() {
   FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
@@ -694,5 +697,6 @@ $('#btnWest').on('mouseup touchend', function() {
 $('#btnWest').on('mouseout', function() {
   clearMovement()
 })
+*/
 
 }())
