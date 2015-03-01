@@ -472,15 +472,15 @@ function setupButtons() {
   SCENES.game.addChild(BUTTONS.rotate)
 
   // BUTTON: south
-  BUTTONS.south = new Elements.Button('South', {x: GRID.u*7, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
+  BUTTONS.south = new Elements.Button('↓', {x: GRID.u*7, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
   SCENES.game.addChild(BUTTONS.south)
 
   // BUTTON: east
-  BUTTONS.east = new Elements.Button('East', {x: GRID.u*11, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
+  BUTTONS.east = new Elements.Button('→', {x: GRID.u*11, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
   SCENES.game.addChild(BUTTONS.east)
 
   // BUTTON: west
-  BUTTONS.west = new Elements.Button('West', {x: GRID.u*3, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
+  BUTTONS.west = new Elements.Button('←', {x: GRID.u*3, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
   SCENES.game.addChild(BUTTONS.west)
 }
 
@@ -545,11 +545,8 @@ function gameLoop() {
 
   if(STATE.gameRunning === true && STATE.gameOver === false) {
     showFPOnceInView(FP.pieces)
-
     checkIfFPLanded(FP.pieces)
-
     updateGhost()
-
     if(GAME.timer < new Date().getTime()) {stepUpdate()}
   }
 

@@ -19,25 +19,6 @@ function Button(text, btnOptions, textOptions) {
   var defaultBtnTexture = TBtnBackground
 
   //------------------------------------------------------------
-  // SETUP TEXT
-  defaultTextStyle = {
-    font: 'bold 72px Arial'
-  , fill: '#000000'
-  , align: 'left'
-  }
-
-  // set text options if they don't exist
-  if(typeof textOptions === 'undefined') {
-    textOptions = {}
-  }
-  if(typeof textOptions.style === 'undefined') {
-    textOptions.style = defaultTextStyle
-  }
-
-  //
-  btnText = new P.Text(text, textOptions.style)
-
-  //------------------------------------------------------------
   // SETUP SPRITE
 
   // set btn options if they don't exist
@@ -63,15 +44,33 @@ function Button(text, btnOptions, textOptions) {
   btn.width = btnOptions.width
   btn.height = btnOptions.height
 
-  btn.addChild(btnText)
-
   // make it interactive
   btn.interactive = true
   btn.buttonMode = true
 
-  //btn.hitArea = new P.Rectangle(0, 0, btnOptions.width, btnOptions.height)
+  //------------------------------------------------------------
+  // SETUP TEXT
 
-  console.log(btn)
+  defaultTextStyle = {
+    font: 'bold 120px Arial'
+  , fill: '#000000'
+  , align: 'left'
+  }
+
+  // set text options if they don't exist
+  if(typeof textOptions === 'undefined') {
+    textOptions = {}
+  }
+  if(typeof textOptions.style === 'undefined') {
+    textOptions.style = defaultTextStyle
+  }
+
+  btnText = new P.Text(text, textOptions.style)
+
+  btnText.position.x = (btn.width - btnText.width) / 2
+  btnText.position.y = (btn.height - btnText.height) / 2
+  btn.addChild(btnText)
+
   return btn
 }
 
