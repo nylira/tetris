@@ -54,7 +54,6 @@ function Button(text, btnOptions, textOptions) {
   defaultTextStyle = {
     font: 'bold 120px Arial'
   , fill: '#000000'
-  , align: 'left'
   }
 
   // set text options if they don't exist

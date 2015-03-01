@@ -422,17 +422,13 @@ function setupSceneGameTexts() {
   STATE.textNextPiece = texts[3]
 }
 
-function setupSceneGame() {
-  setupSceneGameMap(GRID)
-  setupSceneGameTexts()
-  setupNewFP()
-
+/*
+function setupCopyrightText() {
   // setup tag
   var copyrightTextStyle = {
     font: 24*GRID.r + 'px "Helvetica Neue", Arial, Helvetica, sans-serif'
   , fill: 'hsl(200,100%,50%)'
   , dropShadow: false
-  }
 
   var copyrightText = new P.Text('built by nylira.com', copyrightTextStyle)
   copyrightText.position.x = GRID.r*6
@@ -447,8 +443,8 @@ function setupSceneGame() {
   }
 
   SCENES.game.addChild(copyrightText)
-
 }
+*/
 
 function movePeriodically(direction, delay) {
   delay = typeof delay !== 'undefined' ? delay : 30
@@ -466,7 +462,7 @@ function movePeriodically(direction, delay) {
   }, 225)
 }
 
-function setupButtons() {
+function setupSceneGameButtons() {
   // BUTTON: rotate
   BUTTONS.rotate = new Elements.Button('⟳', {x: GRID.u*7, y: GRID.u*24, width: GRID.u*4, height: GRID.u*4})
   SCENES.game.addChild(BUTTONS.rotate)
@@ -493,7 +489,7 @@ function bindMovementButton(button, direction) {
   }
 }
 
-function setupButtonBindings() {
+function setupSceneGameButtonBindings() {
   BUTTONS.rotate.click = BUTTONS.rotate.tap = function() {
     FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
     FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
@@ -504,7 +500,7 @@ function setupButtonBindings() {
   bindMovementButton(BUTTONS.west, 'w')
 }
 
-function setupKeyBindings(){
+function setupSceneGameKeyBindings(){
   combokeys.bind(['a', 'left'], function(){
     move('w', FP, GRID, SCENES, STATE, TEXTURES)
   })
@@ -521,6 +517,17 @@ function setupKeyBindings(){
   combokeys.bind(['x', 'space'], function(){STATE.gameRunning = !STATE.gameRunning})
 }
 
+function setupSceneGame() {
+  setupSceneGameMap(GRID)
+  setupSceneGameTexts()
+  setupSceneGameButtons()
+  setupSceneGameButtonBindings()
+  setupSceneGameKeyBindings()
+
+  setupNewFP()
+}
+
+
 /*============================================================================*/
 // setupAll()
 /*============================================================================*/
@@ -531,9 +538,6 @@ function setupAll() {
   setupTextures()
   setupScenes()
   setupSceneGame()
-  setupButtons()
-  setupButtonBindings()
-  setupKeyBindings()
 }
 
 /*----------------------------------------------------------------------------*/
