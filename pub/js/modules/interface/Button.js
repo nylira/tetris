@@ -69,6 +69,8 @@ function Button(text, btnOptions, textOptions) {
   btn.interactive = true
   btn.buttonMode = true
 
+  //btn.hitArea = new P.Rectangle(0, 0, btnOptions.width, btnOptions.height)
+
   console.log(btn)
   return btn
 }

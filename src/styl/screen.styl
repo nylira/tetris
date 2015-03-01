@@ -8,63 +8,14 @@ html
 *, *:before, *:after
   box-sizing inherit
 
-gu = 20px
-btnSize = gu * 4
-
 body
   font-size 16px
   font-family 'Helvetica Neue', Arial, Helvetica, sans-serif
   background #000
 
-#container, canvas, #ui
+canvas
   width (1080 / 3px)
   height (1920 / 3px)
-
-#container
-  position relative
   margin 0 auto
   margin-top 1em
-
-canvas
   display block
-
-#ui
-  position absolute
-  top 0
-  left 0
-  color #fff
-
-.btn-group-controls
-  position absolute 
-  top gu*24
-  left gu*3
-  width btnSize*3
-
-.btn
-  width btnSize
-  height btnSize
-  background hsl(0,0,30)
-  border 1px solid hsl(0,0,15)
-
-  text-align center
-  font 2em 'Helvetica Neue', sans-serif
-  line-height btnSize
-
-  // cursor stuff
-  user-select none
-  cursor pointer
-
-  position absolute
-
-  &.btn-north
-    top 0
-    left btnSize
-  &.btn-south
-    top btnSize
-    left btnSize
-  &.btn-east
-    top btnSize
-    left btnSize*2
-  &.btn-west
-    top btnSize
-    left 0

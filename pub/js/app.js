@@ -40,7 +40,8 @@ var GRID = {}
   , BUTTONS = {}
 
 var GAME = {
-  fpTypes: ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
+  id: document.getElementById('gameCanvas')
+, fpTypes: ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
 , rowsToLevel: 10
 , tick: 500
 , timer: new Date().getTime() + 500
@@ -391,10 +392,11 @@ function setupTextures() {
 }
 
 function setupStage() {
+  // setup stage
   GAME.stage = new P.Stage(0x222222)
-  GAME.stage.interactive = true
-  GAME.renderer = P.autoDetectRenderer(GAME.x, GAME.y)
-  document.getElementById('container').appendChild(GAME.renderer.view)
+  GAME.stage.interactive = true // make it clickable
+  // setup renderer
+  GAME.renderer = P.autoDetectRenderer(GAME.x, GAME.y, {view: GAME.id})
 }
 
 function setupScenes() {
@@ -424,6 +426,28 @@ function setupSceneGame() {
   setupSceneGameMap(GRID)
   setupSceneGameTexts()
   setupNewFP()
+
+  // setup tag
+  var copyrightTextStyle = {
+    font: 24*GRID.r + 'px "Helvetica Neue", Arial, Helvetica, sans-serif'
+  , fill: 'hsl(200,100%,50%)'
+  , dropShadow: false
+  }
+
+  var copyrightText = new P.Text('built by nylira.com', copyrightTextStyle)
+  copyrightText.position.x = GRID.r*6
+  copyrightText.position.y = GAME.y - GRID.r*400
+  copyrightText.interactive = true
+  copyrightText.buttonMode = true
+  copyrightText.alpha = 0.75
+  copyrightText.mouseover = function() {copyrightText.alpha = 1.0}
+  copyrightText.mouseout = function() {copyrightText.alpha = 0.75}
+  copyrightText.click = copyrightText.tap = function() {
+    window.open('http://nylira.com', '_blank')
+  }
+
+  SCENES.game.addChild(copyrightText)
+
 }
 
 /*
@@ -445,12 +469,6 @@ function movePeriodically(direction, delay) {
 */
 
 function setupButtons() {
-  var TBtnBackground = new P.Texture.fromImage('../img/btnBackground.png')
-  var testButton = new P.Sprite(TBtnBackground)
-  testButton.interactive = true
-  testButton.buttonMode = true
-  SCENES.game.addChild(testButton)
-
   // BUTTON: rotate
   BUTTONS.rotate = new Elements.Button('Rotate', {x: GRID.u*7, y: GRID.u*24, width: GRID.u*4, height: GRID.u*4})
   SCENES.game.addChild(BUTTONS.rotate)
@@ -466,7 +484,6 @@ function setupButtons() {
   }
   */
 
-
   // BUTTON: south
   BUTTONS.south = new Elements.Button('South', {x: GRID.u*7, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
   SCENES.game.addChild(BUTTONS.south)
@@ -478,8 +495,6 @@ function setupButtons() {
   // BUTTON: west
   BUTTONS.west = new Elements.Button('West', {x: GRID.u*3, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
   SCENES.game.addChild(BUTTONS.west)
-
-  console.log(SCENES.game.children)
 }
 
 
@@ -501,10 +516,10 @@ function setupBindings(){
 }
 
 /*============================================================================*/
-// setup()
+// setupAll()
 /*============================================================================*/
 
-function setup() {
+function setupAll() {
   GRID = setupGrid()
   setupStage()
   setupTextures()
@@ -537,7 +552,7 @@ function gameLoop() {
 // play!
 /*============================================================================*/
 
-setup()
+setupAll()
 gameLoop()
 
 /*----------------------------------------------------------------------------*/
