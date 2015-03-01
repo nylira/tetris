@@ -1,5 +1,6 @@
 // TODO: random initial rotation
 // TODO: paint four piece after if you press the down button
+// TODO: fix rotation canceling gravity bug
 
 (function() {
 'use strict'
@@ -61,7 +62,6 @@ var STATE = {
 , occupied: []
 , bag: []
 }
-
 
 var moveInterval, moveTimeout
 var rotateInterval, rotateTimeout
@@ -453,7 +453,7 @@ function setupCopyrightText() {
 function rotatePeriodically(direction, delay) {
   delay = typeof delay !== 'undefined' ? delay : 30
 
-  FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
+  FP.state = rotateFP(FP, STATE, GRID)
   FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
 
   // wait 225ms until starting the repeat process
@@ -461,8 +461,7 @@ function rotatePeriodically(direction, delay) {
 
     // repeat every delay
     rotateInterval = setInterval(function () {
-      FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
-
+      FP.state = rotateFP(FP, STATE, GRID)
       FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
 
     }, delay)
@@ -487,38 +486,28 @@ function movePeriodically(direction, delay) {
 }
 
 function setupSceneGameButtons() {
-  // BUTTON: rotate
   BUTTONS.rotate = new Elements.Button('⟳', {x: GRID.u*7, y: GRID.u*24, width: GRID.u*4, height: GRID.u*4})
   SCENES.game.addChild(BUTTONS.rotate)
 
-  // BUTTON: south
   BUTTONS.south = new Elements.Button('↓', {x: GRID.u*7, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
   SCENES.game.addChild(BUTTONS.south)
 
-  // BUTTON: east
   BUTTONS.east = new Elements.Button('→', {x: GRID.u*11, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
   SCENES.game.addChild(BUTTONS.east)
 
-  // BUTTON: west
   BUTTONS.west = new Elements.Button('←', {x: GRID.u*3, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
   SCENES.game.addChild(BUTTONS.west)
-}
-
-function bindRotateButton(button) {
-  button.mousedown = button.touchstart = function() {
-    button.setTexture(ButtonTextures.button.sq.active)
-    rotatePeriodically()
-  }
-  button.mouseup = button.mouseout = button.touchend = function() {
-    button.setTexture(ButtonTextures.button.sq.normal)
-    clearMovement()
-  }
 }
 
 function bindMovementButton(button, direction) {
   button.mousedown = button.touchstart = function() {
     button.setTexture(ButtonTextures.button.sq.active)
-    movePeriodically(direction)
+
+    if(direction === 'rotate') {
+      rotatePeriodically()
+    } else {
+      movePeriodically(direction)
+    }
   }
   button.mouseup = button.mouseout = button.touchend = function() {
     button.setTexture(ButtonTextures.button.sq.normal)
@@ -527,7 +516,7 @@ function bindMovementButton(button, direction) {
 }
 
 function setupSceneGameButtonBindings() {
-  bindRotateButton(BUTTONS.rotate)
+  bindMovementButton(BUTTONS.rotate, 'rotate')
   bindMovementButton(BUTTONS.south, 's')
   bindMovementButton(BUTTONS.east, 'e')
   bindMovementButton(BUTTONS.west, 'w')
@@ -544,7 +533,7 @@ function setupSceneGameKeyBindings(){
     move('s', FP, GRID, SCENES, STATE, TEXTURES)
   })
   combokeys.bind(['w', 'up'], function(){
-    FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
+    FP.state = rotateFP(FP, STATE, GRID)
     FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
   })
   combokeys.bind(['x', 'space'], function(){STATE.gameRunning = !STATE.gameRunning})
