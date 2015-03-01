@@ -8,15 +8,13 @@
 //==============================================================================
 
 var P = require('pixi.js')
-var TBtnBackground = new P.Texture.fromImage('../img/btnBackground.png')
-
+var T = require('./ButtonTextures')
 //==============================================================================
 // Functions
 //==============================================================================
 
 function Button(text, btnOptions, textOptions) {
   var btn, btnText, defaultTextStyle
-  var defaultBtnTexture = TBtnBackground
 
   //------------------------------------------------------------
   // SETUP SPRITE
@@ -25,9 +23,31 @@ function Button(text, btnOptions, textOptions) {
   if(typeof btnOptions === 'undefined') {
     btnOptions = {}
   }
-  if(typeof btnOptions.texture === 'undefined') {
-    btnOptions.texture = defaultBtnTexture
+
+  switch(btnOptions.textures) {
+    case 'rect':
+      btnOptions.textures = {
+        normal: T.button.rect.normal
+      , hover: T.button.rect.hover
+      , active: T.button.rect.active
+      }
+      break
+    case 'sq':
+      btnOptions.textures = {
+        normal: T.button.sq.normal
+      , hover: T.button.sq.hover
+      , active: T.button.sq.active
+      }
+      break
+    default:
+      btnOptions.textures = {
+        normal: T.button.sq.normal
+      , hover: T.button.sq.hover
+      , active: T.button.sq.active
+      }
+      break
   }
+
   btnOptions.x = typeof btnOptions.x !== 'undefined' ? btnOptions.x : 0
   btnOptions.y = typeof btnOptions.y !== 'undefined' ? btnOptions.y : 0
   if(typeof btnOptions.width === 'undefined') {
@@ -38,7 +58,7 @@ function Button(text, btnOptions, textOptions) {
   }
 
   // setup button
-  btn = new P.Sprite(btnOptions.texture)
+  btn = new P.Sprite(btnOptions.textures.normal)
   btn.position.x = btnOptions.x
   btn.position.y = btnOptions.y
   btn.width = btnOptions.width
@@ -48,12 +68,20 @@ function Button(text, btnOptions, textOptions) {
   btn.interactive = true
   btn.buttonMode = true
 
+  // swap textures
+  btn.mouseover = function() {
+    btn.setTexture(btnOptions.textures.hover)
+  }
+  btn.mouseout = function() {
+    btn.setTexture(btnOptions.textures.normal)
+  }
+
   //------------------------------------------------------------
   // SETUP TEXT
 
   defaultTextStyle = {
     font: 'bold 120px Arial'
-  , fill: '#000000'
+  , fill: '#FFFFFF'
   }
 
   // set text options if they don't exist

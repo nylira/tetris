@@ -28,6 +28,7 @@ var collision = require('./modules/game/collision')
 var newGhost = require('./modules/game/newGhost')
 var move = require('./modules/game/move')
 var Elements = require('./modules/interface/Elements')
+var ButtonTextures = require('./modules/interface/ButtonTextures')
 
 /*============================================================================*/
 // Variables
@@ -63,6 +64,7 @@ var STATE = {
 
 
 var moveInterval, moveTimeout
+var rotateInterval, rotateTimeout
 
 /*----------------------------------------------------------------------------*/
 // Helpers
@@ -256,6 +258,8 @@ function setupNewFP() {
 function clearMovement() {
   clearInterval(moveInterval)
   clearTimeout(moveTimeout)
+  clearInterval(rotateInterval)
+  clearTimeout(rotateTimeout)
 }
 
 function stepUpdate(){
@@ -446,6 +450,26 @@ function setupCopyrightText() {
 }
 */
 
+function rotatePeriodically(direction, delay) {
+  delay = typeof delay !== 'undefined' ? delay : 30
+
+  FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
+  FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
+
+  // wait 225ms until starting the repeat process
+  rotateTimeout = setTimeout(function() {
+
+    // repeat every delay
+    rotateInterval = setInterval(function () {
+      FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
+
+      FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
+
+    }, delay)
+
+  }, 225)
+}
+
 function movePeriodically(direction, delay) {
   delay = typeof delay !== 'undefined' ? delay : 30
 
@@ -480,21 +504,30 @@ function setupSceneGameButtons() {
   SCENES.game.addChild(BUTTONS.west)
 }
 
+function bindRotateButton(button) {
+  button.mousedown = button.touchstart = function() {
+    button.setTexture(ButtonTextures.button.sq.active)
+    rotatePeriodically()
+  }
+  button.mouseup = button.mouseout = button.touchend = function() {
+    button.setTexture(ButtonTextures.button.sq.normal)
+    clearMovement()
+  }
+}
+
 function bindMovementButton(button, direction) {
   button.mousedown = button.touchstart = function() {
+    button.setTexture(ButtonTextures.button.sq.active)
     movePeriodically(direction)
   }
   button.mouseup = button.mouseout = button.touchend = function() {
+    button.setTexture(ButtonTextures.button.sq.normal)
     clearMovement()
   }
 }
 
 function setupSceneGameButtonBindings() {
-  BUTTONS.rotate.click = BUTTONS.rotate.tap = function() {
-    FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
-    FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
-  }
-
+  bindRotateButton(BUTTONS.rotate)
   bindMovementButton(BUTTONS.south, 's')
   bindMovementButton(BUTTONS.east, 'e')
   bindMovementButton(BUTTONS.west, 'w')
