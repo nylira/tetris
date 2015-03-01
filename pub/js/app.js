@@ -450,39 +450,26 @@ function setupSceneGame() {
 
 }
 
-/*
 function movePeriodically(direction, delay) {
   delay = typeof delay !== 'undefined' ? delay : 30
 
-  move(direction, FP, GRID, STATE)
+  move(direction, FP, GRID, SCENES, STATE, TEXTURES)
 
   // wait 225ms until starting the repeat process
   moveTimeout = setTimeout(function() {
 
     // repeat every 30ms
     moveInterval = setInterval(function () {
-      move(direction, FP, GRID, STATE)
+      move(direction, FP, GRID, SCENES, STATE, TEXTURES)
     }, delay)
 
   }, 225)
 }
-*/
 
 function setupButtons() {
   // BUTTON: rotate
-  BUTTONS.rotate = new Elements.Button('Rotate', {x: GRID.u*7, y: GRID.u*24, width: GRID.u*4, height: GRID.u*4})
+  BUTTONS.rotate = new Elements.Button('⟳', {x: GRID.u*7, y: GRID.u*24, width: GRID.u*4, height: GRID.u*4})
   SCENES.game.addChild(BUTTONS.rotate)
-
-  BUTTONS.rotate.click = function() {
-    alert('rotating')
-  }
-
-  /*
-  BUTTONS.rotate.click = BUTTONS.rotate.tap = function() {
-    FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
-    FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
-  }
-  */
 
   // BUTTON: south
   BUTTONS.south = new Elements.Button('South', {x: GRID.u*7, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
@@ -497,8 +484,27 @@ function setupButtons() {
   SCENES.game.addChild(BUTTONS.west)
 }
 
+function bindMovementButton(button, direction) {
+  button.mousedown = button.touchstart = function() {
+    movePeriodically(direction)
+  }
+  button.mouseup = button.mouseout = button.touchend = function() {
+    clearMovement()
+  }
+}
 
-function setupBindings(){
+function setupButtonBindings() {
+  BUTTONS.rotate.click = BUTTONS.rotate.tap = function() {
+    FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
+    FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
+  }
+
+  bindMovementButton(BUTTONS.south, 's')
+  bindMovementButton(BUTTONS.east, 'e')
+  bindMovementButton(BUTTONS.west, 'w')
+}
+
+function setupKeyBindings(){
   combokeys.bind(['a', 'left'], function(){
     move('w', FP, GRID, SCENES, STATE, TEXTURES)
   })
@@ -526,7 +532,8 @@ function setupAll() {
   setupScenes()
   setupSceneGame()
   setupButtons()
-  setupBindings()
+  setupButtonBindings()
+  setupKeyBindings()
 }
 
 /*----------------------------------------------------------------------------*/
@@ -554,47 +561,5 @@ function gameLoop() {
 
 setupAll()
 gameLoop()
-
-/*----------------------------------------------------------------------------*/
-//  watch for jquery events after map is drawn
-/*----------------------------------------------------------------------------*/
-/*
-
-$('#btnNorth').click(function() {
-  FP.state = rotateFP(FP.pieces, FP.type, FP.state, STATE.occupied, GRID.boundsLeft, GRID.boundsRight, GRID.width, GRID.u)
-  FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
-})
-
-$('#btnSouth').on('mousedown touchstart', function() {
-  movePeriodically('s')
-})
-$('#btnSouth').on('mouseup touchend', function() {
-  clearMovement()
-})
-$('#btnSouth').on('mouseout', function() {
-  clearMovement()
-})
-
-$('#btnEast').on('mousedown touchstart', function() {
-  movePeriodically('e')
-})
-$('#btnEast').on('mouseup touchend', function() {
-  clearMovement()
-})
-$('#btnEast').on('mouseout', function() {
-  clearMovement()
-})
-
-$('#btnWest').on('mousedown touchstart', function() {
-  movePeriodically('w')
-})
-
-$('#btnWest').on('mouseup touchend', function() {
-  clearMovement()
-})
-$('#btnWest').on('mouseout', function() {
-  clearMovement()
-})
-*/
 
 }())
