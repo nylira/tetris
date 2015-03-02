@@ -1,6 +1,5 @@
 // TODO: random initial rotation
 // TODO: paint four piece after if you press the down button
-// TODO: fix rotation canceling gravity bug
 
 (function() {
 'use strict'
@@ -91,8 +90,14 @@ function checkIfFPLanded(fp) {
     // stacking on others
     if(collision('s', GRID, STATE, fp[j]) === true) {
       STATE.fpLanded = true
+      //console.log('collide with another piece')
       break
+    } else {
+      // if collision no longer exists, the fp DID NOT land
+      STATE.fpLanded = false
+      //console.log('did not collide with another piece')
     }
+
     // stacking on ground
     if(fp[j].position.y === GRID.floor) {
       STATE.fpLanded = true
