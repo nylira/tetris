@@ -8,14 +8,54 @@ html
 *, *:before, *:after
   box-sizing inherit
 
+html, body
+  height 100%
+
 body
-  font-size 16px
-  font-family 'Helvetica Neue', Arial, Helvetica, sans-serif
+  font 16px/1.5 'Helvetica Neue', Arial, Helvetica, sans-serif
+  color #fff
   background #000
+  display flex
+  flex-direction row
+  // horizontally center
+  justify-content center
+  // vertically center
+  align-items center
 
 canvas
-  width (1080 / 3px)
-  height (1920 / 3px)
-  margin 0 auto
-  margin-top 1em
+  //width (1080 / 3px)
+  //height (1920 / 3px)
+  // width and height set for iphone 4 as baseline
+  width 270px
+  height 480px
   display block
+
+@media (min-height: 568px) 
+  canvas
+    width 320px
+    height 568px
+
+@media (min-height: 667px) 
+  canvas
+    width 375px
+    height 667px
+
+@media (min-height: 736px) 
+  canvas
+    width 414px
+    height 736px
+
+@media (min-height: 1024px) 
+  canvas
+    width 567px
+    height 1024px
+
+@media (min-height: 1024px) 
+  canvas
+    width 567px
+    height 1024px
+
+@media (min-height: 1200px) 
+  canvas
+    width 675px
+    height 1200px
