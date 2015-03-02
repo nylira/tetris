@@ -39,7 +39,6 @@ var GRID = {}
   , SCENES = {}
   , BUTTONS = {}
 
-console.log(TEXTURES)
 var GAME = {
   id: document.getElementById('gameCanvas')
 , fpTypes: ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
@@ -388,11 +387,11 @@ function setupStage() {
 
 function setupScenes() {
   SCENES.menu = new P.DisplayObjectContainer()
-  SCENES.menu.visible = false
+  SCENES.menu.visible = true
   GAME.stage.addChild(SCENES.menu)
 
   SCENES.game = new P.DisplayObjectContainer()
-  SCENES.game.visible = true
+  SCENES.game.visible = false
   GAME.stage.addChild(SCENES.game)
 
   SCENES.summary = new P.DisplayObjectContainer()
@@ -432,6 +431,14 @@ function setupCopyrightText() {
   SCENES.game.addChild(copyrightText)
 }
 */
+
+function setupSceneMenu() {
+  BUTTONS.newGame = new Elements.Button('New Game', {x: GRID.u*1, y: GRID.u*16, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
+  SCENES.menu.addChild(BUTTONS.newGame)
+
+  BUTTONS.gameOptions = new Elements.Button('Options', {x: GRID.u*1, y: GRID.u*21, width: GRID.u*16, height: GRID.u*4, textures: 'rect'})
+  SCENES.menu.addChild(BUTTONS.gameOptions)
+}
 
 function rotatePeriodically(direction, delay) {
   delay = typeof delay !== 'undefined' ? delay : 30
@@ -539,7 +546,8 @@ function setupAll() {
   GRID = setupGrid()
   setupStage()
   setupScenes()
-  setupSceneGame()
+  setupSceneMenu()
+  //setupSceneGame()
 }
 
 /*----------------------------------------------------------------------------*/
@@ -549,7 +557,7 @@ function setupAll() {
 function gameLoop() {
   requestAnimationFrame(gameLoop)
 
-  if(STATE.gameRunning === true && STATE.gameOver === false) {
+  if(SCENES.game.visible === true && STATE.gameRunning === true && STATE.gameOver === false) {
     showFPOnceInView(FP.pieces)
     checkIfFPLanded(FP.pieces)
     updateGhost()

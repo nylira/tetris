@@ -51,19 +51,18 @@ function Button(text, btnOptions, textOptions) {
 
   btnOptions.x = typeof btnOptions.x !== 'undefined' ? btnOptions.x : 0
   btnOptions.y = typeof btnOptions.y !== 'undefined' ? btnOptions.y : 0
-  if(typeof btnOptions.width === 'undefined') {
-    btnOptions.width = btnText.width
-  }
-  if(typeof btnOptions.height === 'undefined') {
-    btnOptions.height = btnText.height
-  }
 
   // setup button
   btn = new P.Sprite(btnOptions.textures.normal)
   btn.position.x = btnOptions.x
   btn.position.y = btnOptions.y
-  btn.width = btnOptions.width
-  btn.height = btnOptions.height
+
+  if(typeof btnOptions.width !== 'undefined') {
+    btn.width = btnOptions.width
+  }
+  if(typeof btnOptions.height !== 'undefined') {
+    btn.height = btnOptions.height
+  }
 
   // make it interactive
   btn.interactive = true
@@ -95,6 +94,8 @@ function Button(text, btnOptions, textOptions) {
 
   btnText = new P.Text(text, textOptions.style)
 
+  //console.log('btnOptions.width', btnOptions.width)
+  //console.log('btn.width', btn.width, 'btnText.width', btnText.width)
   btnText.position.x = (btn.width - btnText.width) / 2
   btnText.position.y = (btn.height - btnText.height) / 2
   btn.addChild(btnText)

@@ -7,10 +7,10 @@ uglify = ./node_modules/uglify-js/bin/uglifyjs
 default: js css
 
 js:
-	 $(browserify) pub/js/app.js -d -o | $(uglify) > pub/js/bundle.js
+	 $(browserify) -t brfs pub/js/app.js -d -o | $(uglify) > pub/js/bundle.js
 
 wjs:
-	 $(watchify) pub/js/app.js -d -o pub/js/bundle.js -v
+	 $(watchify) -t brfs pub/js/app.js -d -o pub/js/bundle.js -v
 
 css:
 	mkdir -p pub/css

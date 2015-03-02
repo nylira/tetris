@@ -2,6 +2,12 @@
 'use strict'
 
 var P = require('pixi.js')
+var fs = require('fs')
+var path = require('path')
+var junk = require('junk')
+
+var textureFiles = fs.readdirSync(path.join(__dirname, '../../../img/textures'))
+console.log(textureFiles.filter(junk.not))
 
 function t(fileName, fileExtension) {
   var texture
