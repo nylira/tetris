@@ -29,7 +29,6 @@ var collision = require('./modules/game/collision')
 var newGhost = require('./modules/game/newGhost')
 var move = require('./modules/game/move')
 var Elements = require('./modules/interface/Elements')
-var ButtonTextures = require('./modules/interface/ButtonTextures')
 var TEXTURES = require('./modules/game/textures')
 
 /*============================================================================*/
@@ -41,6 +40,7 @@ var GRID = {}
   , SCENES = {}
   , BUTTONS = {}
 
+console.log(TEXTURES)
 var GAME = {
   id: document.getElementById('gameCanvas')
 , fpTypes: ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
@@ -479,7 +479,7 @@ function setupSceneGameButtons() {
 
 function bindMovementButton(button, direction) {
   button.mousedown = button.touchstart = function() {
-    button.setTexture(ButtonTextures.button.sq.active)
+    button.setTexture(TEXTURES.button.sq.active)
 
     if(direction === 'rotate') {
       rotatePeriodically()
@@ -488,7 +488,7 @@ function bindMovementButton(button, direction) {
     }
   }
   button.mouseup = button.mouseout = button.touchend = function() {
-    button.setTexture(ButtonTextures.button.sq.normal)
+    button.setTexture(TEXTURES.button.sq.normal)
     clearMovement()
   }
 }
