@@ -30,6 +30,7 @@ var newGhost = require('./modules/game/newGhost')
 var move = require('./modules/game/move')
 var Elements = require('./modules/interface/Elements')
 var ButtonTextures = require('./modules/interface/ButtonTextures')
+var TEXTURES = require('./modules/game/textures')
 
 /*============================================================================*/
 // Variables
@@ -37,7 +38,6 @@ var ButtonTextures = require('./modules/interface/ButtonTextures')
 
 var GRID = {}
   , FP = {}
-  , TEXTURES = {}
   , SCENES = {}
   , BUTTONS = {}
 
@@ -365,33 +365,11 @@ function setupSceneGameMap(grid) {
   var sprite
   for(var i=0; i < grid.rows; i++) {
     for(var j=0; j < grid.cols; j++) {
-      sprite = new P.Sprite(TEXTURES.background)
+      sprite = new P.Sprite(TEXTURES.grid)
       sprite.position.x = grid.x + GRID.u * j
       sprite.position.y = grid.y + GRID.u * i
       SCENES.game.addChild(sprite)
     }
-  }
-}
-
-function setupTextures() {
-  if(GRID.r === 2){
-    TEXTURES.blockRed = new P.Texture.fromImage('../img/blockRed30@x2.png')
-    TEXTURES.blockGreen = new P.Texture.fromImage('../img/blockGreen30@x2.png')
-    TEXTURES.blockBlue = new P.Texture.fromImage('../img/blockBlue30@x2.png')
-    TEXTURES.blockCyan = new P.Texture.fromImage('../img/blockCyan30@x2.png')
-    TEXTURES.blockMagenta = new P.Texture.fromImage('../img/blockMagenta30@x2.png')
-    TEXTURES.blockYellow = new P.Texture.fromImage('../img/blockYellow30@x2.png')
-    TEXTURES.blockWhite = new P.Texture.fromImage('../img/blockWhite30@x2.png')
-    TEXTURES.background = new P.Texture.fromImage('../img/darkGrid30@x2.png')
-  } else {
-    TEXTURES.blockRed = new P.Texture.fromImage('../img/blockRed30.png')
-    TEXTURES.blockGreen = new P.Texture.fromImage('../img/blockGreen30.png')
-    TEXTURES.blockBlue = new P.Texture.fromImage('../img/blockBlue30.png')
-    TEXTURES.blockCyan = new P.Texture.fromImage('../img/blockCyan30.png')
-    TEXTURES.blockMagenta = new P.Texture.fromImage('../img/blockMagenta30.png')
-    TEXTURES.blockYellow = new P.Texture.fromImage('../img/blockYellow30.png')
-    TEXTURES.blockWhite = new P.Texture.fromImage('../img/blockWhite30.png')
-    TEXTURES.background = new P.Texture.fromImage('../img/darkGrid30.png')
   }
 }
 
@@ -545,10 +523,8 @@ function setupSceneGame() {
   setupSceneGameButtons()
   setupSceneGameButtonBindings()
   setupSceneGameKeyBindings()
-
   setupNewFP()
 }
-
 
 /*============================================================================*/
 // setupAll()
@@ -557,7 +533,6 @@ function setupSceneGame() {
 function setupAll() {
   GRID = setupGrid()
   setupStage()
-  setupTextures()
   setupScenes()
   setupSceneGame()
 }
