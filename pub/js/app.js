@@ -390,11 +390,11 @@ function setupStage() {
 
 function setupScenes() {
   SCENES.menu = new P.DisplayObjectContainer()
-  SCENES.menu.visible = true
+  SCENES.menu.visible = false
   GAME.stage.addChild(SCENES.menu)
 
   SCENES.game = new P.DisplayObjectContainer()
-  SCENES.game.visible = false
+  SCENES.game.visible = true
   GAME.stage.addChild(SCENES.game)
 
   SCENES.summary = new P.DisplayObjectContainer()
@@ -550,7 +550,7 @@ function setupAll() {
   setupStage()
   setupScenes()
   setupSceneMenu()
-  //setupSceneGame()
+  setupSceneGame()
 }
 
 /*----------------------------------------------------------------------------*/
@@ -576,12 +576,14 @@ function gameLoop() {
 textureLoader.onComplete = function() {
   console.log('textures loaded!')
   TEXTURES = require('./modules/game/textures')
+
+  setupAll()
+  gameLoop()
+
   document.getElementById('loading').style.display = 'none'
   document.getElementById('gameCanvas').style.display = 'block'
 }
 textureLoader.load()
 
-setupAll()
-gameLoop()
 
 }())
