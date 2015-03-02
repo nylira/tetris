@@ -574,7 +574,7 @@ function gameLoop() {
 /*============================================================================*/
 
 textureLoader.onComplete = function() {
-  console.log('textures loaded!')
+  //console.log('textures loaded!')
   TEXTURES = require('./modules/game/textures')
 
   setupAll()
@@ -584,6 +584,5 @@ textureLoader.onComplete = function() {
   document.getElementById('gameCanvas').style.display = 'block'
 }
 textureLoader.load()
-
 
 }())
