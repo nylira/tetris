@@ -28,7 +28,9 @@ var collision = require('./modules/game/collision')
 var newGhost = require('./modules/game/newGhost')
 var move = require('./modules/game/move')
 var Elements = require('./modules/interface/Elements')
-var TEXTURES = require('./modules/game/textures')
+
+var textureLoader = require('./modules/game/textureLoader')()
+
 
 /*============================================================================*/
 // Variables
@@ -38,6 +40,7 @@ var GRID = {}
   , FP = {}
   , SCENES = {}
   , BUTTONS = {}
+  , TEXTURES = {}
 
 var GAME = {
   id: document.getElementById('gameCanvas')
@@ -569,6 +572,14 @@ function gameLoop() {
 /*============================================================================*/
 // play!
 /*============================================================================*/
+
+textureLoader.onComplete = function() {
+  console.log('textures loaded!')
+  TEXTURES = require('./modules/game/textures')
+  document.getElementById('loading').style.display = 'none'
+  document.getElementById('gameCanvas').style.display = 'block'
+}
+textureLoader.load()
 
 setupAll()
 gameLoop()
