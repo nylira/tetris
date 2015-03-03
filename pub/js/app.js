@@ -58,7 +58,7 @@ var STATE = {
 , level: 0
 , fpLanded: false
 , ghostLanded: false
-, gameRunning: true
+, gameRunning: false
 , gameOver: false
 , occupied: []
 , bag: []
@@ -390,11 +390,11 @@ function setupStage() {
 
 function setupScenes() {
   SCENES.menu = new P.DisplayObjectContainer()
-  SCENES.menu.visible = false
+  SCENES.menu.visible = true
   GAME.stage.addChild(SCENES.menu)
 
   SCENES.game = new P.DisplayObjectContainer()
-  SCENES.game.visible = true
+  SCENES.game.visible = false
   GAME.stage.addChild(SCENES.game)
 
   SCENES.summary = new P.DisplayObjectContainer()
@@ -435,11 +435,31 @@ function setupCopyrightText() {
 }
 */
 
+function startNewGame(){
+  setupSceneGame()
+  STATE.gameRunning = true
+  SCENES.menu.visible = false
+  SCENES.game.visible = true
+  console.log('starting a new game!')
+}
+
+function setupButton(button, buttonAction) {
+  button.click = button.tap = function(){
+    button.setTexture(TEXTURES.button.rect.active)
+    buttonAction()
+  }
+  button.mouseup = button.mouseout = button.touchend = function() {
+    button.setTexture(TEXTURES.button.rect.normal)
+  }
+}
+
 function setupSceneMenu() {
-  BUTTONS.newGame = new Elements.Button('New Game', {x: GRID.u*1, y: GRID.u*16, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
+  BUTTONS.newGame = new Elements.Button('New Game', {x: GRID.u*9, y: GRID.u*16, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
   SCENES.menu.addChild(BUTTONS.newGame)
 
-  BUTTONS.gameOptions = new Elements.Button('Options', {x: GRID.u*1, y: GRID.u*21, width: GRID.u*16, height: GRID.u*4, textures: 'rect'})
+  setupButton(BUTTONS.newGame, startNewGame)
+
+  BUTTONS.gameOptions = new Elements.Button('Options', {x: GRID.u*9, y: GRID.u*20, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
   SCENES.menu.addChild(BUTTONS.gameOptions)
 }
 
@@ -479,17 +499,21 @@ function movePeriodically(direction, delay) {
 }
 
 function setupSceneGameButtons() {
-  BUTTONS.rotate = new Elements.Button('⟳', {x: GRID.u*7, y: GRID.u*24, width: GRID.u*4, height: GRID.u*4})
-  SCENES.game.addChild(BUTTONS.rotate)
+  var sceneGameButtons = new P.DisplayObjectContainer()
+  sceneGameButtons.position = new P.Point(GRID.u*5, GRID.u*26)
+  SCENES.game.addChild(sceneGameButtons)
 
-  BUTTONS.south = new Elements.Button('↓', {x: GRID.u*7, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
-  SCENES.game.addChild(BUTTONS.south)
+  BUTTONS.rotate = new Elements.Button('⟳', {x: GRID.u*4, y: GRID.u*0, width: GRID.u*4, height: GRID.u*4})
+  sceneGameButtons.addChild(BUTTONS.rotate)
 
-  BUTTONS.east = new Elements.Button('→', {x: GRID.u*11, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
-  SCENES.game.addChild(BUTTONS.east)
+  BUTTONS.south = new Elements.Button('↓', {x: GRID.u*4, y: GRID.u*4, width: GRID.u*4, height: GRID.u*4})
+  sceneGameButtons.addChild(BUTTONS.south)
 
-  BUTTONS.west = new Elements.Button('←', {x: GRID.u*3, y: GRID.u*28, width: GRID.u*4, height: GRID.u*4})
-  SCENES.game.addChild(BUTTONS.west)
+  BUTTONS.east = new Elements.Button('→', {x: GRID.u*8, y: GRID.u*4, width: GRID.u*4, height: GRID.u*4})
+  sceneGameButtons.addChild(BUTTONS.east)
+
+  BUTTONS.west = new Elements.Button('←', {x: GRID.u*0, y: GRID.u*4, width: GRID.u*4, height: GRID.u*4})
+  sceneGameButtons.addChild(BUTTONS.west)
 }
 
 function bindMovementButton(button, direction) {
@@ -550,7 +574,6 @@ function setupAll() {
   setupStage()
   setupScenes()
   setupSceneMenu()
-  setupSceneGame()
 }
 
 /*----------------------------------------------------------------------------*/
