@@ -97,15 +97,6 @@ function Button(text, btnOptions, textOptions) {
   btn.anchor = new P.Point(0.5,0.5)
   btnText.anchor = new P.Point(0.5,0.5)
 
-  /*
-  console.log('btnOptions.width', btnOptions.width)
-  console.log('btn.width', btn.width, 'btnText.width', btnText.width)
-  btnText.position.x = (btn.width - btnText.width) / 2
-  console.log('btn.width', btn.width, 'btnText.width', btnText.width)
-  console.log('btnText.position.x', btnText.position.x)
-  btnText.position.y = (btn.height - btnText.height) / 2
-  */
-
   btn.addChild(btnText)
 
   return btn
