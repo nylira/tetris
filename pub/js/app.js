@@ -72,7 +72,6 @@ var rotateInterval, rotateTimeout
 /*----------------------------------------------------------------------------*/
 
 function showFPOnceInView(fp) {
-  //console.log('checking if fp is visible')
   for(var i=0; i < fp.length; i++) {
     if(fp[i].position.y >= GRID.ciel && fp[i].visible === false) {
       fp[i].visible = true
@@ -87,6 +86,7 @@ function checkIfFPLanded(fp) {
     if(STATE.fpLanded === true && fp[j].position.y === GRID.ciel) {
       STATE.gameOver = true
       console.log('GAME OVER')
+      console.log('your score was', STATE.score)
     }
 
     // stacking on others
@@ -390,7 +390,7 @@ function setupStage() {
 
 function setupScenes() {
   SCENES.menu = new P.DisplayObjectContainer()
-  SCENES.menu.visible = true
+  SCENES.menu.visible = false
   GAME.stage.addChild(SCENES.menu)
 
   SCENES.game = new P.DisplayObjectContainer()
@@ -398,7 +398,7 @@ function setupScenes() {
   GAME.stage.addChild(SCENES.game)
 
   SCENES.summary = new P.DisplayObjectContainer()
-  SCENES.summary.visible = false
+  SCENES.summary.visible = true
   GAME.stage.addChild(SCENES.summary)
 }
 
@@ -410,30 +410,6 @@ function setupSceneGameTexts() {
   STATE.textLevel = texts[2]
   STATE.textNextPiece = texts[3]
 }
-
-/*
-function setupCopyrightText() {
-  // setup tag
-  var copyrightTextStyle = {
-    font: 24*GRID.r + 'px "Helvetica Neue", Arial, Helvetica, sans-serif'
-  , fill: 'hsl(200,100%,50%)'
-  , dropShadow: false
-
-  var copyrightText = new P.Text('built by nylira.com', copyrightTextStyle)
-  copyrightText.position.x = GRID.r*6
-  copyrightText.position.y = GAME.y - GRID.r*400
-  copyrightText.interactive = true
-  copyrightText.buttonMode = true
-  copyrightText.alpha = 0.75
-  copyrightText.mouseover = function() {copyrightText.alpha = 1.0}
-  copyrightText.mouseout = function() {copyrightText.alpha = 0.75}
-  copyrightText.click = copyrightText.tap = function() {
-    window.open('http://nylira.com', '_blank')
-  }
-
-  SCENES.game.addChild(copyrightText)
-}
-*/
 
 function startNewGame(){
   setupSceneGame()
