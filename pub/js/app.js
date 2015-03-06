@@ -29,9 +29,7 @@ var newGhost = require('./modules/game/newGhost')
 var move = require('./modules/game/move')
 var Elements = require('./modules/interface/Elements')
 var State = require('./modules/game/state')
-
 var textureLoader = require('./modules/game/textureLoader')()
-
 
 /*============================================================================*/
 // Variables
@@ -162,29 +160,6 @@ function checkIfRowIsFull(piece) {
   return isRowFull
 }
 
-function updateText(textObject, theText, positionX, positionY) {
-  textObject.setText(theText)
-  switch(positionX) {
-    case 'center':
-      textObject.position.x = (GAME.x - textObject.width) / 2
-      break
-    case 'left':
-      textObject.position.x = 12 * GRID.r
-      break
-    case 'right':
-      textObject.position.x = GAME.x - textObject.width - 12 * GRID.r
-      break
-    default:
-      textObject.position.x = positionX
-      break
-  }
-  if(positionY === undefined) {
-    textObject.position.y = 0
-  } else {
-    textObject.position.y = positionY * GRID.r
-  }
-}
-
 function updateRows(rows) {
   STATE.rows += rows
   console.log('Current Rows Cleared:', STATE.rows)
@@ -193,9 +168,11 @@ function updateRows(rows) {
 function updateLevel(rows) {
   if(STATE.rows >= GAME.rowsToLevel && STATE.rows % GAME.rowsToLevel === 0) {
     STATE.level = Math.floor(rows / GAME.rowsToLevel)
+
     GAME.tick = Math.round(GAME.tick * Math.pow(0.95, STATE.level))
+
+    TEXTS.game.level.setText('LVL ' + STATE.level)
     console.log('Current Level:', STATE.level)
-    updateText(TEXTS.game.level, 'LVL ' + STATE.level, 'left', 12)
     console.log('Current Speed:', GAME.tick)
   }
   return STATE.level
@@ -211,7 +188,7 @@ function updatePoints(rows) {
   }
   STATE.score += points
   console.log('Current Points:', STATE.score)
-  updateText(TEXTS.game.score, STATE.score, 'center', 12)
+  TEXTS.game.score.setText(STATE.score)
 }
 
 function updateUI(rows) {
@@ -244,7 +221,7 @@ function setupNewFP() {
   }
 
   console.log('Next Piece:', STATE.bag[STATE.bag.length - 1])
-  updateText(TEXTS.game.next, 'Next: ' + STATE.bag[STATE.bag.length - 1], 'right', 12)
+  TEXTS.game.next.setText('Next: ' + STATE.bag[STATE.bag.length - 1])
 
   for(var i=0; i < FP.pieces.length; i++) {
     SCENES.game.addChild(FP.pieces[i])
