@@ -85,8 +85,7 @@ function checkIfFPLanded(fp) {
     // game over if piece lands and hits the ceiling
     if(STATE.fpLanded === true && fp[j].position.y === GRID.ciel) {
       STATE.gameOver = true
-      console.log('GAME OVER')
-      console.log('your score was', STATE.score)
+      endGame()
     }
 
     // stacking on others
@@ -414,9 +413,23 @@ function setupSceneGameTexts() {
 function startNewGame(){
   setupSceneGame()
   STATE.gameRunning = true
+
+  // disable the other scenes
   SCENES.menu.visible = false
+  SCENES.summary.visible = false
+
   SCENES.game.visible = true
   console.log('starting a new game!')
+}
+function endGame(){
+  STATE.gameRunning = false
+
+  SCENES.game.visible = false
+
+  SCENES.summary.visible = true
+
+  console.log('GAME OVER')
+  console.log('your score was', STATE.score)
 }
 
 function setupButton(button, buttonAction) {
@@ -541,6 +554,33 @@ function setupSceneGame() {
   setupNewFP()
 }
 
+function setupSceneSummary() {
+  var textEndGameStyle = {
+    font: '200 160px Helvetica Neue',
+    fill: '#FFFFFF'
+  }
+  var textEndGame = new P.Text('Game Over', textEndGameStyle)
+  textEndGame.anchor = new P.Point(0.5,0.5)
+  textEndGame.position = new P.Point(GRID.u*9,GRID.u*6)
+  SCENES.summary.addChild(textEndGame)
+
+  var textPointsStyle = {
+    font: '200 80px Helvetica Neue',
+    fill: '#FFFFFF'
+  }
+  var textPointsContent = 'Your score: ' + STATE.score
+  var textPoints = new P.Text(textPointsContent, textPointsStyle)
+  textPoints.anchor = new P.Point(0.5,0.5)
+  textPoints.position = new P.Point(GRID.u*9,GRID.u*9)
+  SCENES.summary.addChild(textPoints)
+
+  BUTTONS.playAgain = new Elements.Button('Play Again', {x: GRID.u*9, y: GRID.u*16, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
+  SCENES.summary.addChild(BUTTONS.playAgain)
+
+  setupButton(BUTTONS.playAgain, startNewGame)
+}
+
+
 /*============================================================================*/
 // setupAll()
 /*============================================================================*/
@@ -550,6 +590,7 @@ function setupAll() {
   setupStage()
   setupScenes()
   setupSceneMenu()
+  setupSceneSummary()
 }
 
 /*----------------------------------------------------------------------------*/
