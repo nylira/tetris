@@ -28,6 +28,7 @@ var collision = require('./modules/game/collision')
 var newGhost = require('./modules/game/newGhost')
 var move = require('./modules/game/move')
 var Elements = require('./modules/interface/Elements')
+var State = require('./modules/game/state')
 
 var textureLoader = require('./modules/game/textureLoader')()
 
@@ -41,6 +42,7 @@ var GRID = {}
   , SCENES = {}
   , BUTTONS = {}
   , TEXTURES = {}
+  , STATE = {}
 
 var GAME = {
   id: document.getElementById('gameCanvas')
@@ -50,18 +52,6 @@ var GAME = {
 , timer: new Date().getTime() + 500
 , x: 1080/2 * window.devicePixelRatio
 , y: 1920/2 * window.devicePixelRatio
-}
-
-var STATE = {
-  score: 0
-, rows: 0
-, level: 0
-, fpLanded: false
-, ghostLanded: false
-, gameRunning: false
-, gameOver: false
-, occupied: []
-, bag: []
 }
 
 var moveInterval, moveTimeout
@@ -83,7 +73,7 @@ function checkIfFPLanded(fp) {
   for(var j=0; j < fp.length; j++) {
 
     // game over if piece lands and hits the ceiling
-    if(STATE.fpLanded === true && fp[j].position.y === GRID.ciel) {
+    if(STATE.fpLanded === true && fp[j].position.y <= GRID.ciel) {
       STATE.gameOver = true
       endGame()
     }
@@ -389,7 +379,7 @@ function setupStage() {
 
 function setupScenes() {
   SCENES.menu = new P.DisplayObjectContainer()
-  SCENES.menu.visible = false
+  SCENES.menu.visible = true
   GAME.stage.addChild(SCENES.menu)
 
   SCENES.game = new P.DisplayObjectContainer()
@@ -397,7 +387,7 @@ function setupScenes() {
   GAME.stage.addChild(SCENES.game)
 
   SCENES.summary = new P.DisplayObjectContainer()
-  SCENES.summary.visible = true
+  SCENES.summary.visible = false
   GAME.stage.addChild(SCENES.summary)
 }
 
@@ -411,6 +401,7 @@ function setupSceneGameTexts() {
 }
 
 function startNewGame(){
+  STATE = new State()
   setupSceneGame()
   STATE.gameRunning = true
 
