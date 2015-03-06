@@ -22,7 +22,7 @@ attachFastClick(document.body)
 
 var newFP = require('./modules/game/newFP.js')
 var rotateFP = require('./modules/game/rotateFP.js')
-var setupText = require('./modules/game/setupText')
+var setupSceneGameTexts = require('./modules/game/setupSceneGameTexts')
 var setupGrid = require('./modules/game/setupGrid')
 var collision = require('./modules/game/collision')
 var newGhost = require('./modules/game/newGhost')
@@ -188,7 +188,6 @@ function updateText(textObject, theText, positionX, positionY) {
 function updateRows(rows) {
   STATE.rows += rows
   console.log('Current Rows Cleared:', STATE.rows)
-  //updateText(textRows, STATE.rows + ' rows', 'center', 72)
 }
 
 function updateLevel(rows) {
@@ -196,7 +195,7 @@ function updateLevel(rows) {
     STATE.level = Math.floor(rows / GAME.rowsToLevel)
     GAME.tick = Math.round(GAME.tick * Math.pow(0.95, STATE.level))
     console.log('Current Level:', STATE.level)
-    updateText(STATE.textLevel, 'LVL ' + STATE.level, 'left', 12)
+    updateText(TEXTS.game.level, 'LVL ' + STATE.level, 'left', 12)
     console.log('Current Speed:', GAME.tick)
   }
   return STATE.level
@@ -212,7 +211,7 @@ function updatePoints(rows) {
   }
   STATE.score += points
   console.log('Current Points:', STATE.score)
-  updateText(STATE.textScore, STATE.score, 'center', 12)
+  updateText(TEXTS.game.score, STATE.score, 'center', 12)
 }
 
 function updateUI(rows) {
@@ -245,7 +244,7 @@ function setupNewFP() {
   }
 
   console.log('Next Piece:', STATE.bag[STATE.bag.length - 1])
-  updateText(STATE.textNextPiece, 'Next: ' + STATE.bag[STATE.bag.length - 1], 'right', 12)
+  updateText(TEXTS.game.next, 'Next: ' + STATE.bag[STATE.bag.length - 1], 'right', 12)
 
   for(var i=0; i < FP.pieces.length; i++) {
     SCENES.game.addChild(FP.pieces[i])
@@ -396,15 +395,6 @@ function setupScenes() {
   GAME.stage.addChild(SCENES.summary)
 }
 
-function setupSceneGameTexts() {
-  var texts = setupText(SCENES.game, GAME.x, GRID.r)
-
-  STATE.textScore = texts[0]
-  //STATE.textRows = texts[1]
-  STATE.textLevel = texts[2]
-  STATE.textNextPiece = texts[3]
-}
-
 function startNewGame(){
   STATE = new State()
   setupSceneGame()
@@ -543,7 +533,7 @@ function setupSceneGameKeyBindings(){
 
 function setupSceneGame() {
   setupSceneGameMap(GRID)
-  setupSceneGameTexts()
+  setupSceneGameTexts(GAME, GRID, SCENES, TEXTS)
   setupSceneGameButtons()
   setupSceneGameButtonBindings()
   setupSceneGameKeyBindings()
