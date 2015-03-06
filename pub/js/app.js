@@ -220,7 +220,7 @@ function setupNewFP() {
     STATE.bag = _.shuffle(GAME.fpTypes)
   }
 
-  console.log('Next Piece:', STATE.bag[STATE.bag.length - 1])
+  //console.log('Next Piece:', STATE.bag[STATE.bag.length - 1])
   TEXTS.game.next.setText('Next: ' + STATE.bag[STATE.bag.length - 1])
 
   for(var i=0; i < FP.pieces.length; i++) {
@@ -228,7 +228,6 @@ function setupNewFP() {
   }
 
   FP.ghost = newGhost(FP, SCENES, STATE, TEXTURES)
-
   showFPOnceInView(FP.pieces)
 }
 
@@ -280,63 +279,6 @@ function updateGhost(){
     }
   }
 }
-
-/*
-function slideDownIfPossible() {
-  // slide the pieces down if there's nothing below them
-  var canFall = []
-  var n, m, o
-  var canPieceFall = false
-  var pointlessPieces = []
-
-  // for each STATE.occupiedPiece
-  for(m=0; m < STATE.occupied.length; m++) {
-
-    // get a list of pieces that are NOT underneath STATE.occupied piece
-    for(n=0; n < STATE.occupied.length; n++) {
-      if( _.isEqual(STATE.occupied[n].position
-        , new P.Point( STATE.occupied[m].position.x
-                     , STATE.occupied[m].position.y + GRID.u)) === false) {
-        pointlessPieces.push(STATE.occupied[m])
-        //console.log('pointlessPieces.length', pointlessPieces.length)
-      }
-    }
-
-    // if all the pieces are pointless, that means STATE.occupiedPiece can fall
-    if(pointlessPieces.length === STATE.occupied.length) {
-      canPieceFall = true
-    }
-
-    // add STATE.occupiedPiece to a list of pieces that can fall
-    if(canPieceFall === true && STATE.occupied[m].position.y < GRID.floor) {
-      canFall.push(STATE.occupied[m])
-      canFall = _.uniq(canFall)
-    }
-  }
-
-  // slide down every canFall piece
-  for(o=0; o < canFall.length; o++) {
-    canFall[o].position.y = canFall[o].position.y + GRID.u
-
-    // remove pieces from canFall if they reach the bottom
-    if(canFall[o].position.y === GRID.floor) {
-      canFall.splice(o,1)
-    }
-  }
-
-  //console.log('canFall:', slots(canFall))
-}
-*/
-
-/*
-function slots(STATE.occupied) {
-  var STATE.occupiedSlots = []
-  for(var i=0; i < STATE.occupied.length; i++) {
-    STATE.occupiedSlots.push([STATE.occupied[i].position.x, STATE.occupied[i].position.y])
-  }
-  return JSON.stringify(STATE.occupiedSlots)
-}
-*/
 
 function setupSceneGameMap(grid) {
   var sprite

@@ -13,7 +13,6 @@ function setupSceneGameTexts(game, grid, scenes, texts) {
     fill: '#FFFFFF'
   }
 
-
   texts.game.level = new P.Text('LVL 0', textStyleMd)
   texts.game.level.position.x = grid.u * 0.5
   texts.game.level.position.y = grid.u
