@@ -43,6 +43,11 @@ var GRID = {}
   , BUTTONS = {}
   , TEXTURES = {}
   , STATE = {}
+  , TEXTS = {
+      menu: {}
+    , game: {}
+    , summary: {}
+  }
 
 var GAME = {
   id: document.getElementById('gameCanvas')
@@ -412,6 +417,7 @@ function startNewGame(){
   SCENES.game.visible = true
   console.log('starting a new game!')
 }
+
 function endGame(){
   STATE.gameRunning = false
 
@@ -419,8 +425,7 @@ function endGame(){
 
   SCENES.summary.visible = true
 
-  console.log('GAME OVER')
-  console.log('your score was', STATE.score)
+  TEXTS.summary.points.setText('Your Score: ' + STATE.score)
 }
 
 function setupButton(button, buttonAction) {
@@ -550,20 +555,19 @@ function setupSceneSummary() {
     font: '200 160px Helvetica Neue',
     fill: '#FFFFFF'
   }
-  var textEndGame = new P.Text('Game Over', textEndGameStyle)
-  textEndGame.anchor = new P.Point(0.5,0.5)
-  textEndGame.position = new P.Point(GRID.u*9,GRID.u*6)
-  SCENES.summary.addChild(textEndGame)
+  TEXTS.summary.endGame = new P.Text('Game Over', textEndGameStyle)
+  TEXTS.summary.endGame.anchor = new P.Point(0.5,0.5)
+  TEXTS.summary.endGame.position = new P.Point(GRID.u*9,GRID.u*6)
+  SCENES.summary.addChild(TEXTS.summary.endGame)
 
   var textPointsStyle = {
     font: '200 80px Helvetica Neue',
     fill: '#FFFFFF'
   }
-  var textPointsContent = 'Your score: ' + STATE.score
-  var textPoints = new P.Text(textPointsContent, textPointsStyle)
-  textPoints.anchor = new P.Point(0.5,0.5)
-  textPoints.position = new P.Point(GRID.u*9,GRID.u*9)
-  SCENES.summary.addChild(textPoints)
+  TEXTS.summary.points = new P.Text('$POINTS', textPointsStyle)
+  TEXTS.summary.points.anchor = new P.Point(0.5,0.5)
+  TEXTS.summary.points.position = new P.Point(GRID.u*9,GRID.u*9)
+  SCENES.summary.addChild(TEXTS.summary.points)
 
   BUTTONS.playAgain = new Elements.Button('Play Again', {x: GRID.u*9, y: GRID.u*16, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
   SCENES.summary.addChild(BUTTONS.playAgain)
