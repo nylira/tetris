@@ -28,7 +28,6 @@ var newGhost = require('./modules/game/newGhost')
 var move = require('./modules/game/move')
 var Elements = require('./modules/interface/Elements')
 var State = require('./modules/game/state')
-//var clearScene = require('./modules/game/clearScene')
 
 var textureLoader = require('./modules/game/textureLoader')()
 
@@ -301,20 +300,6 @@ function setupStage() {
   GAME.renderer = P.autoDetectRenderer(GAME.x, GAME.y, {view: GAME.id})
 }
 
-function setupScenes() {
-  SCENES.menu = new P.DisplayObjectContainer()
-  SCENES.menu.visible = true
-  GAME.stage.addChild(SCENES.menu)
-
-  SCENES.game = new P.DisplayObjectContainer()
-  SCENES.game.visible = false
-  GAME.stage.addChild(SCENES.game)
-
-  SCENES.summary = new P.DisplayObjectContainer()
-  SCENES.summary.visible = false
-  GAME.stage.addChild(SCENES.summary)
-}
-
 function clearScene(scene) {
   console.log('objects in SCENE.game BEFORE', SCENES.game.children.length)
   for(var i=0; i < scene.children.length; i++) {
@@ -326,32 +311,21 @@ function clearScene(scene) {
 function startNewGame(){
   STATE = new State()
 
-  //clearScene(SCENES.game)
-
-  console.log('objects in SCENE.game BEFORE', SCENES.game.children.length)
-  SCENES.game = new P.DisplayObjectContainer()
-  GAME.stage.addChild(SCENES.game)
-  console.log('objects in SCENE.game AFTER', SCENES.game.children.length)
-
   setupSceneGame()
-
   STATE.gameRunning = true
 
   // disable the other scenes
   SCENES.menu.visible = false
   SCENES.summary.visible = false
-
   SCENES.game.visible = true
+
   console.log('starting a new game!')
 }
 
 function endGame(){
   STATE.gameRunning = false
-
   SCENES.game.visible = false
-
   SCENES.summary.visible = true
-
   TEXTS.summary.points.setText('Your Score: ' + STATE.score)
 }
 
@@ -366,6 +340,10 @@ function setupButton(button, buttonAction) {
 }
 
 function setupSceneMenu() {
+  SCENES.menu = new P.DisplayObjectContainer()
+  SCENES.menu.visible = true
+  GAME.stage.addChild(SCENES.menu)
+
   BUTTONS.newGame = new Elements.Button('New Game', {x: GRID.u*9, y: GRID.u*16, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
   SCENES.menu.addChild(BUTTONS.newGame)
 
@@ -498,6 +476,10 @@ function setupSceneGameKeyBindings(){
 }
 
 function setupSceneGame() {
+  SCENES.game = new P.DisplayObjectContainer()
+  SCENES.game.visible = false
+  GAME.stage.addChild(SCENES.game)
+
   setupSceneGameMap(GRID)
   setupSceneGameTexts(GAME, GRID, SCENES, TEXTS)
   setupSceneGameButtons()
@@ -508,6 +490,10 @@ function setupSceneGame() {
 }
 
 function setupSceneSummary() {
+  SCENES.summary = new P.DisplayObjectContainer()
+  SCENES.summary.visible = false
+  GAME.stage.addChild(SCENES.summary)
+
   var textEndGameStyle = {
     font: '200 160px Helvetica Neue',
     fill: '#FFFFFF'
@@ -540,8 +526,8 @@ function setupSceneSummary() {
 function setupAll() {
   GRID = setupGrid()
   setupStage()
-  setupScenes()
   setupSceneMenu()
+  setupSceneGame()
   setupSceneSummary()
 }
 
