@@ -22,14 +22,13 @@ attachFastClick(document.body)
 
 var newFP = require('./modules/game/newFP.js')
 var rotateFP = require('./modules/game/rotateFP.js')
-var setupSceneGameTexts = require('./modules/game/setupSceneGameTexts')
 var setupGrid = require('./modules/game/setupGrid')
 var collision = require('./modules/game/collision')
 var newGhost = require('./modules/game/newGhost')
 var move = require('./modules/game/move')
 var Elements = require('./modules/interface/Elements')
 var State = require('./modules/game/state')
-var clearScene = require('./modules/game/clearScene')
+//var clearScene = require('./modules/game/clearScene')
 
 var textureLoader = require('./modules/game/textureLoader')()
 
@@ -316,10 +315,24 @@ function setupScenes() {
   GAME.stage.addChild(SCENES.summary)
 }
 
+function clearScene(scene) {
+  console.log('objects in SCENE.game BEFORE', SCENES.game.children.length)
+  for(var i=0; i < scene.children.length; i++) {
+    scene.removeChild(scene.children[i])
+  }
+  console.log('objects in SCENE.game AFTER', SCENES.game.children.length)
+}
+
 function startNewGame(){
   STATE = new State()
 
-  clearScene(SCENES.game)
+  //clearScene(SCENES.game)
+
+  console.log('objects in SCENE.game BEFORE', SCENES.game.children.length)
+  SCENES.game = new P.DisplayObjectContainer()
+  GAME.stage.addChild(SCENES.game)
+  console.log('objects in SCENE.game AFTER', SCENES.game.children.length)
+
   setupSceneGame()
 
   STATE.gameRunning = true
@@ -395,6 +408,35 @@ function movePeriodically(direction, delay) {
     }, delay)
 
   }, 225)
+}
+
+function setupSceneGameTexts() {
+  var textStyleMd = {
+    font: 'bold 40px Helvetica Neue',
+    fill: '#FFFFFF'
+  }
+  var textStyleLg = {
+    font: '90px Helvetica Neue',
+    fill: '#FFFFFF'
+  }
+
+  TEXTS.game.level = new P.Text('LVL 0', textStyleMd)
+  TEXTS.game.level.position.x = GRID.u * 0.5
+  TEXTS.game.level.position.y = GRID.u
+  TEXTS.game.level.anchor = new P.Point(0, 0.5)
+  SCENES.game.addChild(TEXTS.game.level)
+
+  TEXTS.game.score = new P.Text('Z', textStyleLg)
+  TEXTS.game.score.position.x = GAME.x / 2
+  TEXTS.game.score.position.y = GRID.u * 1.5
+  TEXTS.game.score.anchor = new P.Point(0.5, 0.5)
+  SCENES.game.addChild(TEXTS.game.score)
+
+  TEXTS.game.next = new P.Text('Next: ?', textStyleMd)
+  TEXTS.game.next.position.x = GAME.x - GRID.u * 0.5
+  TEXTS.game.next.position.y = GRID.u
+  TEXTS.game.next.anchor = new P.Point(1, 0.5)
+  SCENES.game.addChild(TEXTS.game.next)
 }
 
 function setupSceneGameButtons() {

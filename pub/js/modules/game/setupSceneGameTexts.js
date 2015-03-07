@@ -19,7 +19,7 @@ function setupSceneGameTexts(game, grid, scenes, texts) {
   texts.game.level.anchor = new P.Point(0, 0.5)
   scenes.game.addChild(texts.game.level)
 
-  texts.game.score = new P.Text('0', textStyleLg)
+  texts.game.score = new P.Text('Z', textStyleLg)
   texts.game.score.position.x = game.x / 2
   texts.game.score.position.y = grid.u * 1.5
   texts.game.score.anchor = new P.Point(0.5, 0.5)
