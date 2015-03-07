@@ -26,6 +26,8 @@ var setupGrid = require('./modules/game/setupGrid')
 var collision = require('./modules/game/collision')
 var newGhost = require('./modules/game/newGhost')
 var move = require('./modules/game/move')
+var switchScenes = require('./modules/game/switchScenes')
+
 var Elements = require('./modules/interface/Elements')
 var State = require('./modules/game/State')
 
@@ -310,22 +312,15 @@ function clearScene(scene) {
 
 function startNewGame(){
   STATE = new State()
-
-  setupSceneGame()
   STATE.gameRunning = true
 
-  // disable the other scenes
-  SCENES.menu.visible = false
-  SCENES.summary.visible = false
-  SCENES.game.visible = true
-
-  console.log('starting a new game!')
+  setupSceneGame()
+  switchScenes(SCENES, SCENES.game)
 }
 
 function endGame(){
   STATE.gameRunning = false
-  SCENES.game.visible = false
-  SCENES.summary.visible = true
+  switchScenes(SCENES, SCENES.summary)
   TEXTS.summary.points.setText('Your Score: ' + STATE.score)
 }
 
@@ -511,6 +506,11 @@ function setupSceneSummary() {
 
   BUTTONS.playAgain = new Elements.Button('Play Again', {x: GRID.u*9, y: GRID.u*19, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
   SCENES.summary.addChild(BUTTONS.playAgain)
+
+  /*
+  BUTTONS.playAgain = new Elements.Button('Main Menu', {x: GRID.u*9, y: GRID.u*23, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
+  SCENES.summary.addChild(BUTTONS.mainMenu)
+  */
 
   setupButton(BUTTONS.playAgain, startNewGame)
 }
