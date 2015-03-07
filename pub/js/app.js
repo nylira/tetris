@@ -344,16 +344,15 @@ function setupSceneMenu() {
   SCENES.menu.visible = true
   GAME.stage.addChild(SCENES.menu)
 
-  //background
   var bg = new P.Sprite(TEXTURES.scene.menu)
   SCENES.menu.addChild(bg)
 
-  BUTTONS.newGame = new Elements.Button('New Game', {x: GRID.u*9, y: GRID.u*16, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
+  BUTTONS.newGame = new Elements.Button('New Game', {x: GRID.u*9, y: GRID.u*19, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
   SCENES.menu.addChild(BUTTONS.newGame)
 
   setupButton(BUTTONS.newGame, startNewGame)
 
-  BUTTONS.gameOptions = new Elements.Button('Options', {x: GRID.u*9, y: GRID.u*20, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
+  BUTTONS.gameOptions = new Elements.Button('Options', {x: GRID.u*9, y: GRID.u*23, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
   SCENES.menu.addChild(BUTTONS.gameOptions)
 }
 
@@ -498,14 +497,8 @@ function setupSceneSummary() {
   SCENES.summary.visible = false
   GAME.stage.addChild(SCENES.summary)
 
-  var textEndGameStyle = {
-    font: '200 160px Helvetica Neue',
-    fill: '#FFFFFF'
-  }
-  TEXTS.summary.endGame = new P.Text('Game Over', textEndGameStyle)
-  TEXTS.summary.endGame.anchor = new P.Point(0.5,0.5)
-  TEXTS.summary.endGame.position = new P.Point(GRID.u*9,GRID.u*6)
-  SCENES.summary.addChild(TEXTS.summary.endGame)
+  var bg = new P.Sprite(TEXTURES.scene.summary)
+  SCENES.summary.addChild(bg)
 
   var textPointsStyle = {
     font: '200 80px Helvetica Neue',
@@ -513,10 +506,10 @@ function setupSceneSummary() {
   }
   TEXTS.summary.points = new P.Text('$POINTS', textPointsStyle)
   TEXTS.summary.points.anchor = new P.Point(0.5,0.5)
-  TEXTS.summary.points.position = new P.Point(GRID.u*9,GRID.u*9)
+  TEXTS.summary.points.position = new P.Point(GRID.u*9,GRID.u*14)
   SCENES.summary.addChild(TEXTS.summary.points)
 
-  BUTTONS.playAgain = new Elements.Button('Play Again', {x: GRID.u*9, y: GRID.u*16, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
+  BUTTONS.playAgain = new Elements.Button('Play Again', {x: GRID.u*9, y: GRID.u*19, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
   SCENES.summary.addChild(BUTTONS.playAgain)
 
   setupButton(BUTTONS.playAgain, startNewGame)

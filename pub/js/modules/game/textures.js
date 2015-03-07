@@ -44,9 +44,9 @@ var textures = {
   }
 , grid: t('darkGrid30')
 , scene: {
-  menu: t('T_Bg_Scene_Menu_01')
-}
-
+    menu: t('T_Bg_Scene_Menu_01')
+  , summary: t('T_Bg_Scene_Summary_01')
+  }
 }
 
 module.exports = textures
