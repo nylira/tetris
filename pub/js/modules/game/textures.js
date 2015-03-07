@@ -43,6 +43,10 @@ var textures = {
   , white: t('blockWhite30')
   }
 , grid: t('darkGrid30')
+, scene: {
+  menu: t('T_Bg_Scene_Menu_01')
+}
+
 }
 
 module.exports = textures

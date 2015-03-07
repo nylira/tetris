@@ -344,6 +344,10 @@ function setupSceneMenu() {
   SCENES.menu.visible = true
   GAME.stage.addChild(SCENES.menu)
 
+  //background
+  var bg = new P.Sprite(TEXTURES.scene.menu)
+  SCENES.menu.addChild(bg)
+
   BUTTONS.newGame = new Elements.Button('New Game', {x: GRID.u*9, y: GRID.u*16, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
   SCENES.menu.addChild(BUTTONS.newGame)
 
