@@ -29,6 +29,8 @@ var newGhost = require('./modules/game/newGhost')
 var move = require('./modules/game/move')
 var Elements = require('./modules/interface/Elements')
 var State = require('./modules/game/state')
+var clearScene = require('./modules/game/clearScene')
+
 var textureLoader = require('./modules/game/textureLoader')()
 
 /*============================================================================*/
@@ -316,7 +318,10 @@ function setupScenes() {
 
 function startNewGame(){
   STATE = new State()
+
+  clearScene(SCENES.game)
   setupSceneGame()
+
   STATE.gameRunning = true
 
   // disable the other scenes
@@ -456,6 +461,7 @@ function setupSceneGame() {
   setupSceneGameButtons()
   setupSceneGameButtonBindings()
   setupSceneGameKeyBindings()
+
   setupNewFP()
 }
 
