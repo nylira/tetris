@@ -214,7 +214,7 @@ function setupNewFP() {
     STATE.bag = _.shuffle(GAME.fpTypes)
   }
 
-  FP = newFP(STATE.bag.pop(), TEXTURES, GRID.x, GRID.y, GRID.width, GRID.u)
+  FP = newFP(STATE.bag.pop(), TEXTURES, GRID)
 
   if(STATE.bag === undefined || STATE.bag.length === 0) {
     STATE.bag = _.shuffle(GAME.fpTypes)

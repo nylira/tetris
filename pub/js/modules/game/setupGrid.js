@@ -21,8 +21,8 @@ function setupGrid() {
   , rows: gridRows
   , x: gridX
   , y: gridY
-  , width: gridWidth
-  , height: gridHeight
+  , w: gridWidth
+  , h: gridHeight
   , boundsLeft: gridBoundsLeft
   , boundsRight: gridBoundsRight
   , ciel: gridCeil
