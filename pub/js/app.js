@@ -27,7 +27,7 @@ var collision = require('./modules/game/collision')
 var newGhost = require('./modules/game/newGhost')
 var move = require('./modules/game/move')
 var Elements = require('./modules/interface/Elements')
-var State = require('./modules/game/state')
+var State = require('./modules/game/State')
 
 var textureLoader = require('./modules/game/textureLoader')()
 
