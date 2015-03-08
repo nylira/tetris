@@ -17,7 +17,7 @@ var lsdb = {
   }
 
 , update: function(dataName, data) {
-    console.log('updating data...')
+    //console.log('updating data...')
     localStorage.setItem(dataName, JSON.stringify(data))
     console.log(localStorage.getItem(dataName))
   }
