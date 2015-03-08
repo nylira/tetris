@@ -501,7 +501,6 @@ function setupAll() {
   setupCanvas()
   setupStage()
   setupSceneMenu()
-  setupSceneGame()
 }
 
 /*----------------------------------------------------------------------------*/
@@ -511,7 +510,7 @@ function setupAll() {
 function gameLoop() {
   requestAnimationFrame(gameLoop)
 
-  if(SCENES.game.visible === true && STATE.gameRunning === true && STATE.gameOver === false) {
+  if(SCENES.game !== undefined && SCENES.game.visible === true && STATE.gameRunning === true && STATE.gameOver === false) {
     showFPOnceInView(FP.pieces)
     checkIfFPLanded(FP.pieces)
     updateGhost()
