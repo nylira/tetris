@@ -8,8 +8,10 @@ function drawHighScores(scores, game, grid, scenes, texts) {
   var highScoresContainer = new P.DisplayObjectContainer()
   highScoresContainer.position.y = grid.u * 22
 
-  drawScoresLabel(highScoresContainer, game, texts)
-  drawScores(highScoresContainer, game, grid, scores, texts)
+  if(scores.length > 0) {
+    drawScoresLabel(highScoresContainer, game, texts)
+    drawScores(highScoresContainer, game, grid, scores, texts)
+  }
 
   scenes.summary.addChild(highScoresContainer)
 }
