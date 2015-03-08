@@ -6,11 +6,11 @@ var TS = require('../interface/textStyles')
 
 function drawHighScores(scores, game, grid, scenes, texts) {
   var highScoresContainer = new P.DisplayObjectContainer()
+  highScoresContainer.position.y = grid.u * 22
 
   texts.summary.hsLabel = new P.Text('High Scores', TS.hsLabel)
   texts.summary.hsLabel.anchor = new P.Point(0.5, 0.5)
   texts.summary.hsLabel.position.x = game.x / 2
-  texts.summary.hsLabel.position.y = 24*grid.r
 
   highScoresContainer.addChild(texts.summary.hsLabel)
 
@@ -25,7 +25,6 @@ function drawHighScores(scores, game, grid, scenes, texts) {
       scoreText = new P.Text('--', TS.hs)
     }
     scoreText.anchor = new P.Point(0.5, 0.5)
-
     scoreText.position.x = game.x / 2
     scoreText.position.y = scoreTextY + scoreText.height * i
     highScoresContainer.addChild(scoreText)
