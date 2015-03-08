@@ -16,7 +16,6 @@ function setupCopyrightText(game, grid, scenes) {
   copyrightText.click = copyrightText.tap = function() {
     window.open('http://nylira.com', '_blank')
   }
-
   scenes.game.addChild(copyrightText)
 }
 

@@ -508,20 +508,20 @@ function gameLoop() {
 
   GAME.renderer.render(GAME.stage)
 }
+
 /*============================================================================*/
 // play!
 /*============================================================================*/
 
-textureLoader.onComplete = function() {
-  //console.log('textures loaded!')
+function initialize() {
   TEXTURES = require('./modules/game/textures')
-
   setupAll()
   gameLoop()
-
   document.getElementById('loading').style.display = 'none'
   document.getElementById('gameCanvas').style.display = 'block'
 }
+
+textureLoader.onComplete = initialize
 textureLoader.load()
 
 }())

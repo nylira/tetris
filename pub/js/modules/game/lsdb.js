@@ -25,5 +25,4 @@ var lsdb = {
 }
 
 module.exports = lsdb
-
 }())
