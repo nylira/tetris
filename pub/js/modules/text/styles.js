@@ -1,37 +1,36 @@
 (function(){
 'use strict'
 
-var R = window.devicePixelRatio
+var font = require('./font')
 
 var textStyles = {
   hsLabel: {
-    font: 'bold '+ 24*R + 'px "Helvetica Neue", Arial, Helvetica, sans-serif'
+    font: font(24, 'sans', 'bold')
   , fill: 'hsla(38,100%,100%,0.75)'
   }
 , hs: {
-    font: 24*R + 'px "Helvetica Neue", Arial, Helvetica, sans-serif'
+    font: font(24, 'sans')
   , fill: 'hsla(38,100%,100%,0.75)'
   }
 , md: {
-    font: 'bold 40px Helvetica Neue'
+    font: font(20, 'sans', 'bold')
   , fill: '#FFFFFF'
   }
 , lg: {
-    font: '90px Helvetica Neue'
+    font: font(45, 'sans')
   , fill: '#FFFFFF'
   }
 , points: {
-    font: '200 80px Helvetica Neue'
+    font: font(40, 'sans', '200')
   , fill: '#FFFFFF'
   }
 , btnText: {
-    font: 'bold 120px Arial'
+    font: font(60, 'sans', 'bold')
   , fill: '#FFFFFF'
   }
 , copyright: {
-    font: 24*R + 'px "Helvetica Neue", Arial, Helvetica, sans-serif'
+    font: font(24, 'sans')
   , fill: 'hsl(200,100%,50%)'
-  , dropShadow: false
   }
 }
 

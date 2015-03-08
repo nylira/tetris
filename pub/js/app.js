@@ -62,8 +62,8 @@ var GAME = {
 , rowsToLevel: 10
 , tick: 500
 , timer: new Date().getTime() + 500
-, x: 1080
-, y: 1920
+, x: 1080 / 2 * window.devicePixelRatio
+, y: 1920 / 2 * window.devicePixelRatio
 }
 
 var moveInterval, moveTimeout
