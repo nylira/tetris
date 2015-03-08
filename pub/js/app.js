@@ -1,5 +1,4 @@
-// TODO: random initial rotation
-// TODO: paint four piece after if you press the down button
+// TODO: High Scores saving
 
 (function() {
 'use strict'
