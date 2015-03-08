@@ -27,15 +27,15 @@ var newGhost = require('./modules/game/newGhost')
 var move = require('./modules/game/move')
 var switchScenes = require('./modules/game/switchScenes')
 var updateHighScores = require('./modules/game/updateHighScores')
-var setupSceneGameTexts = require('./modules/game/setupSceneGameTexts')
 var lsdb = require('./modules/game/lsdb')
-var drawHighScores = require('./modules/game/drawHighScores')
+var State = require('./modules/game/State')
+var textureLoader = require('./modules/game/textureLoader')()
 
 var Elements = require('./modules/interface/Elements')
-var State = require('./modules/game/State')
-var TS = require('./modules/interface/textStyles')
 
-var textureLoader = require('./modules/game/textureLoader')()
+var writeSceneGame = require('./modules/text/writeSceneGame')
+var writeHighScores = require('./modules/text/writeHighScores')
+var TS = require('./modules/text/styles')
 
 /*============================================================================*/
 // Variables
@@ -451,7 +451,7 @@ function setupSceneGame() {
   GAME.stage.addChild(SCENES.game)
 
   setupSceneGameMap(GRID)
-  setupSceneGameTexts(GAME, GRID, SCENES, TEXTS)
+  writeSceneGame(GAME, GRID, SCENES, TEXTS)
   setupSceneGameButtons()
   setupSceneGameButtonBindings()
   setupSceneGameKeyBindings()
@@ -476,7 +476,7 @@ function setupSceneSummary() {
   SCENES.summary.addChild(BUTTONS.playAgain)
   setupButton(BUTTONS.playAgain, startNewGame)
 
-  drawHighScores(DB.highScores, GAME, GRID, SCENES, TEXTS)
+  writeHighScores(DB.highScores, GAME, GRID, SCENES, TEXTS)
 }
 
 /*============================================================================*/

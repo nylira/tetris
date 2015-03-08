@@ -2,7 +2,7 @@
 'use strict'
 
 var P = require('pixi.js')
-var TS = require('../interface/textStyles')
+var TS = require('./styles')
 
 function setupCopyrightText(game, grid, scenes) {
   var copyrightText = new P.Text('built by nylira.com', TS.copyright)

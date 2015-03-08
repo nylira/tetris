@@ -8,9 +8,8 @@
 //==============================================================================
 
 var P = require('pixi.js')
-//var T = require('./ButtonTextures')
 var T = require('../game/textures')
-var TS = require('./textStyles')
+var TS = require('../text/styles')
 
 //==============================================================================
 // Functions

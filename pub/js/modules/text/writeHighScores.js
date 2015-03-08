@@ -2,7 +2,7 @@
 'use strict'
 
 var P = require('pixi.js')
-var TS = require('../interface/textStyles')
+var TS = require('./styles')
 
 function drawHighScores(scores, game, grid, scenes, texts) {
   var highScoresContainer = new P.DisplayObjectContainer()

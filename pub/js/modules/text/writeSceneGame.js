@@ -2,7 +2,7 @@
 'use strict'
 
 var P = require('pixi.js')
-var TS = require('../interface/textStyles')
+var TS = require('./styles')
 
 function setupSceneGameTexts(game, grid, scenes, texts) {
   texts.game.level = new P.Text('LVL 0', TS.md)
