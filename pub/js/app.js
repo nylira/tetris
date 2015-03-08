@@ -26,6 +26,7 @@ var collision = require('./modules/game/collision')
 var newGhost = require('./modules/game/newGhost')
 var move = require('./modules/game/move')
 var switchScenes = require('./modules/game/switchScenes')
+var updateHighScores = require('./modules/game/updateHighScores')
 
 var Elements = require('./modules/interface/Elements')
 var State = require('./modules/game/State')
@@ -36,8 +37,11 @@ var textureLoader = require('./modules/game/textureLoader')()
 // Variables
 /*============================================================================*/
 
+var DB_NAME = 'NyliraGameTetris'
+
 var GRID = {}
   , FP = {}
+  , DB
   , SCENES = {}
   , BUTTONS = {}
   , TEXTURES = {}
@@ -317,10 +321,18 @@ function startNewGame(){
   switchScenes(SCENES, SCENES.game)
 }
 
+function updateDb(dbName, data) {
+  console.log('updating db...')
+  localStorage.setItem(DB_NAME, JSON.stringify(DB))
+  console.log(localStorage.getItem(DB_NAME))
+}
+
 function endGame(){
   STATE.gameRunning = false
   switchScenes(SCENES, SCENES.summary)
   TEXTS.summary.points.setText('Your Score: ' + STATE.score)
+  updateHighScores(STATE.score, DB)
+  updateDb(DB_NAME, DB)
 }
 
 function setupButton(button, buttonAction) {
@@ -506,20 +518,27 @@ function setupSceneSummary() {
   BUTTONS.playAgain = new Elements.Button('Play Again', {x: GRID.u*9, y: GRID.u*19, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
   SCENES.summary.addChild(BUTTONS.playAgain)
 
-  /*
-  BUTTONS.playAgain = new Elements.Button('Main Menu', {x: GRID.u*9, y: GRID.u*23, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
-  SCENES.summary.addChild(BUTTONS.mainMenu)
-  */
-
   setupButton(BUTTONS.playAgain, startNewGame)
 }
 
+function preload() {
+  // recover high scores from local storage if there are any.
+  DB = JSON.parse(localStorage.getItem(DB_NAME))
+  console.log('DB:', DB)
+  if(DB === null){
+    DB = {highScores: []}
+    console.log('No high scores in local storage yet. Add some!')
+  } else {
+    console.log('highScores retrieved from localStorage: ', DB.highScores)
+  }
+}
 
 /*============================================================================*/
 // setupAll()
 /*============================================================================*/
 
 function setupAll() {
+  preload()
   GRID = setupGrid()
   setupStage()
   setupSceneMenu()
