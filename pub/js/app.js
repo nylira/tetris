@@ -62,8 +62,8 @@ var GAME = {
 , rowsToLevel: 10
 , tick: 500
 , timer: new Date().getTime() + 500
-, x: 1080/2 * window.devicePixelRatio
-, y: 1920/2 * window.devicePixelRatio
+, x: 1080
+, y: 1920
 }
 
 var moveInterval, moveTimeout
@@ -479,6 +479,16 @@ function setupSceneSummary() {
   writeHighScores(DB.highScores, GAME, GRID, SCENES, TEXTS)
 }
 
+function setupCanvas(){
+  document.getElementById('loading').style.display = 'none'
+  document.getElementById('gameCanvas').style.display = 'block'
+
+  var y = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
+  var x = y * 9 / 16
+  document.getElementById('gameCanvas').style.width = x + 'px'
+  document.getElementById('gameCanvas').style.height = y + 'px'
+}
+
 /*============================================================================*/
 // setupAll()
 /*============================================================================*/
@@ -486,6 +496,7 @@ function setupSceneSummary() {
 function setupAll() {
   DB = lsdb.create(DB_NAME)
   GRID = setupGrid()
+  setupCanvas()
   setupStage()
   setupSceneMenu()
   setupSceneGame()
@@ -515,10 +526,9 @@ function gameLoop() {
 
 function initialize() {
   TEXTURES = require('./modules/game/textures')
+
   setupAll()
   gameLoop()
-  document.getElementById('loading').style.display = 'none'
-  document.getElementById('gameCanvas').style.display = 'block'
 }
 
 textureLoader.onComplete = initialize
