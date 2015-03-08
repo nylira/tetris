@@ -2,16 +2,10 @@
 'use strict'
 
 var P = require('pixi.js')
+var TS = require('../interface/textStyles')
 
 function setupCopyrightText(game, grid, scenes) {
-  // setup tag
-  var copyrightTextStyle = {
-    font: 24*grid.r + 'px "Helvetica Neue", Arial, Helvetica, sans-serif'
-  , fill: 'hsl(200,100%,50%)'
-  , dropShadow: false
-  }
-
-  var copyrightText = new P.Text('built by nylira.com', copyrightTextStyle)
+  var copyrightText = new P.Text('built by nylira.com', TS.copyright)
   copyrightText.position.x = grid.r*6
   copyrightText.position.y = game.y - grid.r*400
   copyrightText.interactive = true

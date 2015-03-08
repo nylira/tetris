@@ -27,10 +27,13 @@ var newGhost = require('./modules/game/newGhost')
 var move = require('./modules/game/move')
 var switchScenes = require('./modules/game/switchScenes')
 var updateHighScores = require('./modules/game/updateHighScores')
+var setupSceneGameTexts = require('./modules/game/setupSceneGameTexts')
 var lsdb = require('./modules/game/lsdb')
+var drawHighScores = require('./modules/game/drawHighScores')
 
 var Elements = require('./modules/interface/Elements')
 var State = require('./modules/game/State')
+var TS = require('./modules/interface/textStyles')
 
 var textureLoader = require('./modules/game/textureLoader')()
 
@@ -306,14 +309,6 @@ function setupStage() {
   GAME.renderer = P.autoDetectRenderer(GAME.x, GAME.y, {view: GAME.id})
 }
 
-function clearScene(scene) {
-  console.log('objects in SCENE.game BEFORE', SCENES.game.children.length)
-  for(var i=0; i < scene.children.length; i++) {
-    scene.removeChild(scene.children[i])
-  }
-  console.log('objects in SCENE.game AFTER', SCENES.game.children.length)
-}
-
 function startNewGame(){
   STATE = new State()
   STATE.gameRunning = true
@@ -390,35 +385,6 @@ function movePeriodically(direction, delay) {
     }, delay)
 
   }, 225)
-}
-
-function setupSceneGameTexts() {
-  var textStyleMd = {
-    font: 'bold 40px Helvetica Neue',
-    fill: '#FFFFFF'
-  }
-  var textStyleLg = {
-    font: '90px Helvetica Neue',
-    fill: '#FFFFFF'
-  }
-
-  TEXTS.game.level = new P.Text('LVL 0', textStyleMd)
-  TEXTS.game.level.position.x = GRID.u * 0.5
-  TEXTS.game.level.position.y = GRID.u
-  TEXTS.game.level.anchor = new P.Point(0, 0.5)
-  SCENES.game.addChild(TEXTS.game.level)
-
-  TEXTS.game.score = new P.Text('0', textStyleLg)
-  TEXTS.game.score.position.x = GAME.x / 2
-  TEXTS.game.score.position.y = GRID.u * 1.5
-  TEXTS.game.score.anchor = new P.Point(0.5, 0.5)
-  SCENES.game.addChild(TEXTS.game.score)
-
-  TEXTS.game.next = new P.Text('Next: ?', textStyleMd)
-  TEXTS.game.next.position.x = GAME.x - GRID.u * 0.5
-  TEXTS.game.next.position.y = GRID.u
-  TEXTS.game.next.anchor = new P.Point(1, 0.5)
-  SCENES.game.addChild(TEXTS.game.next)
 }
 
 function setupSceneGameButtons() {
@@ -501,19 +467,16 @@ function setupSceneSummary() {
   var bg = new P.Sprite(TEXTURES.scene.summary)
   SCENES.summary.addChild(bg)
 
-  var textPointsStyle = {
-    font: '200 80px Helvetica Neue',
-    fill: '#FFFFFF'
-  }
-  TEXTS.summary.points = new P.Text('$POINTS', textPointsStyle)
+  TEXTS.summary.points = new P.Text('$POINTS', TS.points)
   TEXTS.summary.points.anchor = new P.Point(0.5,0.5)
   TEXTS.summary.points.position = new P.Point(GRID.u*9,GRID.u*14)
   SCENES.summary.addChild(TEXTS.summary.points)
 
   BUTTONS.playAgain = new Elements.Button('Play Again', {x: GRID.u*9, y: GRID.u*19, width: GRID.u*12, height: GRID.u*3, textures: 'rect'})
   SCENES.summary.addChild(BUTTONS.playAgain)
-
   setupButton(BUTTONS.playAgain, startNewGame)
+
+  drawHighScores(DB.highScores, GAME, GRID, SCENES, TEXTS)
 }
 
 /*============================================================================*/

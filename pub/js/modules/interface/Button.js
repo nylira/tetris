@@ -10,12 +10,14 @@
 var P = require('pixi.js')
 //var T = require('./ButtonTextures')
 var T = require('../game/textures')
+var TS = require('./textStyles')
+
 //==============================================================================
 // Functions
 //==============================================================================
 
 function Button(text, btnOptions, textOptions) {
-  var btn, btnText, defaultTextStyle
+  var btn, btnText
 
   //------------------------------------------------------------
   // SETUP SPRITE
@@ -79,17 +81,12 @@ function Button(text, btnOptions, textOptions) {
   //------------------------------------------------------------
   // SETUP TEXT
 
-  defaultTextStyle = {
-    font: 'bold 120px Arial'
-  , fill: '#FFFFFF'
-  }
-
   // set text options if they don't exist
   if(typeof textOptions === 'undefined') {
     textOptions = {}
   }
   if(typeof textOptions.style === 'undefined') {
-    textOptions.style = defaultTextStyle
+    textOptions.style = TS.btnText
   }
 
   btnText = new P.Text(text, textOptions.style)
