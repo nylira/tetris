@@ -13,6 +13,11 @@ function updateHighScores(newScore, db) {
   if(newScore === 0) {
     highScoreMessage = 'Zero is no points, doh!'
 
+  // if there are no high scores
+  } else if(db.highScores.length === 0) {
+    db.highScores.push(newScore)
+    highScoreMessage = 'NEW HIGH SCORE!'
+
   // if there are less than 10 high scores, and the new score is high
   } else if(db.highScores.length < 10 && _.min(db.highScores) < newScore) {
     db.highScores.push(newScore)
