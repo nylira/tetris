@@ -19,17 +19,18 @@ attachFastClick(document.body)
 // Functions
 /*============================================================================*/
 
+var collision = require('./modules/game/collision')
+var countDown = require('./modules/game/countDown')
+var lsdb = require('./modules/game/lsdb')
+var move = require('./modules/game/move')
 var newFP = require('./modules/game/newFP.js')
+var newGhost = require('./modules/game/newGhost')
 var rotateFP = require('./modules/game/rotateFP.js')
 var setupGrid = require('./modules/game/setupGrid')
-var collision = require('./modules/game/collision')
-var newGhost = require('./modules/game/newGhost')
-var move = require('./modules/game/move')
-var switchScenes = require('./modules/game/switchScenes')
-var updateHighScores = require('./modules/game/updateHighScores')
-var lsdb = require('./modules/game/lsdb')
 var State = require('./modules/game/State')
+var switchScenes = require('./modules/game/switchScenes')
 var textureLoader = require('./modules/game/textureLoader')()
+var updateHighScores = require('./modules/game/updateHighScores')
 
 var Elements = require('./modules/interface/Elements')
 
@@ -74,6 +75,9 @@ var rotateInterval, rotateTimeout
 /*----------------------------------------------------------------------------*/
 
 function showFPOnceInView(fp) {
+  if(fp === undefined) {
+    return
+  }
   for(var i=0; i < fp.length; i++) {
     if(fp[i].position.y >= GRID.ciel && fp[i].visible === false) {
       fp[i].visible = true
@@ -311,7 +315,6 @@ function setupStage() {
 
 function startNewGame(){
   STATE = new State()
-  STATE.gameRunning = true
 
   setupSceneGame()
   switchScenes(SCENES, SCENES.game)
@@ -449,7 +452,6 @@ function setupSceneGameKeyBindings(){
 
 function setupSceneGame() {
   SCENES.game = new P.DisplayObjectContainer()
-  SCENES.game.visible = false
   GAME.stage.addChild(SCENES.game)
 
   setupSceneGameMap(GRID)
@@ -458,7 +460,18 @@ function setupSceneGame() {
   setupSceneGameButtonBindings()
   setupSceneGameKeyBindings()
 
-  setupNewFP()
+  TEXTS.game.countDown = new P.Text('3', TS.countDown)
+  TEXTS.game.countDown.anchor.x = 0.5
+  TEXTS.game.countDown.position.x = GAME.x / 2
+  TEXTS.game.countDown.position.y = GRID.u * 6
+  SCENES.game.addChild(TEXTS.game.countDown)
+
+  countDown(3, TEXTS.game.countDown, SCENES)
+
+  setTimeout(function() {
+    STATE.gameRunning = true
+    setupNewFP()
+  }, 3000)
 }
 
 function setupSceneSummary() {

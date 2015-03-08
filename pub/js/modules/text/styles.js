@@ -32,6 +32,10 @@ var textStyles = {
     font: font(24, 'sans')
   , fill: 'hsl(200,100%,50%)'
   }
+, countDown: {
+    font: font(80, 'sans', 'bold')
+  , fill: 'hsla(0,100%,100%,0.75)'
+  }
 }
 
 module.exports = textStyles
