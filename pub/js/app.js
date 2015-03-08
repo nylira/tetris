@@ -320,7 +320,6 @@ function startNewGame(){
 function endGame(){
   STATE.gameRunning = false
 
-  TEXTS.summary.points.setText('Your Score: ' + STATE.score)
   updateHighScores(STATE.score, DB)
   lsdb.update(DB_NAME, DB)
 
@@ -470,7 +469,7 @@ function setupSceneSummary() {
   var bg = new P.Sprite(TEXTURES.scene.summary)
   SCENES.summary.addChild(bg)
 
-  TEXTS.summary.points = new P.Text('$POINTS', TS.points)
+  TEXTS.summary.points = new P.Text('Your Score: ' + STATE.score, TS.points)
   TEXTS.summary.points.anchor = new P.Point(0.5,0.5)
   TEXTS.summary.points.position = new P.Point(GRID.u*9,GRID.u*14)
   SCENES.summary.addChild(TEXTS.summary.points)
