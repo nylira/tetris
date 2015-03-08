@@ -1,4 +1,4 @@
-// TODO: High Scores saving
+// TODO: update high score display after scoring
 
 (function() {
 'use strict'
