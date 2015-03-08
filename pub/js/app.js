@@ -319,7 +319,10 @@ function startNewGame(){
 
 function endGame(){
   STATE.gameRunning = false
+
+  setupSceneSummary()
   switchScenes(SCENES, SCENES.summary)
+
   TEXTS.summary.points.setText('Your Score: ' + STATE.score)
   updateHighScores(STATE.score, DB)
   lsdb.update(DB_NAME, DB)
@@ -500,7 +503,6 @@ function setupAll() {
   setupStage()
   setupSceneMenu()
   setupSceneGame()
-  setupSceneSummary()
 }
 
 /*----------------------------------------------------------------------------*/
