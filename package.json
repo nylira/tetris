@@ -18,7 +18,7 @@
     "koa-static": "^1.4.9",
     "lodash": "^3.5.0",
     "nib": "^1.1.0",
-    "pixi.js": "^3.0.0-rc1",
+    "pixi.js": "^2.2.7",
     "stylus": "^0.50.0",
     "uglify-js": "^2.4.17",
     "watchify": "^2.4.0"
