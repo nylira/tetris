@@ -397,7 +397,7 @@ function setupSceneGameButtons() {
   sceneGameButtons.position = new P.Point(GRID.u*5, GRID.u*26)
   SCENES.game.addChild(sceneGameButtons)
 
-  BUTTONS.rotate = new Elements.Button('⟳', {x: GRID.u*4, y: GRID.u*0, width: GRID.u*4, height: GRID.u*4})
+  BUTTONS.rotate = new Elements.Button('R', {x: GRID.u*4, y: GRID.u*0, width: GRID.u*4, height: GRID.u*4})
   sceneGameButtons.addChild(BUTTONS.rotate)
 
   BUTTONS.south = new Elements.Button('↓', {x: GRID.u*4, y: GRID.u*4, width: GRID.u*4, height: GRID.u*4})
