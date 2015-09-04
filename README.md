@@ -1,10 +1,10 @@
 # Tetris
 
-A variation on Tetris, ported to JavaScript.
+It is a variation on Tetris, ported to [JavaScript](https://en.wikipedia.org/wiki/JavaScript).
 
 ## Play Online
 
-  Visit [tetris.nylira.com](http://tetris.nylira.com) to play online.
+Visit [tetris.nylira.com](http://tetris.nylira.com) to play online.
 
 ## Play Locally
 
@@ -13,4 +13,4 @@ A variation on Tetris, ported to JavaScript.
 
 ## License
 
-GPLv3
+This program is under [GNU General Public License version 3](https://www.gnu.org/licenses/gpl-3.0.html).
