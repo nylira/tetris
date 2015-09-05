@@ -3,6 +3,8 @@ pub/js/bundle.js
 node_modules
 
 .DS_Store
+*~
+*.autosave
 
 # Logs
 logs
