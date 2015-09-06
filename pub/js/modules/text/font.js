@@ -16,7 +16,7 @@ function font(size, family, weight) {
       break
   }
 
-  if(weight === undefined) {
+  if(weight === undefined || weight == null) {
     fontWeight = ''
   } else {
     fontWeight = weight + ' '
